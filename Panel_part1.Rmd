@@ -55,7 +55,7 @@ sessionInfo()
 
 * Hybrid / Mundlak models
 
-* Causal inference
+* Statistical inference
 
 
 # Panel data structure
@@ -825,11 +825,13 @@ However, it obscures the main advantage of panel data: the relaxation of assumpt
 
 * $\E(\epsilon_{it} | x_{it}) = 0$: No time-varying unobserved heterogeneity
 
-The RE model is usually written as:
+The RE model can be written as:
 
 $$
+y_{it} = \alpha + \beta x_{it} + \alpha_i + \vartheta_{it}.
 $$
 
+Instead of assuming $\alpha_i$ are fixed effects, we treat them as i.i.d random effects, usually assuming they are normally distributed
 
 We can also write the RE as q quasi-demeaned estimator:
 

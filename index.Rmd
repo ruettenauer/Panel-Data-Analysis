@@ -25,7 +25,9 @@ link-citations: yes
 
 # Introduction
 
-In panel data, we observe the same unit (person, region, or country) repeatedly over time. 
+With usual cross-sectional data, we only observe each unit once.
+
+With panel data, we observe the same unit (person, region, or country) repeatedly over time. 
 
 This allows applying statistical methods which identify relations based on the within-unit changes rather than the differences between units. We can then account for some statistical problems of non-experimental studies and increases the confidence in a causal interpretation of the results.
 
@@ -35,9 +37,9 @@ This course profited a lot from teaching materials by Josef Brüderl and Volker 
 
 ### Why do we need panel data analysis? 
 
-In empirical social sciences, we are often interested in the causal research questions: we want to investigate questions of cause and effect. Using purely cross-sectional data, we can compare two (or more) different units (e.g. people, states, companies) and test is there exist differences according to our treatment or variable of interest more generally. 
+In empirical social sciences, we are often interested in the __causal research questions__: we want to investigate questions of cause and effect. Using purely cross-sectional data, we can compare two (or more) different units (e.g. people, states, companies) and test is there exist differences according to our treatment or variable of interest. 
 
-However, these units may not only differ in the dimension of interest, but may also be different in many other other aspects, and it is likely that we do not obverse all the relevant aspects. In the end, we might erroneously conclude that there is a causal effect, even though we only observe correlation.
+However, these units may not only differ in the dimension of interest, but may also be different in many other other aspects, and it is likely that we do not obverse all the relevant aspects. In the end, we might erroneously conclude that there is a causal effect, even though we only observe correlation (which is confounded by other differences).
 
 ![](fig/matrix.jpg)
 
@@ -45,7 +47,7 @@ Randomized controlled trials (RCT) provide a way to circumvent the problems of u
 
 By randomly selecting some individuals and exposing them to the treatment of interest, we make sure that no (unobserved) characteristics of these individual can be correlated with the treatment. In other words, units in the treatment group should - on average - be identical to units in the control group on all characteristics except the treatment.
 
-However, randomly exposing some individual to treatment and others not can be tricky in the social sciences. Think about the effects of education, the effects of marriage, or the effect of leaving the European Union (good luck with your ethics committee).
+However, randomly exposing some individuals to treatment and withholding treatment from others can be tricky in the social sciences. Think about the effects of education, the effects of marriage, or the effect of pregnancy (good luck with your ethics committee).
 
 A potential compromise between those two approaches: "compare alike with alike". This is what we usually aim for by using panel data. We do not compare two different units to each other. Rather, we compare a unit in an earlier stage to the same unit in a later stage. Not as save as an RCT, but much more ethical for many research questions.
 

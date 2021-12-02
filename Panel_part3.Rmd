@@ -21,7 +21,7 @@ link-citations: yes
 ### Required packages
 
 ```{r, message = FALSE, warning = FALSE, results = 'hide'}
-pkgs <- c("plm", "feisr", "panelView", "texreg", "tidyr", "haven", "dplyr", "ggplot2", "ggforce") 
+pkgs <- c("plm", "feisr", "sandwich", "texreg", "tidyr", "haven", "dplyr", "ggplot2", "ggforce") 
 lapply(pkgs, require, character.only = TRUE)
 ```
 
@@ -92,67 +92,48 @@ data.df <- data.df[order(data.df$pid, data.df$year), ]
 
 Can we use this dataset to replicate our earlier analysis on the marital wage premium? What might be a problem here?
 
-```{r}
-
-```
-
 
 # Exercise 2
 
 However, we do something similar: is there a fatherhood wage premium? In other words, do men experience an increase in wages when they become fathers?
 
     * Restrict the age at the start (first wage) to people aged 25-35
-    
-```{r}
 
-```
     
 
     * Use number of children to contruct a binary indicator of wether the is a child in the household or not
     
-```{r}
 
-```
     
     * Make sure we start only with men who are not yet fathers.
     
-```{r}
 
-```
 
 __Note: this feels like dropping a lot of information! However, it makes sense if we want to correctly identify the effect of interest.__
 
     * Do we need to drop observations where people go from child to no child?
     
-```{r}
 
-```    
 
     * Calculate the effect of having a child on th wage of men (including controls if reasonable). 
     
-    * Calculate effects for POLS, RE, and FE (if you have some extra time, also FEIS). (#Hint for feis: it needs a class `data.frame` as input data)
-    
-```{r}
-
-```
     
     
-    * Compare using Texreg.
+    * Calculate effects for POLS, RE, and FE (if you have some extra time, also FEIS). (#Hint: feis needs a class `data.frame` as input data)
+    
+    
+    
+    * Compare using cluster robust standard errors (and screenreg).
 
-```{r}
 
-```
   
     * Interpret the results 
-
 
 
   
    * Try to perform a placebo test: what happens if you use the "lead" of becoming father. Why is this an interesting test?
    
-```{r}
 
-```
 
 
 

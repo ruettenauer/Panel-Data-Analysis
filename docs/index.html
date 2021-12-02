@@ -345,7 +345,7 @@ div.tocify {
   <a href="Panel_part2.html">2) Extensions</a>
 </li>
 <li>
-  <a href="Panel_part3.html">3) Practical exercises</a>
+  <a href="Panel_part3.html">3) Exercises</a>
 </li>
 <li>
   <a href="Panel_part3_solutions.html">Solutions</a>
@@ -374,18 +374,19 @@ div.tocify {
 <hr />
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
-<p>In panel data, we observe the same unit (person, region, or country) repeatedly over time.</p>
+<p>With usual cross-sectional data, we only observe each unit once.</p>
+<p>With panel data, we observe the same unit (person, region, or country) repeatedly over time.</p>
 <p>This allows applying statistical methods which identify relations based on the within-unit changes rather than the differences between units. We can then account for some statistical problems of non-experimental studies and increases the confidence in a causal interpretation of the results.</p>
 <p>This course provides a hands on introduction to the preparation of panel data and the application of panel data methods. The course focuses on the most common methods like Difference in Differences, Random Effects, and Fixed Effects. We will also briefly discuss some extensions like novel Diff-in-Diff estimators and Fixed Effects Individual Slopes. The empirical part will be based on R and RMarkdown.</p>
 <p>This course profited a lot from teaching materials by Josef Brüderl and Volker Ludwig: <a href="https://www.ls3.soziologie.uni-muenchen.de/studium-lehre/archiv/teaching-marterials/panel-analysis_april-2019.pdf">Slides</a></p>
 <div id="why-do-we-need-panel-data-analysis" class="section level3">
 <h3>Why do we need panel data analysis?</h3>
-<p>In empirical social sciences, we are often interested in the causal research questions: we want to investigate questions of cause and effect. Using purely cross-sectional data, we can compare two (or more) different units (e.g. people, states, companies) and test is there exist differences according to our treatment or variable of interest more generally.</p>
-<p>However, these units may not only differ in the dimension of interest, but may also be different in many other other aspects, and it is likely that we do not obverse all the relevant aspects. In the end, we might erroneously conclude that there is a causal effect, even though we only observe correlation.</p>
+<p>In empirical social sciences, we are often interested in the <strong>causal research questions</strong>: we want to investigate questions of cause and effect. Using purely cross-sectional data, we can compare two (or more) different units (e.g. people, states, companies) and test is there exist differences according to our treatment or variable of interest.</p>
+<p>However, these units may not only differ in the dimension of interest, but may also be different in many other other aspects, and it is likely that we do not obverse all the relevant aspects. In the end, we might erroneously conclude that there is a causal effect, even though we only observe correlation (which is confounded by other differences).</p>
 <p><img src="fig/matrix.jpg" /></p>
 <p>Randomized controlled trials (RCT) provide a way to circumvent the problems of unobserved differences between treatment and control cases.</p>
 <p>By randomly selecting some individuals and exposing them to the treatment of interest, we make sure that no (unobserved) characteristics of these individual can be correlated with the treatment. In other words, units in the treatment group should - on average - be identical to units in the control group on all characteristics except the treatment.</p>
-<p>However, randomly exposing some individual to treatment and others not can be tricky in the social sciences. Think about the effects of education, the effects of marriage, or the effect of leaving the European Union (good luck with your ethics committee).</p>
+<p>However, randomly exposing some individuals to treatment and withholding treatment from others can be tricky in the social sciences. Think about the effects of education, the effects of marriage, or the effect of pregnancy (good luck with your ethics committee).</p>
 <p>A potential compromise between those two approaches: “compare alike with alike.” This is what we usually aim for by using panel data. We do not compare two different units to each other. Rather, we compare a unit in an earlier stage to the same unit in a later stage. Not as save as an RCT, but much more ethical for many research questions.</p>
 </div>
 </div>

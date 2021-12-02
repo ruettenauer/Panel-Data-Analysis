@@ -45,9 +45,7 @@ sessionInfo()
 
 * Fixed Effects Individual Slopes
 
-* Difference-in-Differences
-
-* Non-linear models
+* Dynamic treatment effects
 
 
 # Fixed Effects Individual Slopes (FEIS)

@@ -534,7 +534,7 @@ div.tocify {
 <li><p>Fixed Effects Model</p></li>
 <li><p>Random Effects Model</p></li>
 <li><p>Hybrid / Mundlak models</p></li>
-<li><p>Causal inference</p></li>
+<li><p>Statistical inference</p></li>
 </ul>
 </div>
 <div id="panel-data-structure" class="section level1">
@@ -1469,9 +1469,11 @@ y_{it} = \alpha + \beta_1 D_{i} + \beta_2 Post_{t} + \delta_{DD} (D_{i} \times P
 <li><p><span class="math inline">\(\mathrm{E}(\alpha_{i} | x_{it}) = 0\)</span>: No time-constant unobserved heterogeneity</p></li>
 <li><p><span class="math inline">\(\mathrm{E}(\epsilon_{it} | x_{it}) = 0\)</span>: No time-varying unobserved heterogeneity</p></li>
 </ul>
-<p>The RE model is usually written as:</p>
+<p>The RE model can be written as:</p>
 <p><span class="math display">\[
+y_{it} = \alpha + \beta x_{it} + \alpha_i + \vartheta_{it}.
 \]</span></p>
+<p>Instead of assuming <span class="math inline">\(\alpha_i\)</span> are fixed effects, we treat them as i.i.d random effects, usually assuming they are normally distributed</p>
 <p>We can also write the RE as q quasi-demeaned estimator:</p>
 <p><span class="math display">\[
 (y_{it} - \lambda\bar{y}_i) = \beta (x_{it} - \lambda\bar{x}_i) + (\epsilon_{it} - \lambda\bar{\epsilon}_i)  
