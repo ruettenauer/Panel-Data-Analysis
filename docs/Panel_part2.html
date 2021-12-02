@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Tobias Rüttenauer" />
+
+<meta name="date" content="2021-12-03" />
+
+<title>2) Extensions</title>
+
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; } /* Alert */
+code span.an { color: #008000; } /* Annotation */
+code span.at { } /* Attribute */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #0000ff; } /* ControlFlow */
+code span.ch { color: #008080; } /* Char */
+code span.cn { } /* Constant */
+code span.co { color: #008000; } /* Comment */
+code span.cv { color: #008000; } /* CommentVar */
+code span.do { color: #008000; } /* Documentation */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.im { } /* Import */
+code span.in { color: #008000; } /* Information */
+code span.kw { color: #0000ff; } /* Keyword */
+code span.op { } /* Operator */
+code span.ot { color: #ff4000; } /* Other */
+code span.pp { color: #ff4000; } /* Preprocessor */
+code span.sc { color: #008080; } /* SpecialChar */
+code span.ss { color: #008080; } /* SpecialString */
+code span.st { color: #008080; } /* String */
+code span.va { } /* Variable */
+code span.vs { color: #008080; } /* VerbatimString */
+code span.wa { color: #008000; font-weight: bold; } /* Warning */
+
+.sourceCode .row {
+  width: 100%;
+}
+.sourceCode {
+  overflow-x: auto;
+}
+.code-folding-btn {
+  margin-right: -30px;
+}
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">
+/* for pandoc --citeproc since 2.11 */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Panel Data Analysis</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="Panel_part1.html">1) Panel data methods</a>
+</li>
+<li>
+  <a href="Panel_part2.html">2) Extensions</a>
+</li>
+<li>
+  <a href="Panel_part3.html">3) Exercises</a>
+</li>
+<li>
+  <a href="Panel_part3_solutions.html">Solutions</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">2) Extensions</h1>
+<h4 class="author">Tobias Rüttenauer</h4>
+<h4 class="date">December 03, 2021</h4>
+
+</div>
+
+
+<div id="required-packages" class="section level3">
+<h3>Required packages</h3>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pkgs <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;plm&quot;</span>, <span class="st">&quot;feisr&quot;</span>, <span class="st">&quot;panelView&quot;</span>, <span class="st">&quot;texreg&quot;</span>, <span class="st">&quot;tidyr&quot;</span>, <span class="st">&quot;dplyr&quot;</span>, <span class="st">&quot;ggplot2&quot;</span>, <span class="st">&quot;ggforce&quot;</span>) </span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(pkgs, require, <span class="at">character.only =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+</div>
+<div id="session-info" class="section level3">
+<h3>Session info</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
+<pre><code>## R version 4.1.0 (2021-05-18)
+## Platform: x86_64-w64-mingw32/x64 (64-bit)
+## Running under: Windows 10 x64 (build 19042)
+## 
+## Matrix products: default
+## 
+## locale:
+## [1] LC_COLLATE=English_United Kingdom.1252 
+## [2] LC_CTYPE=English_United Kingdom.1252   
+## [3] LC_MONETARY=English_United Kingdom.1252
+## [4] LC_NUMERIC=C                           
+## [5] LC_TIME=English_United Kingdom.1252    
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+## [1] ggforce_0.3.3   ggplot2_3.3.5   dplyr_1.0.6     tidyr_1.1.3    
+## [5] texreg_1.37.5   panelView_1.1.2 feisr_1.2.0     plm_2.4-1      
+## 
+## loaded via a namespace (and not attached):
+##  [1] zoo_1.8-9         tidyselect_1.1.1  xfun_0.23         bslib_0.2.5.1    
+##  [5] purrr_0.3.4       lattice_0.20-44   colorspace_2.0-1  vctrs_0.3.8      
+##  [9] generics_0.1.0    htmltools_0.5.1.1 yaml_2.2.1        utf8_1.2.1       
+## [13] rlang_0.4.11      jquerylib_0.1.4   pillar_1.6.2      withr_2.4.2      
+## [17] glue_1.4.2        DBI_1.1.1         tweenr_1.0.2      lifecycle_1.0.0  
+## [21] stringr_1.4.0     munsell_0.5.0     gtable_0.3.0      bdsmatrix_1.3-4  
+## [25] evaluate_0.14     knitr_1.33        miscTools_0.6-26  lmtest_0.9-38    
+## [29] fansi_0.5.0       Rcpp_1.0.7        scales_1.1.1      jsonlite_1.7.2   
+## [33] farver_2.1.0      gridExtra_2.3     maxLik_1.4-8      digest_0.6.27    
+## [37] stringi_1.6.2     polyclip_1.10-0   rbibutils_2.2     grid_4.1.0       
+## [41] Rdpack_2.1.2      tools_4.1.0       sandwich_3.0-1    magrittr_2.0.1   
+## [45] sass_0.4.0        tibble_3.1.2      Formula_1.2-4     crayon_1.4.1     
+## [49] pkgconfig_2.0.3   MASS_7.3-54       ellipsis_0.3.2    httr_1.4.2       
+## [53] assertthat_0.2.1  rmarkdown_2.11    R6_2.5.1          nlme_3.1-152     
+## [57] compiler_4.1.0</code></pre>
+</div>
+<div id="outline" class="section level1">
+<h1>Outline</h1>
+<ul>
+<li><p>Fixed Effects Individual Slopes</p></li>
+<li><p>Difference-in-Differences</p></li>
+<li><p>Non-linear models</p></li>
+</ul>
+</div>
+<div id="fixed-effects-individual-slopes-feis" class="section level1">
+<h1>Fixed Effects Individual Slopes (FEIS)</h1>
+<p>Remeber that we have to make the parallel trends assumption in twoways FE models. A violation of the parallel trends assumption leads to biased estimates. Usually, when controlling for time or time fixed effects, we make the assumption that every observation experiences the same “effect of time.”</p>
+<p>However, we can relax this assumption by giving each individual their own intercept <strong>and</strong> their own slope.</p>
+<p>The fixed effects individual slope (FEIS) estimator is a more general version of the well-known fixed effects estimator (FE), which allows to control for heterogeneous slopes in addition to time-constant heterogeneity <span class="citation">(e.g. <a href="#ref-Bruderl.2015.387" role="doc-biblioref">Brüderl and Ludwig 2015</a>; <a href="#ref-Polachek.1994.0" role="doc-biblioref">Polachek and Kim 1994</a>; <a href="#ref-Ruttenauer.2020" role="doc-biblioref">Rüttenauer and Ludwig 2020</a>; <a href="#ref-Wooldridge.2010.384" role="doc-biblioref">Wooldridge 2010</a>)</span>. Formally, the FEIS estimator can be expressed as</p>
+<p><span class="math display">\[
+\begin{align} 
+\boldsymbol{\mathbf{y}}_{i} =&amp; \boldsymbol{\mathbf{X}}_{i}\boldsymbol{\mathbf{\beta }}+ \boldsymbol{\mathbf{W}}_i \boldsymbol{\mathbf{\alpha}}_i + \boldsymbol{\mathbf{\epsilon}}_{i},
+\end{align}
+\]</span> where <span class="math inline">\(\boldsymbol{\mathbf{y}}_{i}\)</span> is <span class="math inline">\(T \times 1\)</span>, <span class="math inline">\(\boldsymbol{\mathbf{X}}_{i}\)</span> is <span class="math inline">\(T \times K\)</span>, and <span class="math inline">\(\boldsymbol{\mathbf{\epsilon}}_{i}\)</span> is <span class="math inline">\(T \times 1\)</span>. <span class="math inline">\(\boldsymbol{\mathbf{W}}_i\)</span> is a <span class="math inline">\(T \times J\)</span> matrix of slope variables, and <span class="math inline">\(\boldsymbol{\mathbf{\alpha}}_i\)</span> a <span class="math inline">\(J \times 1\)</span> vector of individual-specific slope parameters, for <span class="math inline">\(J\)</span> slope parameters including a constant term. If <span class="math inline">\(\boldsymbol{\mathbf{W}}_i\)</span> consists of a constant term only, <span class="math inline">\(\boldsymbol{\mathbf{W}}_i = \boldsymbol{\mathbf{1}}\)</span>, thus <span class="math inline">\(\boldsymbol{\mathbf{\alpha}}_i\)</span> reduces to <span class="math inline">\(\alpha_{i1}\)</span>, and the above equation represents the well-known formula of a conventional FE model with individual fixed effects.</p>
+<p>As with the conventional FE, FEIS can be estimated using <code>lm()</code> by including <span class="math inline">\(N-1\)</span> individual-specific dummies and interaction terms of each slope variable with the <span class="math inline">\(N-1\)</span> individual-specific dummies (<span class="math inline">\((N-1) *J\)</span> controls). This is however highly inefficient. As with the conventional FE estimator, we can achieve the same result by running an <code>lm()</code> on pre-transformed data. Therefore, specify the ‘residual maker’ matrix <span class="math inline">\(\boldsymbol{\mathbf{M}}_i = \boldsymbol{\mathbf{I}}_T - \boldsymbol{\mathbf{W}}_i(\boldsymbol{\mathbf{W}}^\intercal_i \boldsymbol{\mathbf{W}}_i)^{-1}\boldsymbol{\mathbf{W}}^\intercal_i\)</span>, and estimate <span class="math display">\[
+\begin{align} 
+y_{it} - \hat{y}_{it} =&amp; (\boldsymbol{\mathbf{x}}_{it} - \hat{\boldsymbol{\mathbf{x}}}_{it})\boldsymbol{\mathbf{\beta }}+ \epsilon_{it} - \hat{\epsilon}_{it}, \\
+\boldsymbol{\mathbf{M}}_i \boldsymbol{\mathbf{y}}_i =&amp; \boldsymbol{\mathbf{M}}_i \boldsymbol{\mathbf{X}}_i\boldsymbol{\mathbf{\beta }}+ \boldsymbol{\mathbf{M}}_i \boldsymbol{\mathbf{\epsilon}}_{i}, \\
+\tilde{\boldsymbol{\mathbf{y}}}_{i} =&amp; \tilde{\boldsymbol{\mathbf{X}}}_{i}\boldsymbol{\mathbf{\beta }}+ \tilde{\boldsymbol{\mathbf{\epsilon}}}_{i},
+\end{align} 
+\]</span> where <span class="math inline">\(\tilde{\boldsymbol{\mathbf{y}}}_{i}\)</span>, <span class="math inline">\(\tilde{\boldsymbol{\mathbf{X}}}_{i}\)</span>, and <span class="math inline">\(\tilde{\boldsymbol{\mathbf{\epsilon}}}_{i}\)</span> are the residuals of regressing <span class="math inline">\(\boldsymbol{\mathbf{y}}_{i}\)</span>, each column-vector of <span class="math inline">\(\boldsymbol{\mathbf{X}}_{i}\)</span>, and <span class="math inline">\(\boldsymbol{\mathbf{\epsilon}}_{i}\)</span> on <span class="math inline">\(\boldsymbol{\mathbf{W}}_i\)</span>. Intuitively, we (1) estimate the individual-specific predicted values for the dependent variable and each covariate based on an individual intercept and the additional slope variables of <span class="math inline">\(\boldsymbol{\mathbf{W}}_i\)</span>, (2) ‘detrend’ the original data by these individual-specific predicted values, and (3) run an OLS model on the residual data.</p>
+<p>Similarly, we can estimate a correlated random effects (CRE) model <span class="citation">(<a href="#ref-Chamberlain.1982" role="doc-biblioref">Chamberlain 1982</a>; <a href="#ref-Mundlak.1978.0" role="doc-biblioref">Mundlak 1978</a>; <a href="#ref-Wooldridge.2010.384" role="doc-biblioref">Wooldridge 2010</a>)</span> including the individual specific predictions <span class="math inline">\(\hat{\boldsymbol{\mathbf{X}}}_{i}\)</span> to obtain the FEIS estimator: <span class="math display">\[
+\begin{align} 
+\boldsymbol{\mathbf{y}}_{i} =&amp; \boldsymbol{\mathbf{X}}_{i}\boldsymbol{\mathbf{\beta }}+ \hat{\boldsymbol{\mathbf{X}}}_{i}\boldsymbol{\mathbf{\rho }}+ \boldsymbol{\mathbf{\epsilon}}_{i}.
+\end{align}
+\]</span></p>
+<div id="example" class="section level3">
+<h3>Example</h3>
+<p>As an example, we use the <code>mwp</code> panel data, containing information on wages and family status of 268 men. This is a random sample drawn from the National Longitudinal Survey of Youth <span class="citation">(<a href="#ref-NLSY79.2012" role="doc-biblioref">Bureau of Labor Statistics 2014</a>)</span>, and more details on the selection of observations and variable construction can be found in <span class="citation"><a href="#ref-Ludwig.2018.0" role="doc-biblioref">Ludwig and Brüderl</a> (<a href="#ref-Ludwig.2018.0" role="doc-biblioref">2018</a>)</span>.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;mwp&quot;</span>, <span class="at">package =</span> <span class="st">&quot;feisr&quot;</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(mwp)</span></code></pre></div>
+<pre><code>##   id year      lnw      exp      expq marry evermarry enrol yeduc age cohort
+## 1  1 1981 1.934358 1.076923  1.159763     0         1     1    11  18   1963
+## 2  1 1983 2.468140 3.019231  9.115755     0         1     1    12  20   1963
+## 3  1 1984 2.162480 4.038462 16.309174     0         1     1    12  21   1963
+## 4  1 1985 1.746280 5.076923 25.775146     0         1     0    12  22   1963
+## 5  1 1986 2.527840 6.096154 37.163090     0         1     1    13  23   1963
+## 6  1 1987 2.365361 7.500000 56.250000     0         1     1    13  24   1963
+##   yeargr yeargr1 yeargr2 yeargr3 yeargr4 yeargr5
+## 1      2       0       1       0       0       0
+## 2      2       0       1       0       0       0
+## 3      2       0       1       0       0       0
+## 4      2       0       1       0       0       0
+## 5      3       0       0       1       0       0
+## 6      3       0       0       1       0       0</code></pre>
+<p>The data set contains a unique person identifier (<code>id</code>) and survey year indicator (<code>year</code>). Furthermore, we have information about the log hourly wage rate (<code>lnwage</code>), work experience (<code>exp</code>) and its square (<code>expq</code>), family status (<code>marry</code>), enrollment in current education (<code>enrol</code>), years of formal education education (<code>yeduc</code>), age (<code>age</code>), birth cohort (<code>cohort</code>), and a grouped year indicator (<code>yeargr</code>).</p>
+<p>we exemplary investigate the ‘marriage wage premium’: we analyze whether marriage leads to an increase in the hourly wage for men. We use the function <code>feis</code> to estimate fixed effects individual slope models to control for the hypothesis that those men who are more likely to marry or marry earlier, also have a steeper wage growth over time.</p>
+<p>Let’s start with our most common panel models (FE and RE):</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>wages.fe <span class="ot">&lt;-</span> <span class="fu">plm</span>(lnw <span class="sc">~</span> marry <span class="sc">+</span> enrol <span class="sc">+</span> yeduc <span class="sc">+</span> <span class="fu">as.factor</span>(yeargr)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>                <span class="sc">+</span> exp <span class="sc">+</span> <span class="fu">I</span>(exp<span class="sc">^</span><span class="dv">2</span>), <span class="at">data =</span> mwp, <span class="at">index =</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;year&quot;</span>),</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>                <span class="at">model =</span> <span class="st">&quot;within&quot;</span>, <span class="at">effect =</span> <span class="st">&quot;individual&quot;</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>wages.re <span class="ot">&lt;-</span> <span class="fu">plm</span>(lnw <span class="sc">~</span> marry <span class="sc">+</span> enrol <span class="sc">+</span> yeduc <span class="sc">+</span> <span class="fu">as.factor</span>(yeargr)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>                <span class="sc">+</span> exp <span class="sc">+</span> <span class="fu">I</span>(exp<span class="sc">^</span><span class="dv">2</span>), <span class="at">data =</span> mwp, <span class="at">index =</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;year&quot;</span>),</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>                <span class="at">model =</span> <span class="st">&quot;random&quot;</span>, <span class="at">effect =</span> <span class="st">&quot;individual&quot;</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(wages.fe)</span></code></pre></div>
+<pre><code>## Oneway (individual) effect Within Model
+## 
+## Call:
+## plm(formula = lnw ~ marry + enrol + yeduc + as.factor(yeargr) + 
+##     exp + I(exp^2), data = mwp, effect = &quot;individual&quot;, model = &quot;within&quot;, 
+##     index = c(&quot;id&quot;, &quot;year&quot;))
+## 
+## Unbalanced Panel: n = 268, T = 4-19, N = 3100
+## 
+## Residuals:
+##       Min.    1st Qu.     Median    3rd Qu.       Max. 
+## -2.5870006 -0.1580744  0.0081262  0.1701488  1.9958088 
+## 
+## Coefficients:
+##                       Estimate  Std. Error t-value  Pr(&gt;|t|)    
+## marry               0.07773216  0.02160148  3.5985 0.0003256 ***
+## enrol              -0.20810059  0.02282898 -9.1156 &lt; 2.2e-16 ***
+## yeduc               0.05584485  0.00715655  7.8033 8.424e-15 ***
+## as.factor(yeargr)2 -0.14080625  0.03036533 -4.6371 3.694e-06 ***
+## as.factor(yeargr)3 -0.16453499  0.04696595 -3.5033 0.0004667 ***
+## as.factor(yeargr)4 -0.27553668  0.06196892 -4.4464 9.071e-06 ***
+## as.factor(yeargr)5 -0.29750723  0.07932341 -3.7506 0.0001800 ***
+## exp                 0.07299927  0.00867777  8.4122 &lt; 2.2e-16 ***
+## I(exp^2)           -0.00127502  0.00036103 -3.5317 0.0004196 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Total Sum of Squares:    559.75
+## Residual Sum of Squares: 327.88
+## R-Squared:      0.41424
+## Adj. R-Squared: 0.35697
+## F-statistic: 221.816 on 9 and 2823 DF, p-value: &lt; 2.22e-16</code></pre>
+<p>and we calculate panel robust standard errors and attach them back to the model output:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate vcov</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>vcovx_fe <span class="ot">&lt;-</span> <span class="fu">vcovHC</span>(wages.fe, <span class="at">cluster =</span> <span class="st">&quot;group&quot;</span>, <span class="at">method =</span> <span class="st">&quot;arellano&quot;</span>, <span class="at">type =</span> <span class="st">&quot;HC3&quot;</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>vcovx_re <span class="ot">&lt;-</span> <span class="fu">vcovHC</span>(wages.re, <span class="at">cluster =</span> <span class="st">&quot;group&quot;</span>, <span class="at">method =</span> <span class="st">&quot;arellano&quot;</span>, <span class="at">type =</span> <span class="st">&quot;HC3&quot;</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Replace original vcov in output</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>wages.fe<span class="sc">$</span>vcov <span class="ot">&lt;-</span> vcovx_fe</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>wages.re<span class="sc">$</span>vcov <span class="ot">&lt;-</span> vcovx_re</span></code></pre></div>
+<p>Replacing has the advantage that we know use the cluster robust SEs in all following operations (like <code>summary()</code> or <code>screenreg</code>).</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(wages.fe)</span></code></pre></div>
+<pre><code>## Oneway (individual) effect Within Model
+## 
+## Call:
+## plm(formula = lnw ~ marry + enrol + yeduc + as.factor(yeargr) + 
+##     exp + I(exp^2), data = mwp, effect = &quot;individual&quot;, model = &quot;within&quot;, 
+##     index = c(&quot;id&quot;, &quot;year&quot;))
+## 
+## Unbalanced Panel: n = 268, T = 4-19, N = 3100
+## 
+## Residuals:
+##       Min.    1st Qu.     Median    3rd Qu.       Max. 
+## -2.5870006 -0.1580744  0.0081262  0.1701488  1.9958088 
+## 
+## Coefficients:
+##                       Estimate  Std. Error t-value  Pr(&gt;|t|)    
+## marry               0.07773216  0.03160634  2.4594 0.0139771 *  
+## enrol              -0.20810059  0.02738300 -7.5996 4.015e-14 ***
+## yeduc               0.05584485  0.01025801  5.4440 5.656e-08 ***
+## as.factor(yeargr)2 -0.14080625  0.03554205 -3.9617 7.627e-05 ***
+## as.factor(yeargr)3 -0.16453499  0.05338645 -3.0820 0.0020763 ** 
+## as.factor(yeargr)4 -0.27553668  0.06829208 -4.0347 5.613e-05 ***
+## as.factor(yeargr)5 -0.29750723  0.08916462 -3.3366 0.0008591 ***
+## exp                 0.07299927  0.01245954  5.8589 5.198e-09 ***
+## I(exp^2)           -0.00127502  0.00057274 -2.2262 0.0260794 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Total Sum of Squares:    559.75
+## Residual Sum of Squares: 327.88
+## R-Squared:      0.41424
+## Adj. R-Squared: 0.35697
+## F-statistic: 77.9716 on 9 and 2823 DF, p-value: &lt; 2.22e-16</code></pre>
+<p>And now, we allow the individual specific trends. To replicate the analysis of <span class="citation"><a href="#ref-Ludwig.2018.0" role="doc-biblioref">Ludwig and Brüderl</a> (<a href="#ref-Ludwig.2018.0" role="doc-biblioref">2018</a>)</span>, we use work experience (<code>exp</code>) and squared work experience as the slope variables.</p>
+<p><strong>One mayor advantage of using work experience as slope it that we can still control for (grouped) time fixed effects</strong></p>
+<p><strong>Assuming linear trends (only using exp), is a strong assumption. However, for each additional slope (e.g. polynomial), FEIS becomes more data hungry: each individual needs at least <span class="math inline">\(T \geq K + 1\)</span> observations to contribute to the model. If not, they are dropped!</strong></p>
+<p>Here we use <code>feis</code> with panel robust standard errors. The command <code>felm</code> from <code>lfe</code> can be used to calculate individual slopes as well.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>wages.feis <span class="ot">&lt;-</span> <span class="fu">feis</span>(lnw <span class="sc">~</span> marry <span class="sc">+</span> enrol <span class="sc">+</span> yeduc <span class="sc">+</span> <span class="fu">as.factor</span>(yeargr)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>                   <span class="sc">|</span> exp <span class="sc">+</span> <span class="fu">I</span>(exp<span class="sc">^</span><span class="dv">2</span>), <span class="at">data =</span> mwp, <span class="at">id =</span> <span class="st">&quot;id&quot;</span>,</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>                   <span class="at">robust =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(wages.feis)</span></code></pre></div>
+<pre><code>## 
+## 
+## Call:
+## feis(formula = lnw ~ marry + enrol + yeduc + as.factor(yeargr) | 
+##     exp + I(exp^2), data = mwp, id = &quot;id&quot;, robust = TRUE)
+## 
+## 
+## Residuals:
+##       Min.    1st Qu.     Median    3rd Qu.       Max. 
+## -2.0790815 -0.1050450  0.0046876  0.1112708  1.9412090 
+## 
+## Coefficients:
+##                      Estimate Std. Error t-value  Pr(&gt;|t|)    
+## marry               0.0134582  0.0292771  0.4597   0.64579    
+## enrol              -0.1181725  0.0235003 -5.0286 5.325e-07 ***
+## yeduc              -0.0020607  0.0175059 -0.1177   0.90630    
+## as.factor(yeargr)2 -0.0464504  0.0378675 -1.2267   0.22008    
+## as.factor(yeargr)3 -0.0189333  0.0524265 -0.3611   0.71803    
+## as.factor(yeargr)4 -0.1361305  0.0615033 -2.2134   0.02697 *  
+## as.factor(yeargr)5 -0.1868589  0.0742904 -2.5152   0.01196 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Cluster robust standard errors
+## Slope parameters:  exp, I(exp^2) 
+## Total Sum of Squares:    190.33
+## Residual Sum of Squares: 185.64
+## R-Squared:      0.024626
+## Adj. R-Squared: 0.022419</code></pre>
+<p>Let’s compare the results.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">screenreg</span>(<span class="fu">list</span>(wages.re, wages.fe, wages.feis), <span class="at">digits =</span> <span class="dv">3</span>,</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>          <span class="at">custom.model.names =</span> <span class="fu">c</span>(<span class="st">&quot;RE&quot;</span>, <span class="st">&quot;FE&quot;</span>, <span class="st">&quot;FEIS&quot;</span>))</span></code></pre></div>
+<pre><code>## 
+## ============================================================
+##                     RE            FE            FEIS        
+## ------------------------------------------------------------
+## (Intercept)            1.562 ***                            
+##                       (0.094)                               
+## marry                  0.091 **      0.078 *       0.013    
+##                       (0.032)       (0.032)       (0.029)   
+## enrol                 -0.202 ***    -0.208 ***    -0.118 ***
+##                       (0.025)       (0.027)       (0.024)   
+## yeduc                  0.063 ***     0.056 ***    -0.002    
+##                       (0.008)       (0.010)       (0.018)   
+## as.factor(yeargr)2    -0.157 ***    -0.141 ***    -0.046    
+##                       (0.034)       (0.036)       (0.038)   
+## as.factor(yeargr)3    -0.197 ***    -0.165 **     -0.019    
+##                       (0.050)       (0.053)       (0.052)   
+## as.factor(yeargr)4    -0.316 ***    -0.276 ***    -0.136 *  
+##                       (0.066)       (0.068)       (0.062)   
+## as.factor(yeargr)5    -0.349 ***    -0.298 ***    -0.187 *  
+##                       (0.089)       (0.089)       (0.074)   
+## exp                    0.074 ***     0.073 ***              
+##                       (0.012)       (0.012)                 
+## exp^2                 -0.001 *      -0.001 *                
+##                       (0.001)       (0.001)                 
+## ------------------------------------------------------------
+## s_idios                0.341                                
+## s_id                   0.279                                
+## R^2                    0.440         0.414         0.025    
+## Adj. R^2               0.439         0.357         0.022    
+## Num. obs.           3100          3100          3100        
+## Num. groups: id                                  268        
+## RMSE                                               0.285    
+## ============================================================
+## *** p &lt; 0.001; ** p &lt; 0.01; * p &lt; 0.05</code></pre>
+<p>Interpretation:</p>
+<ul>
+<li><p>RE: Married observations have a significantly higher wage than unmarried observations.</p></li>
+<li><p>FE: If people marry, they experience an increase in wages afterwards. The effect is significant and slightly lower than the RE.</p></li>
+<li><p>FEIS: Accounting for the individual wage trend before marriage, we do not observe an increase in wages if people marry. The effect is small and non-significant.</p></li>
+</ul>
+<p>Overall, this indicated that there is a problem with non-parallel trends: Those with steeper wage trajectories are more likely to marry (or marry earlier).</p>
+</div>
+</div>
+<div id="dynamic-treatment-effects" class="section level1">
+<h1>Dynamic treatment effects</h1>
+<p>Often, we are not only interested in the overall treatment effect, but we also want to know how treatment effects unfold after a treatment. For example, how does happiness change around specific life course events <span class="citation">(<a href="#ref-Clark.2013" role="doc-biblioref">Clark and Georgellis 2013</a>)</span>, or how do housing prices develop after the opening of an industrial plant <span class="citation">(<a href="#ref-Currie.2015" role="doc-biblioref">Currie et al. 2015</a>)</span>?</p>
+<p>There are various ways of calculating how a treatment effect develops over time:</p>
+<div class="figure">
+<img src="fig/Impact-function.PNG" alt="" />
+<p class="caption">Brüderl/Ludwig 2019, <a href="https://www.ls3.soziologie.uni-muenchen.de/studium-lehre/archiv/teaching-marterials/panel-analysis_april-2019.pdf" class="uri">https://www.ls3.soziologie.uni-muenchen.de/studium-lehre/archiv/teaching-marterials/panel-analysis_april-2019.pdf</a></p>
+</div>
+<p>Usually, it is best to not impose a structural form, but rather to use dummy impact functions. However, even with this, there is an ongoing debate on what is the best choice of specification <span class="citation">(<a href="#ref-Ludwig.2021" role="doc-biblioref">Ludwig and Brüderl 2021</a>)</span>, or see for instance <a href="https://pedrohcgs.github.io/posts/twfe">blog post by Pedro H. C. Sant’Anna and Brantly Callaway</a>.</p>
+<p><strong>Note that these settings usually require a staggered treatment adoption: individuals are treated once, and afterwards reamin treated</strong></p>
+<p>There are many cases where this does not apply. However, one can think about potential ways of artificially creating such designs:</p>
+<ul>
+<li><p>Dichotomize continuous treatments (if theoretically plausible!)</p></li>
+<li><p>Create id-period splits. E.g. if a person gets divorced, either drop from sample, or treat as a “new id” as a person can re-marry (note that this assumes that first and second marriage have equal effects).</p></li>
+</ul>
+<div id="example-1" class="section level3">
+<h3>Example</h3>
+<p>We stick with our example and try to estimate how the wage changes around the year of marriage.</p>
+<p>To do so, we first estimate make sure the data is ordered by id and time</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>mwp <span class="ot">&lt;-</span> mwp[<span class="fu">order</span>(mwp<span class="sc">$</span>id, mwp<span class="sc">$</span>year), ]</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(mwp[, <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>], <span class="at">n =</span> <span class="dv">20</span>)</span></code></pre></div>
+<pre><code>##    id year      lnw        exp        expq marry
+## 1   1 1981 1.934358  1.0769231   1.1597635     0
+## 2   1 1983 2.468140  3.0192308   9.1157551     0
+## 3   1 1984 2.162480  4.0384617  16.3091736     0
+## 4   1 1985 1.746280  5.0769229  25.7751465     0
+## 5   1 1986 2.527840  6.0961537  37.1630898     0
+## 6   1 1987 2.365361  7.5000000  56.2500000     0
+## 7   1 1988 2.467478  8.6730766  75.2222595     1
+## 8   1 1989 4.398027  9.4423075  89.1571732     1
+## 9   1 1990 2.822144 10.7307692 115.1494064     1
+## 10  1 1991 2.654965 11.6730766 136.2607117     1
+## 11  1 1992 2.665088 12.6730766 160.6068726     1
+## 12  2 1979 2.236233  0.9423077   0.8879438     0
+## 13  2 1981 2.916389  2.9615386   8.7707109     0
+## 14  2 1982 2.751646  3.8269231  14.6453409     0
+## 15  2 1983 2.629372  4.4807692  20.0772915     0
+## 16  2 1984 2.965442  5.5384617  30.6745586     0
+## 17  2 1985 2.890669  6.6538463  44.2736702     0
+## 18  2 1989 2.392579 11.1538458 124.4082794     0
+## 19  3 1979 2.456405  1.1730769   1.3761094     0
+## 20  3 1980 2.661142  2.1153846   4.4748521     0</code></pre>
+<p>Then, we make sure that our data looks like a staggered treatment design. Are there people who jump from married to not married in the data?</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Change in marriage status within an id</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>mwp<span class="sc">$</span>fd_marry <span class="ot">&lt;-</span> <span class="fu">ave</span>(mwp<span class="sc">$</span>marry,</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>                    mwp<span class="sc">$</span>id,</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>                    <span class="at">FUN =</span> <span class="cf">function</span>(x) x <span class="sc">-</span> dplyr<span class="sc">::</span><span class="fu">lag</span>(x, <span class="dv">1</span>, <span class="at">default =</span> <span class="dv">0</span>)) <span class="co"># 0 insteat of NA for 1st year</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Mark observations starting with a negative fd value (jump from marry=1 to marry =0)</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>mwp<span class="sc">$</span>notstag_marry <span class="ot">&lt;-</span> <span class="fu">ave</span>(<span class="fu">ifelse</span>(mwp<span class="sc">$</span>fd_marry <span class="sc">==</span> <span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>),</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>                         mwp<span class="sc">$</span>id,</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>                         <span class="at">FUN =</span> <span class="cf">function</span>(x) <span class="fu">cumsum</span>(x))</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(mwp<span class="sc">$</span>fd_marry)</span></code></pre></div>
+<pre><code>## 
+##    0    1 
+## 2896  204</code></pre>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(mwp<span class="sc">$</span>notstag_marry)</span></code></pre></div>
+<pre><code>## 
+##    0 
+## 3100</code></pre>
+<p>Luckily, the dataset is already cleaned: there are only transitions into marriage, not out of marriage.</p>
+<p>Next we want to make sure if there are any individuals who already start with the treatment (who are married right from their first wave on).</p>
+<p><strong>We only want to have those in our sample who potentially can go from not-treated to treated!</strong></p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>mwp <span class="ot">&lt;-</span> mwp[<span class="fu">order</span>(mwp<span class="sc">$</span>id, mwp<span class="sc">$</span>year), ] <span class="co"># just to be sure</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Person year number</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>mwp<span class="sc">$</span>pynr <span class="ot">&lt;-</span> <span class="fu">ave</span>(mwp<span class="sc">$</span>year,</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>                mwp<span class="sc">$</span>id,</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>                <span class="at">FUN =</span> <span class="cf">function</span>(x) <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(x))</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Marry status at first wave</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>mwp<span class="sc">$</span>f_marry <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(mwp<span class="sc">$</span>pynr <span class="sc">==</span> <span class="dv">1</span>, mwp<span class="sc">$</span>marry, <span class="cn">NA</span>)</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Distribute across individual, using mean and na.rm = TRUE</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>mwp<span class="sc">$</span>f_marry <span class="ot">&lt;-</span> <span class="fu">ave</span>(mwp<span class="sc">$</span>f_marry,</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>                   mwp<span class="sc">$</span>id,</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>                   <span class="at">FUN =</span> <span class="cf">function</span>(x) <span class="fu">mean</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(mwp<span class="sc">$</span>f_marry)</span></code></pre></div>
+<pre><code>## 
+##    0 
+## 3100</code></pre>
+<p>Again, someone has already done the job. There are no individuals who start married in the first wave.</p>
+<p>We can also look at this graphically with <code>panelView</code> (mainly helpful for small N data):</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">panelView</span>(lnw <span class="sc">~</span> marry, </span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>          <span class="at">data =</span> mwp, <span class="at">index =</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>,<span class="st">&quot;year&quot;</span>),</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">type =</span> <span class="st">&quot;treat&quot;</span>, <span class="at">theme.bw =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<p><img src="Panel_part2_files/figure-html/unnamed-chunk-12-1.png" width="480" /></p>
+<p>Alright, so lets create a dummy impact function / a count variable around the treatment.</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>mwp <span class="ot">&lt;-</span> mwp[<span class="fu">order</span>(mwp<span class="sc">$</span>id, mwp<span class="sc">$</span>year), ] <span class="co"># just to be sure!!</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Function that creates distance to the treatment (assuming 0=control, 1=treated)</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>impfun <span class="ot">&lt;-</span> <span class="cf">function</span>(x, <span class="at">default =</span> <span class="sc">-</span><span class="dv">99</span>){</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  nas <span class="ot">&lt;-</span> <span class="fu">which</span>(<span class="fu">is.na</span>(x))  <span class="co">#save nas</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  ft <span class="ot">&lt;-</span> <span class="fu">which</span>(x <span class="sc">==</span> <span class="dv">1</span>)[<span class="dv">1</span>]  <span class="co">#first teatment index</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="fu">is.na</span>(ft)){          <span class="co">#replicate default if never treated</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>    count <span class="ot">&lt;-</span> <span class="fu">rep</span>(default, <span class="fu">length</span>(x))</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>  }<span class="cf">else</span>{</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>    ri <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(x)       <span class="co">#running index</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>    count <span class="ot">&lt;-</span> ri <span class="sc">-</span> ft        <span class="co">#distance to first treatment</span></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="fu">length</span>(nas) <span class="sc">!=</span> <span class="dv">0</span>){   <span class="co">#replace nas if any</span></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>    count[nas] <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(count)           <span class="co">#return counter</span></span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply to each individual</span></span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>mwp<span class="sc">$</span>marry_if <span class="ot">&lt;-</span> <span class="fu">ave</span>(mwp<span class="sc">$</span>marry,</span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>                    mwp<span class="sc">$</span>id,</span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>                    <span class="at">FUN =</span> <span class="cf">function</span>(x) <span class="fu">impfun</span>(x))</span>
+<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(mwp[, <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;year&quot;</span>, <span class="st">&quot;marry&quot;</span>, <span class="st">&quot;marry_if&quot;</span>)], <span class="at">n =</span> <span class="dv">50</span>)</span></code></pre></div>
+<pre><code>##    id year marry marry_if
+## 1   1 1981     0       -6
+## 2   1 1983     0       -5
+## 3   1 1984     0       -4
+## 4   1 1985     0       -3
+## 5   1 1986     0       -2
+## 6   1 1987     0       -1
+## 7   1 1988     1        0
+## 8   1 1989     1        1
+## 9   1 1990     1        2
+## 10  1 1991     1        3
+## 11  1 1992     1        4
+## 12  2 1979     0      -99
+## 13  2 1981     0      -99
+## 14  2 1982     0      -99
+## 15  2 1983     0      -99
+## 16  2 1984     0      -99
+## 17  2 1985     0      -99
+## 18  2 1989     0      -99
+## 19  3 1979     0      -99
+## 20  3 1980     0      -99
+## 21  3 1981     0      -99
+## 22  3 1982     0      -99
+## 23  3 1983     0      -99
+## 24  3 1984     0      -99
+## 25  3 1985     0      -99
+## 26  3 1986     0      -99
+## 27  3 1987     0      -99
+## 28  3 1988     0      -99
+## 29  3 1989     0      -99
+## 30  3 1993     0      -99
+## 31  3 1994     0      -99
+## 32  3 2000     0      -99
+## 33  4 1979     0       -2
+## 34  4 1981     0       -1
+## 35  4 1982     1        0
+## 36  4 1983     1        1
+## 37  4 1984     1        2
+## 38  4 1985     1        3
+## 39  4 1986     1        4
+## 40  4 1987     1        5
+## 41  4 1988     1        6
+## 42  4 1989     1        7
+## 43  4 1990     1        8
+## 44  4 1991     1        9
+## 45  4 1992     1       10
+## 46  4 1993     1       11
+## 47  5 1979     0       -6
+## 48  5 1980     0       -5
+## 49  5 1981     0       -4
+## 50  5 1982     0       -3</code></pre>
+<p>We can now use this time count function to estimate dynamic treatment effects.</p>
+<p>Note that we need to make to important decisions (<a href="https://pedrohcgs.github.io/posts/twfe">blog post by Pedro H. C. Sant’Anna and Brantly Callaway</a>):</p>
+<ul>
+<li><p>Which dates to use a reference category</p></li>
+<li><p>How many pre-treatment periods to include (to test for anticipation or potential pre-treatment differences)</p></li>
+</ul>
+<p>Here, re will just include two periods before marriage and use the rest as reference categories</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set all before -2 to -99</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>mwp<span class="sc">$</span>marry_if[mwp<span class="sc">$</span>marry_if <span class="sc">&lt;</span> <span class="sc">-</span><span class="dv">2</span> <span class="sc">&amp;</span> mwp<span class="sc">$</span>marry_if <span class="sc">&gt;</span> <span class="sc">-</span><span class="dv">99</span>] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">99</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Make factor with -99 as reference category</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>mwp<span class="sc">$</span>marry_if <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(mwp<span class="sc">$</span>marry_if)</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>mwp<span class="sc">$</span>marry_if <span class="ot">&lt;-</span> <span class="fu">relevel</span>(mwp<span class="sc">$</span>marry_if, <span class="st">&quot;-99&quot;</span>)</span></code></pre></div>
+<p>And we use this as our treatment variable in the FE estimator.</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Standard marriage indicator</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>wages.fe <span class="ot">&lt;-</span> <span class="fu">plm</span>(lnw <span class="sc">~</span> marry <span class="sc">+</span> enrol <span class="sc">+</span> yeduc <span class="sc">+</span> <span class="fu">as.factor</span>(yeargr)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>                <span class="sc">+</span> exp <span class="sc">+</span> <span class="fu">I</span>(exp<span class="sc">^</span><span class="dv">2</span>), <span class="at">data =</span> mwp, <span class="at">index =</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;year&quot;</span>),</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">model =</span> <span class="st">&quot;within&quot;</span>, <span class="at">effect =</span> <span class="st">&quot;individual&quot;</span>)</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a><span class="co"># with dummy impact function</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>wages2.fe <span class="ot">&lt;-</span> <span class="fu">plm</span>(lnw <span class="sc">~</span> marry_if <span class="sc">+</span> enrol <span class="sc">+</span> yeduc <span class="sc">+</span> <span class="fu">as.factor</span>(yeargr)</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>                 <span class="sc">+</span> exp <span class="sc">+</span> <span class="fu">I</span>(exp<span class="sc">^</span><span class="dv">2</span>), <span class="at">data =</span> mwp, <span class="at">index =</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;year&quot;</span>),</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>                 <span class="at">model =</span> <span class="st">&quot;within&quot;</span>, <span class="at">effect =</span> <span class="st">&quot;individual&quot;</span>)</span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(wages2.fe)</span></code></pre></div>
+<pre><code>## Oneway (individual) effect Within Model
+## 
+## Call:
+## plm(formula = lnw ~ marry_if + enrol + yeduc + as.factor(yeargr) + 
+##     exp + I(exp^2), data = mwp, effect = &quot;individual&quot;, model = &quot;within&quot;, 
+##     index = c(&quot;id&quot;, &quot;year&quot;))
+## 
+## Unbalanced Panel: n = 268, T = 4-19, N = 3100
+## 
+## Residuals:
+##       Min.    1st Qu.     Median    3rd Qu.       Max. 
+## -2.5656690 -0.1609273  0.0082329  0.1742273  2.0065696 
+## 
+## Coefficients:
+##                       Estimate  Std. Error t-value  Pr(&gt;|t|)    
+## marry_if-2          0.03957838  0.02996752  1.3207 0.1867061    
+## marry_if-1          0.07832762  0.03059293  2.5603 0.0105096 *  
+## marry_if0           0.07379160  0.03231455  2.2835 0.0224729 *  
+## marry_if1           0.14014248  0.03481233  4.0257 5.832e-05 ***
+## marry_if2           0.14018128  0.03792067  3.6967 0.0002226 ***
+## marry_if3           0.14964188  0.04146083  3.6092 0.0003125 ***
+## marry_if4           0.12780655  0.04454917  2.8689 0.0041500 ** 
+## marry_if5           0.12142562  0.04797581  2.5310 0.0114288 *  
+## marry_if6           0.13713667  0.05182496  2.6462 0.0081868 ** 
+## marry_if7           0.10939628  0.05558233  1.9682 0.0491451 *  
+## marry_if8           0.09838997  0.05973251  1.6472 0.0996338 .  
+## marry_if9           0.11804019  0.06454907  1.8287 0.0675522 .  
+## marry_if10          0.09287002  0.07354064  1.2628 0.2067518    
+## marry_if11          0.18168622  0.08624623  2.1066 0.0352409 *  
+## marry_if12          0.08374341  0.10121905  0.8273 0.4081100    
+## marry_if13          0.08058853  0.13832518  0.5826 0.5602080    
+## marry_if14         -0.16488098  0.35796896 -0.4606 0.6451203    
+## enrol              -0.20519204  0.02290081 -8.9600 &lt; 2.2e-16 ***
+## yeduc               0.05523753  0.00728318  7.5843 4.517e-14 ***
+## as.factor(yeargr)2 -0.13939376  0.03046625 -4.5753 4.961e-06 ***
+## as.factor(yeargr)3 -0.16615950  0.04712195 -3.5262 0.0004284 ***
+## as.factor(yeargr)4 -0.27554159  0.06222036 -4.4285 9.853e-06 ***
+## as.factor(yeargr)5 -0.29409443  0.07970281 -3.6899 0.0002286 ***
+## exp                 0.06873715  0.00887436  7.7456 1.319e-14 ***
+## I(exp^2)           -0.00114227  0.00037249 -3.0666 0.0021859 ** 
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Total Sum of Squares:    559.75
+## Residual Sum of Squares: 326.09
+## R-Squared:      0.41744
+## Adj. R-Squared: 0.35684
+## F-statistic: 80.4557 on 25 and 2807 DF, p-value: &lt; 2.22e-16</code></pre>
+<p>Let’s plot that</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set up results matrix</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>coef.df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>,</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">nrow =</span> (<span class="fu">length</span>(<span class="fu">levels</span>(mwp<span class="sc">$</span>marry_if)) <span class="sc">-</span> <span class="dv">1</span>),</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>                  <span class="at">ncol =</span> <span class="dv">3</span>))</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(coef.df) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;time&quot;</span>, <span class="st">&quot;att&quot;</span>, <span class="st">&quot;se&quot;</span>)</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="co"># paste results</span></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>coef.df<span class="sc">$</span>time <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">2</span><span class="sc">:</span><span class="dv">14</span>)</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>output <span class="ot">&lt;-</span> <span class="fu">summary</span>(wages2.fe)<span class="sc">$</span>coefficients</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>coef.df[, <span class="fu">c</span>(<span class="st">&quot;att&quot;</span>, <span class="st">&quot;se&quot;</span>)] <span class="ot">&lt;-</span> output[<span class="fu">which</span>(<span class="fu">grepl</span>(<span class="st">&quot;marry_if&quot;</span>, <span class="fu">rownames</span>(output))), <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]</span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a><span class="co"># 95% CI</span></span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>interval2  <span class="ot">&lt;-</span>  <span class="sc">-</span><span class="fu">qnorm</span>((<span class="dv">1</span><span class="fl">-0.95</span>)<span class="sc">/</span><span class="dv">2</span>)  <span class="co"># 95% multiplier</span></span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>coef.df<span class="sc">$</span>ll <span class="ot">&lt;-</span> coef.df<span class="sc">$</span>att <span class="sc">-</span> coef.df<span class="sc">$</span>se<span class="sc">*</span>interval2</span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>coef.df<span class="sc">$</span>ul <span class="ot">&lt;-</span> coef.df<span class="sc">$</span>att <span class="sc">+</span> coef.df<span class="sc">$</span>se<span class="sc">*</span>interval2</span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot</span></span>
+<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a>zp1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(coef.df[coef.df<span class="sc">$</span>time <span class="sc">&lt;</span> <span class="dv">7</span>, ], </span>
+<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a>              <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> att)) <span class="sc">+</span>  </span>
+<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_pointrange</span>(<span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> att, <span class="at">ymin =</span> ll, <span class="at">ymax =</span> ul),</span>
+<span id="cb29-21"><a href="#cb29-21" aria-hidden="true" tabindex="-1"></a>                                <span class="at">lwd =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb29-22"><a href="#cb29-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> att)) <span class="sc">+</span></span>
+<span id="cb29-23"><a href="#cb29-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">colour =</span> <span class="fu">gray</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>), <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">lwd =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb29-24"><a href="#cb29-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="sc">-</span><span class="fl">0.5</span>, <span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">lty =</span> <span class="dv">1</span>, <span class="at">lwd =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb29-25"><a href="#cb29-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span>
+<span id="cb29-26"><a href="#cb29-26" aria-hidden="true" tabindex="-1"></a>zp1</span></code></pre></div>
+<p><img src="Panel_part2_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<p>An interesting finding here. There is a positive anticipation effect: “The anticipation of marriage already increases the husbands wage.”</p>
+<p>Is this plausible?</p>
+</div>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1 class="unnumbered">References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Bruderl.2015.387" class="csl-entry">
+Brüderl, Josef, and Volker Ludwig. 2015. <span>“<span>Fixed-Effects Panel Regression</span>.”</span> In <em><span class="nocase">The Sage Handbook of Regression Analysis and Causal Inference</span></em>, edited by Henning Best and Christof Wolf, 327–57. Los Angeles: Sage.
+</div>
+<div id="ref-NLSY79.2012" class="csl-entry">
+Bureau of Labor Statistics. 2014. <em><span class="nocase">National Longitudinal Survey of Youth 1979 Cohort, 1979-2012 (rounds 1-23)</span></em>. Columbus, OH: <span>Center for Human Resource Research, The Ohio State University</span>.
+</div>
+<div id="ref-Chamberlain.1982" class="csl-entry">
+Chamberlain, Gary. 1982. <span>“<span class="nocase">Multivariate Regression Models for Panel Data</span>.”</span> <em><span>Journal of Econometrics</span></em> 18 (1): 5–46. <a href="https://doi.org/10.1016/0304-4076(82)90094-X">https://doi.org/10.1016/0304-4076(82)90094-X</a>.
+</div>
+<div id="ref-Clark.2013" class="csl-entry">
+Clark, Andrew E., and Yannis Georgellis. 2013. <span>“<span class="nocase">Back to Baseline in Britain: Adaptation in the British Household Panel Survey</span>.”</span> <em><span>Economica</span></em> 80 (319): 496–512. <a href="https://doi.org/10.1111/ecca.12007">https://doi.org/10.1111/ecca.12007</a>.
+</div>
+<div id="ref-Currie.2015" class="csl-entry">
+Currie, Janet, Lucas Davis, Michael Greenstone, and Reed Walker. 2015. <span>“<span class="nocase">Environmental Health Risks and Housing Values: Evidence from 1,600 Toxic Plant Openings and Closings</span>.”</span> <em><span>American Economic Review</span></em> 105 (2): 678–709. <a href="https://doi.org/10.1257/aer.20121656">https://doi.org/10.1257/aer.20121656</a>.
+</div>
+<div id="ref-Ludwig.2018.0" class="csl-entry">
+Ludwig, Volker, and Josef Brüderl. 2018. <span>“<span class="nocase">Is There a Male Marital Wage Premium? New Evidence from the United States</span>.”</span> <em><span>American Sociological Review</span></em> 83 (4): 744–70. <a href="https://doi.org/10.1177/0003122418784909">https://doi.org/10.1177/0003122418784909</a>.
+</div>
+<div id="ref-Ludwig.2021" class="csl-entry">
+———. 2021. <span>“<span class="nocase">What You Need to Know When Estimating Impact Functions with Panel Data for Demographic Research</span>.”</span> <em><span>Comparative Population Studies</span></em> 46. <a href="https://doi.org/10.12765/CPoS-2021-16">https://doi.org/10.12765/CPoS-2021-16</a>.
+</div>
+<div id="ref-Mundlak.1978.0" class="csl-entry">
+Mundlak, Yair. 1978. <span>“<span class="nocase">On the Pooling of Time Series and Cross Section Data</span>.”</span> <em><span>Econometrica</span></em> 46 (1): 69. <a href="https://doi.org/10.2307/1913646">https://doi.org/10.2307/1913646</a>.
+</div>
+<div id="ref-Polachek.1994.0" class="csl-entry">
+Polachek, Solomon W., and Moon-Kak Kim. 1994. <span>“<span class="nocase">Panel Estimates of the Gender Earnings Gap</span>.”</span> <em><span>Journal of Econometrics</span></em> 61 (1): 23–42. <a href="https://doi.org/10.1016/0304-4076(94)90075-2">https://doi.org/10.1016/0304-4076(94)90075-2</a>.
+</div>
+<div id="ref-Ruttenauer.2020" class="csl-entry">
+Rüttenauer, Tobias, and Volker Ludwig. 2020. <span>“<span class="nocase">Fixed effects individual slopes: Accounting and testing for heterogeneous effects in panel data or other multilevel models</span>.”</span> <em><span>Sociological Methods <span>&amp;</span> Research</span></em> OnlineFirst. <a href="https://doi.org/10.1177/0049124120926211">https://doi.org/10.1177/0049124120926211</a>.
+</div>
+<div id="ref-Wooldridge.2010.384" class="csl-entry">
+Wooldridge, Jeffrey M. 2010. <em><span class="nocase">Econometric Analysis of Cross Section and Panel Data</span></em>. Cambridge, Mass.: <span>MIT Press</span>.
+</div>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = false;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

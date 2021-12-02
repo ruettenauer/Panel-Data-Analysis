@@ -1,0 +1,1862 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Tobias Rüttenauer" />
+
+<meta name="date" content="2021-12-03" />
+
+<title>1) Panel data methods</title>
+
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; } /* Alert */
+code span.an { color: #008000; } /* Annotation */
+code span.at { } /* Attribute */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #0000ff; } /* ControlFlow */
+code span.ch { color: #008080; } /* Char */
+code span.cn { } /* Constant */
+code span.co { color: #008000; } /* Comment */
+code span.cv { color: #008000; } /* CommentVar */
+code span.do { color: #008000; } /* Documentation */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.im { } /* Import */
+code span.in { color: #008000; } /* Information */
+code span.kw { color: #0000ff; } /* Keyword */
+code span.op { } /* Operator */
+code span.ot { color: #ff4000; } /* Other */
+code span.pp { color: #ff4000; } /* Preprocessor */
+code span.sc { color: #008080; } /* SpecialChar */
+code span.ss { color: #008080; } /* SpecialString */
+code span.st { color: #008080; } /* String */
+code span.va { } /* Variable */
+code span.vs { color: #008080; } /* VerbatimString */
+code span.wa { color: #008000; font-weight: bold; } /* Warning */
+
+.sourceCode .row {
+  width: 100%;
+}
+.sourceCode {
+  overflow-x: auto;
+}
+.code-folding-btn {
+  margin-right: -30px;
+}
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">
+/* for pandoc --citeproc since 2.11 */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Panel Data Analysis</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="Panel_part1.html">1) Panel data methods</a>
+</li>
+<li>
+  <a href="Panel_part2.html">2) Extensions</a>
+</li>
+<li>
+  <a href="Panel_part3.html">3) Exercises</a>
+</li>
+<li>
+  <a href="Panel_part3_solutions.html">Solutions</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">1) Panel data methods</h1>
+<h4 class="author">Tobias Rüttenauer</h4>
+<h4 class="date">December 03, 2021</h4>
+
+</div>
+
+
+<div id="required-packages" class="section level3">
+<h3>Required packages</h3>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pkgs <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;plm&quot;</span>, <span class="st">&quot;lfe&quot;</span>, <span class="st">&quot;texreg&quot;</span>, <span class="st">&quot;tidyr&quot;</span>, <span class="st">&quot;dplyr&quot;</span>, <span class="st">&quot;lmtest&quot;</span>, <span class="st">&quot;sandwich&quot;</span>, </span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>          <span class="st">&quot;ggplot2&quot;</span>, <span class="st">&quot;ggforce&quot;</span>) </span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(pkgs, require, <span class="at">character.only =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+</div>
+<div id="session-info" class="section level3">
+<h3>Session info</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
+<pre><code>## R version 4.1.0 (2021-05-18)
+## Platform: x86_64-w64-mingw32/x64 (64-bit)
+## Running under: Windows 10 x64 (build 19042)
+## 
+## Matrix products: default
+## 
+## locale:
+## [1] LC_COLLATE=English_United Kingdom.1252 
+## [2] LC_CTYPE=English_United Kingdom.1252   
+## [3] LC_MONETARY=English_United Kingdom.1252
+## [4] LC_NUMERIC=C                           
+## [5] LC_TIME=English_United Kingdom.1252    
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+##  [1] ggforce_0.3.3  ggplot2_3.3.5  sandwich_3.0-1 lmtest_0.9-38  zoo_1.8-9     
+##  [6] dplyr_1.0.6    tidyr_1.1.3    texreg_1.37.5  lfe_2.8-7      Matrix_1.3-3  
+## [11] plm_2.4-1     
+## 
+## loaded via a namespace (and not attached):
+##  [1] tidyselect_1.1.1  xfun_0.23         bslib_0.2.5.1     purrr_0.3.4      
+##  [5] lattice_0.20-44   colorspace_2.0-1  vctrs_0.3.8       generics_0.1.0   
+##  [9] htmltools_0.5.1.1 yaml_2.2.1        utf8_1.2.1        rlang_0.4.11     
+## [13] jquerylib_0.1.4   pillar_1.6.2      withr_2.4.2       glue_1.4.2       
+## [17] DBI_1.1.1         tweenr_1.0.2      lifecycle_1.0.0   stringr_1.4.0    
+## [21] munsell_0.5.0     gtable_0.3.0      bdsmatrix_1.3-4   evaluate_0.14    
+## [25] knitr_1.33        miscTools_0.6-26  fansi_0.5.0       Rcpp_1.0.7       
+## [29] xtable_1.8-4      scales_1.1.1      jsonlite_1.7.2    farver_2.1.0     
+## [33] maxLik_1.4-8      digest_0.6.27     stringi_1.6.2     polyclip_1.10-0  
+## [37] rbibutils_2.2     grid_4.1.0        Rdpack_2.1.2      tools_4.1.0      
+## [41] magrittr_2.0.1    sass_0.4.0        tibble_3.1.2      Formula_1.2-4    
+## [45] crayon_1.4.1      pkgconfig_2.0.3   MASS_7.3-54       ellipsis_0.3.2   
+## [49] assertthat_0.2.1  rmarkdown_2.11    httr_1.4.2        R6_2.5.1         
+## [53] nlme_3.1-152      compiler_4.1.0</code></pre>
+</div>
+<div id="outline" class="section level1">
+<h1>Outline</h1>
+<ul>
+<li><p>Panel data structure</p></li>
+<li><p>Decomposing variance</p></li>
+<li><p>Fixed Effects Model</p></li>
+<li><p>Random Effects Model</p></li>
+<li><p>Hybrid / Mundlak models</p></li>
+<li><p>Causal inference</p></li>
+</ul>
+</div>
+<div id="panel-data-structure" class="section level1">
+<h1>Panel data structure</h1>
+<p>Usually cross-sectional data is organized as a matrix, where rows represent the obervation / individual and the columns hold the variables. In panel data settings, we need to add the dimension of time. There are two ways to do so:</p>
+<ul>
+<li><p>Long format: <span class="math inline">\(N \times T\)</span> observations (rows), with variables “id” and “time.”</p></li>
+<li><p>Wide format: <span class="math inline">\(N\)</span> observations, and <span class="math inline">\(T \times K\)</span> variables, which one variable for each time-period.</p></li>
+</ul>
+<p>Let’s have a look at the Wages data of the <code>plm</code> package.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;Males&quot;</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(Males[,<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>], <span class="at">n =</span> <span class="dv">16</span>)</span></code></pre></div>
+<pre><code>##    nr year school exper union
+## 1  13 1980     14     1    no
+## 2  13 1981     14     2   yes
+## 3  13 1982     14     3    no
+## 4  13 1983     14     4    no
+## 5  13 1984     14     5    no
+## 6  13 1985     14     6    no
+## 7  13 1986     14     7    no
+## 8  13 1987     14     8    no
+## 9  17 1980     13     4    no
+## 10 17 1981     13     5    no
+## 11 17 1982     13     6    no
+## 12 17 1983     13     7    no
+## 13 17 1984     13     8    no
+## 14 17 1985     13     9    no
+## 15 17 1986     13    10    no
+## 16 17 1987     13    11    no</code></pre>
+<p>This is in long format, with nr as id and year as time indicator. Long format is what we usually need when analysing data.</p>
+<p>Sometimes data comes in wide format. Luckily, we can easily switch between those formats using `tidyr’.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>Males_wide <span class="ot">&lt;-</span> <span class="fu">pivot_wider</span>(Males, <span class="at">id_cols =</span> nr, <span class="at">names_from =</span> year, </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>                          <span class="at">values_from =</span> <span class="dv">3</span><span class="sc">:</span><span class="fu">ncol</span>(Males), <span class="at">names_sep =</span> <span class="st">&quot;_&quot;</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(Males_wide[,<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>], <span class="at">n =</span> <span class="dv">16</span>)</span></code></pre></div>
+<pre><code>## # A tibble: 16 x 5
+##       nr school_1980 school_1981 school_1982 school_1983
+##    &lt;int&gt;       &lt;int&gt;       &lt;int&gt;       &lt;int&gt;       &lt;int&gt;
+##  1    13          14          14          14          14
+##  2    17          13          13          13          13
+##  3    18          12          12          12          12
+##  4    45          12          12          12          12
+##  5   110          12          12          12          12
+##  6   120          10          10          10          10
+##  7   126          13          13          13          13
+##  8   150          12          12          12          12
+##  9   162          11          11          11          11
+## 10   166          10          10          10          10
+## 11   189          14          14          14          14
+## 12   193          14          14          14          14
+## 13   209          11          11          11          11
+## 14   212          11          11          11          11
+## 15   218          15          15          15          15
+## 16   243          12          12          12          12</code></pre>
+<p>And we can go back to long again:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>Males_long <span class="ot">&lt;-</span> <span class="fu">pivot_longer</span>(Males_wide, <span class="at">cols =</span> <span class="dv">2</span><span class="sc">:</span><span class="fu">ncol</span>(Males_wide), </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>                           <span class="at">names_to =</span> <span class="fu">c</span>(<span class="st">&quot;.value&quot;</span>, <span class="st">&quot;year&quot;</span>), </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>                           <span class="at">names_pattern =</span> <span class="st">&quot;(.*)_(.*)&quot;</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(Males_wide[,<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>], <span class="at">n =</span> <span class="dv">16</span>)</span></code></pre></div>
+<pre><code>## # A tibble: 16 x 5
+##       nr school_1980 school_1981 school_1982 school_1983
+##    &lt;int&gt;       &lt;int&gt;       &lt;int&gt;       &lt;int&gt;       &lt;int&gt;
+##  1    13          14          14          14          14
+##  2    17          13          13          13          13
+##  3    18          12          12          12          12
+##  4    45          12          12          12          12
+##  5   110          12          12          12          12
+##  6   120          10          10          10          10
+##  7   126          13          13          13          13
+##  8   150          12          12          12          12
+##  9   162          11          11          11          11
+## 10   166          10          10          10          10
+## 11   189          14          14          14          14
+## 12   193          14          14          14          14
+## 13   209          11          11          11          11
+## 14   212          11          11          11          11
+## 15   218          15          15          15          15
+## 16   243          12          12          12          12</code></pre>
+<p>Moreover, there two types of panel data:</p>
+<ul>
+<li><p>Balanced: Contains information for each unit at each time period</p></li>
+<li><p>Unbalanced: Some units have missing information at some time periods</p></li>
+</ul>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">is.pbalanced</span>(Males, <span class="at">index =</span> <span class="fu">c</span>(<span class="st">&quot;nr&quot;</span>, <span class="st">&quot;year&quot;</span>))</span></code></pre></div>
+<pre><code>## [1] TRUE</code></pre>
+<p>In our example, we have balanced data (although there might still be NAs in the data).</p>
+<p>A nice feature of panel data is that we can do some within-person transformation. For instance we can calculate the lags and leads, or first differences of data. NOTE: always make sure the data is sorted properly before you do!</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Order data</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>Males <span class="ot">&lt;-</span> Males[<span class="fu">order</span>(Males<span class="sc">$</span>nr, Males<span class="sc">$</span>year),]</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Lag (last years value)</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>Males<span class="sc">$</span>lag_wage <span class="ot">&lt;-</span> <span class="fu">ave</span>(Males<span class="sc">$</span>wage,</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>                      Males<span class="sc">$</span>nr,</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>                      <span class="at">FUN =</span> <span class="cf">function</span>(x) dplyr<span class="sc">::</span><span class="fu">lag</span>(x, <span class="at">n =</span> <span class="dv">1</span>))</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Lead (next years value)</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>Males<span class="sc">$</span>lead_wage <span class="ot">&lt;-</span> <span class="fu">ave</span>(Males<span class="sc">$</span>wage,</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>                      Males<span class="sc">$</span>nr,</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>                      <span class="at">FUN =</span> <span class="cf">function</span>(x) dplyr<span class="sc">::</span><span class="fu">lead</span>(x, <span class="at">n =</span> <span class="dv">1</span>))</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a><span class="co"># First difference (this years value minus last years value)</span></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>Males<span class="sc">$</span>fd_wage <span class="ot">&lt;-</span> <span class="fu">ave</span>(Males<span class="sc">$</span>wage,</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>                      Males<span class="sc">$</span>nr,</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>                      <span class="at">FUN =</span> <span class="cf">function</span>(x) x <span class="sc">-</span> dplyr<span class="sc">::</span><span class="fu">lag</span>(x, <span class="at">n =</span> <span class="dv">1</span>))</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(Males[, <span class="fu">c</span>(<span class="st">&quot;nr&quot;</span>, <span class="st">&quot;year&quot;</span>, <span class="st">&quot;wage&quot;</span>, <span class="st">&quot;lag_wage&quot;</span>, <span class="st">&quot;lead_wage&quot;</span>, <span class="st">&quot;fd_wage&quot;</span>)], <span class="at">n =</span> <span class="dv">16</span>)</span></code></pre></div>
+<pre><code>##    nr year       wage   lag_wage  lead_wage     fd_wage
+## 1  13 1980  1.1975402         NA  1.8530600          NA
+## 2  13 1981  1.8530600  1.1975402  1.3444617  0.65551979
+## 3  13 1982  1.3444617  1.8530600  1.4332133 -0.50859832
+## 4  13 1983  1.4332133  1.3444617  1.5681251  0.08875166
+## 5  13 1984  1.5681251  1.4332133  1.6998909  0.13491174
+## 6  13 1985  1.6998909  1.5681251 -0.7202626  0.13176586
+## 7  13 1986 -0.7202626  1.6998909  1.6691879 -2.42015352
+## 8  13 1987  1.6691879 -0.7202626         NA  2.38945049
+## 9  17 1980  1.6759624         NA  1.5183982          NA
+## 10 17 1981  1.5183982  1.6759624  1.5591905 -0.15756420
+## 11 17 1982  1.5591905  1.5183982  1.7254101  0.04079228
+## 12 17 1983  1.7254101  1.5591905  1.6220223  0.16621961
+## 13 17 1984  1.6220223  1.7254101  1.6085883 -0.10338777
+## 14 17 1985  1.6085883  1.6220223  1.5723854 -0.01343405
+## 15 17 1986  1.5723854  1.6085883  1.8203339 -0.03620286
+## 16 17 1987  1.8203339  1.5723854         NA  0.24794844</code></pre>
+<p>There are a lot of different panel data sources available. Some examples are:</p>
+<ul>
+<li><p><a href="https://psidonline.isr.umich.edu/">PSID</a></p></li>
+<li><p><a href="https://www.understandingsociety.ac.uk/">Understanding Society</a></p></li>
+<li><p><a href="https://www.diw.de/en/diw_01.c.615551.en/research_infrastructure__socio-economic_panel__soep.html">SOEP</a></p></li>
+<li><p><a href="http://www.share-project.org/home0.html">SHARE</a></p></li>
+</ul>
+<p>One thing that is often difficult: Many panel data come as a bunch of single (cross-sectional) files and have to be combined into a single dataset. However, many of those providers now offer simplified long-format data or pre-written scripts to merge data across waves (e.g. <a href="https://www.understandingsociety.ac.uk/documentation/mainstage/syntax">here</a> for Understanding Society).</p>
+<p>A second problem is panel attrition. Usually, the number of individuals participating repeatedly goes down over time.</p>
+<div class="figure">
+<img src="fig/soep.PNG" alt="" />
+<p class="caption">Rainer Siegers, Veronika Belcheva, Tobias Silbermann 2020: <a href="https://www.diw.de/documents/publikationen/73/diw_01.c.745900.de/diw_ssp0826.pdf" class="uri">https://www.diw.de/documents/publikationen/73/diw_01.c.745900.de/diw_ssp0826.pdf</a></p>
+</div>
+<p>The main question here: Is attrition (as good as) random or are drop-outs systematic? How does this affect the sample composition and representativeness?</p>
+</div>
+<div id="decomposing-variance" class="section level1">
+<h1>Decomposing variance</h1>
+<p>Let’s clarify the idea and advantage of panel data, lets start with an example. Assume we want to know the relationship between age (as our independent variable) and happiness (as our dependent variable), and we have data on 24 observations.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="do">################################</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="do">### Example 1: Age happiness </span><span class="al">###</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="do">################################</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">213</span>)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="do">### Set up six individuals with age and happiness</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">6</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>T <span class="ot">&lt;-</span> <span class="dv">4</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="co"># id and wave</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">ncol =</span> <span class="dv">2</span>, <span class="at">nrow =</span> N<span class="sc">*</span>T))</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(df) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;wave&quot;</span>)</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>id <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span>N, <span class="at">each =</span> T)</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>wave <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span>T, <span class="at">times =</span> N)</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>idname <span class="ot">&lt;-</span> <span class="fu">factor</span>(df<span class="sc">$</span>id, <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span>N), <span class="at">labels =</span> <span class="fu">paste</span>(<span class="st">&quot;Person&quot;</span>, <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span>N)))</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a><span class="co"># age</span></span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>startingage <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">20</span><span class="sc">:</span><span class="dv">60</span>)</span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>startingage <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">quantile</span>(startingage, <span class="at">probs =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span><span class="sc">/</span>(N<span class="dv">-1</span>))), <span class="dv">0</span>)</span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>age <span class="ot">&lt;-</span> <span class="fu">unname</span>(<span class="fu">rep</span>(startingage, <span class="at">each =</span> T)) <span class="sc">+</span> df<span class="sc">$</span>wave<span class="sc">*</span><span class="dv">2</span></span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a><span class="co"># cohort </span></span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>cohort <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>cohort[(N<span class="sc">*</span>T<span class="sc">/</span><span class="dv">2</span> <span class="sc">+</span> <span class="dv">1</span>)<span class="sc">:</span>(N<span class="sc">*</span>T)] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>cohort <span class="ot">&lt;-</span> <span class="fu">factor</span>(df<span class="sc">$</span>cohort, <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), </span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>                    <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&quot;Younger cohort&quot;</span>, <span class="st">&quot;Older cohort&quot;</span>))</span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a><span class="co"># demeaned age</span></span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>dm_age <span class="ot">&lt;-</span> df<span class="sc">$</span>age <span class="sc">-</span> <span class="fu">ave</span>(df<span class="sc">$</span>age, df<span class="sc">$</span>id, <span class="at">FUN =</span> <span class="cf">function</span>(x) <span class="fu">mean</span>(x)) </span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a><span class="co"># Personal intercept</span></span>
+<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>intercept <span class="ot">&lt;-</span> <span class="dv">5</span> <span class="sc">+</span> <span class="fl">0.5</span> <span class="sc">*</span> df<span class="sc">$</span>id</span>
+<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Gen happiness</span></span>
+<span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a>u <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(N<span class="sc">*</span>T, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="fl">0.2</span>)</span>
+<span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">+</span> <span class="fl">0.05</span> <span class="sc">*</span> df<span class="sc">$</span>age <span class="sc">-</span> <span class="fl">0.2</span> <span class="sc">*</span> df<span class="sc">$</span>dm_age <span class="sc">+</span> <span class="dv">2</span> <span class="sc">*</span> <span class="fu">as.numeric</span>(df<span class="sc">$</span>cohort) <span class="sc">+</span> u</span>
+<span id="cb14-39"><a href="#cb14-39" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>happiness <span class="ot">&lt;-</span> y</span>
+<span id="cb14-40"><a href="#cb14-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-41"><a href="#cb14-41" aria-hidden="true" tabindex="-1"></a><span class="co"># Gen person means</span></span>
+<span id="cb14-42"><a href="#cb14-42" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>m_age <span class="ot">&lt;-</span> <span class="fu">ave</span>(df<span class="sc">$</span>age, df<span class="sc">$</span>id, <span class="at">FUN =</span> <span class="cf">function</span>(x) <span class="fu">mean</span>(x)) </span>
+<span id="cb14-43"><a href="#cb14-43" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>m_happiness <span class="ot">&lt;-</span> <span class="fu">ave</span>(df<span class="sc">$</span>happiness, df<span class="sc">$</span>id, <span class="at">FUN =</span> <span class="cf">function</span>(x) <span class="fu">mean</span>(x)) </span>
+<span id="cb14-44"><a href="#cb14-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-45"><a href="#cb14-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-46"><a href="#cb14-46" aria-hidden="true" tabindex="-1"></a><span class="co"># Total line for plot</span></span>
+<span id="cb14-47"><a href="#cb14-47" aria-hidden="true" tabindex="-1"></a>lm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(happiness <span class="sc">~</span> age, <span class="at">data =</span> df)</span>
+<span id="cb14-48"><a href="#cb14-48" aria-hidden="true" tabindex="-1"></a>lm2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(happiness <span class="sc">~</span> age <span class="sc">+</span> cohort, <span class="at">data =</span> df)</span>
+<span id="cb14-49"><a href="#cb14-49" aria-hidden="true" tabindex="-1"></a>lm3 <span class="ot">&lt;-</span> <span class="fu">lm</span>(happiness <span class="sc">~</span> age <span class="sc">+</span> idname, <span class="at">data =</span> df)</span>
+<span id="cb14-50"><a href="#cb14-50" aria-hidden="true" tabindex="-1"></a>lm4 <span class="ot">&lt;-</span> <span class="fu">lm</span>(m_happiness <span class="sc">~</span> m_age, <span class="at">data =</span> df)</span></code></pre></div>
+<div id="cross-sectional-setting" class="section level2">
+<h2>Cross-sectional setting</h2>
+<p>In a cross-sectional setting, we could just run a standard linear regression model using Omitted Least Squares (OLS) of the form <span class="math display">\[
+y_{i} = \alpha + \beta_1 x_{i} + \upsilon_{i},
+\]</span> where <span class="math inline">\(y_{i}\)</span> is the dependent variable (happiness) and <span class="math inline">\(x_i\)</span> the independent variable of each observation <span class="math inline">\(i \in \{1, \dots, 24\}\)</span>. <span class="math inline">\(\beta_1\)</span> is the coefficient of interest, <span class="math inline">\(\alpha\)</span> the overall intercept and <span class="math inline">\(\upsilon_{i}\)</span> the error term.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>lm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(happiness <span class="sc">~</span> age, <span class="at">data =</span> df)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lm1)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = happiness ~ age, data = df)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -1.4964 -0.4209 -0.1201  0.6615  1.6868 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   1.0506     0.5696   1.844   0.0787 .  
+## age           0.1151     0.0121   9.515 2.96e-09 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.8206 on 22 degrees of freedom
+## Multiple R-squared:  0.8045, Adjusted R-squared:  0.7956 
+## F-statistic: 90.53 on 1 and 22 DF,  p-value: 2.96e-09</code></pre>
+<p>This indicates a positive relation between age and happiness. Graphically, this would look like:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>zp1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df, <span class="fu">aes</span>(age, happiness)) <span class="sc">+</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>( <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> happiness), <span class="at">size =</span> <span class="dv">2</span>, <span class="at">stroke =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">&#39;lm&#39;</span>, <span class="at">formula =</span> y <span class="sc">~</span> x, <span class="at">se =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="fl">3.3</span>, <span class="fl">9.2</span>) <span class="sc">+</span> <span class="fu">expand_limits</span>(<span class="at">y =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>)) <span class="sc">+</span> </span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.key =</span> <span class="fu">element_blank</span>(), <span class="at">legend.title =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.position =</span> <span class="fu">c</span>(<span class="fl">0.95</span>,<span class="fl">0.05</span>), <span class="at">legend.justification =</span> <span class="fu">c</span>(<span class="st">&quot;right&quot;</span>, <span class="st">&quot;bottom&quot;</span>),</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.background =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.box.background =</span> <span class="fu">element_rect</span>(<span class="at">colour =</span> <span class="st">&quot;black&quot;</span>))</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>zp1  </span></code></pre></div>
+<p><img src="Panel_part1_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p>Obviously, we might suspect some other characteristics to influence our results. For instance, birth cohort might be factor that affects age and happiness. We can easily add a control for the cohort so account for this possibility. We would then estiamte the model</p>
+<p><span class="math display">\[
+y_{i} = \alpha + \beta_1 x_{i} + \beta_2 z_{it} + \upsilon_{i},
+\]</span> where <span class="math inline">\(z_i\)</span> is the control variable (cohort).</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>lm2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(happiness <span class="sc">~</span> age <span class="sc">+</span> cohort, <span class="at">data =</span> df)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lm2)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = happiness ~ age + cohort, data = df)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -1.01188 -0.35012 -0.01682  0.31611  0.92289 
+## 
+## Coefficients:
+##                    Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)         3.32191    0.52030   6.385 2.50e-06 ***
+## age                 0.03687    0.01512   2.439   0.0237 *  
+## cohortOlder cohort  2.49959    0.41862   5.971 6.31e-06 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.5114 on 21 degrees of freedom
+## Multiple R-squared:  0.9275, Adjusted R-squared:  0.9206 
+## F-statistic: 134.4 on 2 and 21 DF,  p-value: 1.075e-12</code></pre>
+<p>As a result, the effect of age becomes weaker. Graphically, this would look like:</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>zp2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df, <span class="fu">aes</span>(age, happiness)) <span class="sc">+</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> happiness, <span class="at">shape =</span> cohort, <span class="at">colour =</span> cohort), </span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">size =</span> <span class="dv">2</span>, <span class="at">stroke =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">&#39;lm&#39;</span>, <span class="at">formula =</span> y <span class="sc">~</span> x, <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">colour =</span> cohort, <span class="at">linetype =</span> cohort)) <span class="sc">+</span>  </span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">intercept =</span> lm2<span class="sc">$</span>coefficients[<span class="dv">1</span>] <span class="sc">+</span> <span class="fl">0.5</span> <span class="sc">*</span> lm2<span class="sc">$</span>coefficients[<span class="dv">3</span>], </span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>                               <span class="at">slope =</span> lm2<span class="sc">$</span>coefficients[<span class="dv">2</span>], <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>) <span class="sc">+</span>  </span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="fl">3.3</span>, <span class="fl">9.2</span>) <span class="sc">+</span> <span class="fu">expand_limits</span>(<span class="at">y =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>)) <span class="sc">+</span> </span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.key =</span> <span class="fu">element_blank</span>(), <span class="at">legend.title =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.position =</span> <span class="fu">c</span>(<span class="fl">0.95</span>,<span class="fl">0.05</span>), <span class="at">legend.justification =</span> <span class="fu">c</span>(<span class="st">&quot;right&quot;</span>, <span class="st">&quot;bottom&quot;</span>),</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.background =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.box.background =</span> <span class="fu">element_rect</span>(<span class="at">colour =</span> <span class="st">&quot;black&quot;</span>))</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>zp2  </span></code></pre></div>
+<p><img src="Panel_part1_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p>So, what we basically receive here is the (weighted) average effect within each birth cohort. We use only similar observations (in terms of cohort) to estimate our effect of interest. If we add some controls, we also decompose the variance which goes into our estimator</p>
+</div>
+<div id="panel-data-setting" class="section level2">
+<h2>Panel data setting</h2>
+<p>Now, with panel data, we can even go a step further. Assume we would not have observed 24 independent observations, but rather 6 independent individuals (N = 6) at 4 time-points each (T = 4).</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>zp3 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df, <span class="fu">aes</span>(age, happiness)) <span class="sc">+</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>( <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> happiness, <span class="at">shape =</span> idname, <span class="at">colour =</span> idname), </span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">size =</span> <span class="dv">2</span>, <span class="at">stroke =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="fl">3.3</span>, <span class="fl">9.2</span>) <span class="sc">+</span> <span class="fu">expand_limits</span>(<span class="at">y =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>)) <span class="sc">+</span> </span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.key =</span> <span class="fu">element_blank</span>(), <span class="at">legend.title =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.position =</span> <span class="fu">c</span>(<span class="fl">0.95</span>,<span class="fl">0.05</span>), <span class="at">legend.justification =</span> <span class="fu">c</span>(<span class="st">&quot;right&quot;</span>, <span class="st">&quot;bottom&quot;</span>),</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.background =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.box.background =</span> <span class="fu">element_rect</span>(<span class="at">colour =</span> <span class="st">&quot;black&quot;</span>))</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>zp3 </span></code></pre></div>
+<p><img src="Panel_part1_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p>We can then decompose the available variance into three different parts:</p>
+<ul>
+<li><p>Pooled variance</p></li>
+<li><p>Between variance</p></li>
+<li><p>Within variance</p></li>
+</ul>
+<div id="pooled-estimator" class="section level3">
+<h3>Pooled estimator</h3>
+<p>The pooled estimator equals what we have seen in the cross-sectional example: we basically assume that we have 24 independent observations and we ignore the person and time dimension. The Pooled OLS estimator is simply:</p>
+<p><span class="math display">\[
+y_{it} = \alpha + \beta_{POLS} x_{it} + \upsilon_{it},
+\]</span></p>
+<p>And, as above, we use the simple `lm()’ command</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>lm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(happiness <span class="sc">~</span> age, <span class="at">data =</span> df)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lm1)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = happiness ~ age, data = df)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -1.4964 -0.4209 -0.1201  0.6615  1.6868 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   1.0506     0.5696   1.844   0.0787 .  
+## age           0.1151     0.0121   9.515 2.96e-09 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.8206 on 22 degrees of freedom
+## Multiple R-squared:  0.8045, Adjusted R-squared:  0.7956 
+## F-statistic: 90.53 on 1 and 22 DF,  p-value: 2.96e-09</code></pre>
+<p>which graphically looks like:</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>zp3 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df, <span class="fu">aes</span>(age, happiness)) <span class="sc">+</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>( <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> happiness, <span class="at">shape =</span> idname, <span class="at">colour =</span> idname), </span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">size =</span> <span class="dv">2</span>, <span class="at">stroke =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">&#39;lm&#39;</span>, <span class="at">formula =</span> y <span class="sc">~</span> x, <span class="at">se =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="fl">3.3</span>, <span class="fl">9.2</span>) <span class="sc">+</span> <span class="fu">expand_limits</span>(<span class="at">y =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>)) <span class="sc">+</span> </span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.key =</span> <span class="fu">element_blank</span>(), <span class="at">legend.title =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.position =</span> <span class="fu">c</span>(<span class="fl">0.95</span>,<span class="fl">0.05</span>), <span class="at">legend.justification =</span> <span class="fu">c</span>(<span class="st">&quot;right&quot;</span>, <span class="st">&quot;bottom&quot;</span>),</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.background =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.box.background =</span> <span class="fu">element_rect</span>(<span class="at">colour =</span> <span class="st">&quot;black&quot;</span>))</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>zp3 </span></code></pre></div>
+<p><img src="Panel_part1_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+</div>
+<div id="between-estimator" class="section level3">
+<h3>Between estimator</h3>
+<p>The between estimator only compares different persons and discards the within-person variance. Therefore, we simply run a model that only uses the person-specific means</p>
+<p><span class="math display">\[
+\bar{y_{i}} = \alpha + \beta_{BTW} \bar{x_{i}} + \bar{\upsilon_{i}},
+\]</span></p>
+<p>We can either estimate this by hand:</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>m_happiness <span class="ot">&lt;-</span> <span class="fu">ave</span>(df<span class="sc">$</span>happiness, df<span class="sc">$</span>id, <span class="at">FUN =</span> mean)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>m_age <span class="ot">&lt;-</span> <span class="fu">ave</span>(df<span class="sc">$</span>age, df<span class="sc">$</span>id, <span class="at">FUN =</span> mean)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>lm2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(m_happiness <span class="sc">~</span> m_age, <span class="at">data =</span> df)</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lm2)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = m_happiness ~ m_age, data = df)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.77437 -0.17518 -0.06819  0.25424  0.83169 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 0.733095   0.356036   2.059   0.0515 .  
+## m_age       0.122176   0.007571  16.138 1.12e-13 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.5067 on 22 degrees of freedom
+## Multiple R-squared:  0.9221, Adjusted R-squared:  0.9186 
+## F-statistic: 260.4 on 1 and 22 DF,  p-value: 1.118e-13</code></pre>
+<p>or we use the <code>plm</code> package to do the job for us</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>btw2 <span class="ot">&lt;-</span> <span class="fu">plm</span>(happiness <span class="sc">~</span> age, <span class="at">data =</span> df,</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">index =</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;wave&quot;</span>),</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">effect =</span> <span class="st">&quot;individual&quot;</span>, <span class="at">model =</span> <span class="st">&quot;between&quot;</span>)</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(btw2)</span></code></pre></div>
+<pre><code>## Oneway (individual) effect Between Model
+## 
+## Call:
+## plm(formula = happiness ~ age, data = df, effect = &quot;individual&quot;, 
+##     model = &quot;between&quot;, index = c(&quot;id&quot;, &quot;wave&quot;))
+## 
+## Balanced Panel: n = 6, T = 4, N = 24
+## Observations used in estimation: 6
+## 
+## Residuals:
+##         1         2         3         4         5         6 
+##  0.254242 -0.158370 -0.774367  0.831689  0.021989 -0.175184 
+## 
+## Coefficients:
+##             Estimate Std. Error t-value Pr(&gt;|t|)   
+## (Intercept) 0.733095   0.834979  0.8780 0.429528   
+## age         0.122176   0.017755  6.8813 0.002337 **
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Total Sum of Squares:    18.13
+## Residual Sum of Squares: 1.4122
+## R-Squared:      0.92211
+## Adj. R-Squared: 0.90263
+## F-statistic: 47.3519 on 1 and 4 DF, p-value: 0.0023371</code></pre>
+<p>NOTE the line “observations used in estimation” ! The manual approach with <code>lm</code> assumes we have 24 independent observations. This is not true, we only have 6 independent observations, where each is replicated 4 times in the data.</p>
+<p>Graphically this result looks like:</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>zp4 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df, <span class="fu">aes</span>(age, happiness)) <span class="sc">+</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> happiness, <span class="at">shape =</span> idname), </span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">size =</span> <span class="dv">2</span>, <span class="at">stroke =</span> <span class="dv">1</span>, <span class="at">colour =</span> <span class="fu">alpha</span>(<span class="st">&quot;black&quot;</span>, .<span class="dv">3</span>)) <span class="sc">+</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> m_age, <span class="at">y =</span> m_happiness, <span class="at">shape =</span> idname, <span class="at">colour =</span> idname), </span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">size =</span> <span class="dv">2</span>, <span class="at">stroke =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">intercept =</span> lm4<span class="sc">$</span>coefficients[<span class="dv">1</span>], </span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>              <span class="at">slope =</span> lm4<span class="sc">$</span>coefficients[<span class="dv">2</span>], <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="fl">3.3</span>, <span class="fl">9.2</span>) <span class="sc">+</span> <span class="fu">expand_limits</span>(<span class="at">y =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>)) <span class="sc">+</span> </span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.key =</span> <span class="fu">element_blank</span>(), <span class="at">legend.title =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.position =</span> <span class="fu">c</span>(<span class="fl">0.95</span>,<span class="fl">0.05</span>), <span class="at">legend.justification =</span> <span class="fu">c</span>(<span class="st">&quot;right&quot;</span>, <span class="st">&quot;bottom&quot;</span>),</span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.background =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.box.background =</span> <span class="fu">element_rect</span>(<span class="at">colour =</span> <span class="st">&quot;black&quot;</span>))</span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>zp4  </span></code></pre></div>
+<p><img src="Panel_part1_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+</div>
+<div id="within-estimator" class="section level3">
+<h3>Within estimator</h3>
+<p>The within estimator only compares different periods within the same person and discards the between-person variance. We could also say the estimator is solely based on changes over time. To achieve this, we simply give every person their own intercept / add a dummy for each person (similar to the cohort example above).</p>
+<p><span class="math display">\[
+y_{it} = \alpha_i + \beta_{WI} x_{it} + \epsilon_{it},
+\]</span></p>
+<p>Again, we could run this manually</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>lm3 <span class="ot">&lt;-</span> <span class="fu">lm</span>(happiness <span class="sc">~</span> age <span class="sc">+</span> idname, <span class="at">data =</span> df)</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lm3)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = happiness ~ age + idname, data = df)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.28791 -0.11875  0.03583  0.14172  0.27594 
+## 
+## Coefficients:
+##                Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)     7.74785    0.44579  17.380 2.93e-12 ***
+## age            -0.14824    0.01742  -8.511 1.56e-07 ***
+## idnamePerson 2  1.75075    0.19396   9.026 6.80e-08 ***
+## idnamePerson 3  3.29812    0.30964  10.652 6.09e-09 ***
+## idnamePerson 4  7.06754    0.43927  16.089 1.01e-11 ***
+## idnamePerson 5  8.42120    0.57348  14.684 4.34e-11 ***
+## idnamePerson 6 10.38740    0.70968  14.637 4.57e-11 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.1908 on 17 degrees of freedom
+## Multiple R-squared:  0.9918, Adjusted R-squared:  0.9889 
+## F-statistic: 344.1 on 6 and 17 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>or we use <code>plm</code>:</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>fe1 <span class="ot">&lt;-</span> <span class="fu">plm</span>(happiness <span class="sc">~</span> age, <span class="at">data =</span> df,</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">index =</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;wave&quot;</span>),</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">effect =</span> <span class="st">&quot;individual&quot;</span>, <span class="at">model =</span> <span class="st">&quot;within&quot;</span>)</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fe1)</span></code></pre></div>
+<pre><code>## Oneway (individual) effect Within Model
+## 
+## Call:
+## plm(formula = happiness ~ age, data = df, effect = &quot;individual&quot;, 
+##     model = &quot;within&quot;, index = c(&quot;id&quot;, &quot;wave&quot;))
+## 
+## Balanced Panel: n = 6, T = 4, N = 24
+## 
+## Residuals:
+##      Min.   1st Qu.    Median   3rd Qu.      Max. 
+## -0.287907 -0.118754  0.035834  0.141721  0.275941 
+## 
+## Coefficients:
+##      Estimate Std. Error t-value  Pr(&gt;|t|)    
+## age -0.148245   0.017418 -8.5108 1.556e-07 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Total Sum of Squares:    3.2561
+## Residual Sum of Squares: 0.61893
+## R-Squared:      0.80992
+## Adj. R-Squared: 0.74283
+## F-statistic: 72.4345 on 1 and 17 DF, p-value: 1.5556e-07</code></pre>
+<p>Graphically, this would look like:</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>zp5 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df, <span class="fu">aes</span>(age, happiness)) <span class="sc">+</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>( <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> happiness, <span class="at">shape =</span> idname, <span class="at">colour =</span> idname), </span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">size =</span> <span class="dv">2</span>, <span class="at">stroke =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">&#39;lm&#39;</span>, <span class="at">formula =</span> y <span class="sc">~</span> x, <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">colour =</span> idname, <span class="at">linetype =</span> idname)) <span class="sc">+</span></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">intercept =</span> lm3<span class="sc">$</span>coefficients[<span class="dv">1</span>] <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> lm3<span class="sc">$</span>coefficients[<span class="dv">3</span>]  <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> lm3<span class="sc">$</span>coefficients[<span class="dv">4</span>] </span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>              <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> lm3<span class="sc">$</span>coefficients[<span class="dv">5</span>]  <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> lm3<span class="sc">$</span>coefficients[<span class="dv">6</span>]  <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> lm3<span class="sc">$</span>coefficients[<span class="dv">7</span>], </span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>              <span class="at">slope =</span> lm3<span class="sc">$</span>coefficients[<span class="dv">2</span>], <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="fl">3.3</span>, <span class="fl">9.2</span>) <span class="sc">+</span> <span class="fu">expand_limits</span>(<span class="at">y =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>)) <span class="sc">+</span> </span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.key =</span> <span class="fu">element_blank</span>(), <span class="at">legend.title =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.position =</span> <span class="fu">c</span>(<span class="fl">0.95</span>,<span class="fl">0.05</span>), <span class="at">legend.justification =</span> <span class="fu">c</span>(<span class="st">&quot;right&quot;</span>, <span class="st">&quot;bottom&quot;</span>),</span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.background =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.box.background =</span> <span class="fu">element_rect</span>(<span class="at">colour =</span> <span class="st">&quot;black&quot;</span>))</span>
+<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>zp5</span></code></pre></div>
+<p><img src="Panel_part1_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<p>Now, we have estimated the effect by only taking observations within each person into account: given the person id, how does age correlate with happiness.</p>
+</div>
+<div id="comparison" class="section level3">
+<h3>Comparison</h3>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">screenreg</span>(<span class="fu">list</span>(lm1, lm2, lm3), <span class="at">digits =</span> <span class="dv">3</span>, </span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>          <span class="at">custom.model.names =</span> <span class="fu">c</span>(<span class="st">&quot;POLS&quot;</span>, <span class="st">&quot;Between&quot;</span>, <span class="st">&quot;Within&quot;</span>))</span></code></pre></div>
+<pre><code>## 
+## ==================================================
+##                 POLS        Between     Within    
+## --------------------------------------------------
+## (Intercept)      1.051       0.733       7.748 ***
+##                 (0.570)     (0.356)     (0.446)   
+## age              0.115 ***              -0.148 ***
+##                 (0.012)                 (0.017)   
+## m_age                        0.122 ***            
+##                             (0.008)               
+## idnamePerson 2                           1.751 ***
+##                                         (0.194)   
+## idnamePerson 3                           3.298 ***
+##                                         (0.310)   
+## idnamePerson 4                           7.068 ***
+##                                         (0.439)   
+## idnamePerson 5                           8.421 ***
+##                                         (0.573)   
+## idnamePerson 6                          10.387 ***
+##                                         (0.710)   
+## --------------------------------------------------
+## R^2              0.805       0.922       0.992    
+## Adj. R^2         0.796       0.919       0.989    
+## Num. obs.       24          24          24        
+## ==================================================
+## *** p &lt; 0.001; ** p &lt; 0.01; * p &lt; 0.05</code></pre>
+<p>POLS: The older an observation (person-year), the higher its happiness.</p>
+<p>Between: The older a person, the higher their happiness.</p>
+<p>Within: Increasing age within a person goes along with declining happiness within the same person.</p>
+<p>The estimates for <span class="math inline">\(\beta_{POLS}\)</span> and <span class="math inline">\(\beta_{BTW}\)</span> are very similar here. We will see below why.</p>
+</div>
+</div>
+</div>
+<div id="fixed-effects-estimator" class="section level1">
+<h1>Fixed effects estimator</h1>
+<p>The estimator we used above to derive the within coefficient is the fixed effects (FE) estimator. This method is very widely used, especially with survey data.</p>
+<p>We use a second example here: assume we observe 4 individuals over 6 periods, and we want to estimate the effect of marriage on the wage for males. This is the so called “marriage wage premium” <span class="citation">(<a href="#ref-Ludwig.2018.0" role="doc-biblioref">Ludwig and Brüderl 2018</a>)</span>.</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="do">##################################</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="do">### Example 2: Marriage Income </span><span class="al">###</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="do">##################################</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a><span class="do">### Set up six individuals with age and happiness</span></span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">4</span></span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>T <span class="ot">&lt;-</span> <span class="dv">6</span></span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a><span class="co"># id and wave</span></span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>df2 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">ncol =</span> <span class="dv">2</span>, <span class="at">nrow =</span> N<span class="sc">*</span>T))</span>
+<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(df2) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;wave&quot;</span>)</span>
+<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a>df2<span class="sc">$</span>id <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span>N, <span class="at">each =</span> T)</span>
+<span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a>df2<span class="sc">$</span>wave <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span>T, <span class="at">times =</span> N)</span>
+<span id="cb37-15"><a href="#cb37-15" aria-hidden="true" tabindex="-1"></a>df2<span class="sc">$</span>idname <span class="ot">&lt;-</span> <span class="fu">factor</span>(df2<span class="sc">$</span>id, <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span>N), <span class="at">labels =</span> <span class="fu">paste</span>(<span class="st">&quot;Person&quot;</span>, <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span>N)))</span>
+<span id="cb37-16"><a href="#cb37-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-17"><a href="#cb37-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Marriage dummy</span></span>
+<span id="cb37-18"><a href="#cb37-18" aria-hidden="true" tabindex="-1"></a>df2<span class="sc">$</span>marriage_ever <span class="ot">&lt;-</span> <span class="dv">0</span> </span>
+<span id="cb37-19"><a href="#cb37-19" aria-hidden="true" tabindex="-1"></a>df2<span class="sc">$</span>marriage_ever[(N<span class="sc">*</span>T<span class="sc">/</span><span class="dv">2</span> <span class="sc">+</span> <span class="dv">1</span>)<span class="sc">:</span>(N<span class="sc">*</span>T)] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb37-20"><a href="#cb37-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-21"><a href="#cb37-21" aria-hidden="true" tabindex="-1"></a>df2<span class="sc">$</span>marriage <span class="ot">&lt;-</span> df2<span class="sc">$</span>marriage_ever <span class="sc">*</span> <span class="fu">ifelse</span>(df2<span class="sc">$</span>wave <span class="sc">&gt;=</span> <span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
+<span id="cb37-22"><a href="#cb37-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-23"><a href="#cb37-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Starting wage</span></span>
+<span id="cb37-24"><a href="#cb37-24" aria-hidden="true" tabindex="-1"></a>stw <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">2000</span>, <span class="dv">5000</span>)</span>
+<span id="cb37-25"><a href="#cb37-25" aria-hidden="true" tabindex="-1"></a>stw <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">quantile</span>(stw, <span class="at">probs =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span><span class="sc">/</span>(N<span class="dv">-1</span>))), <span class="dv">0</span>)</span>
+<span id="cb37-26"><a href="#cb37-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-27"><a href="#cb37-27" aria-hidden="true" tabindex="-1"></a><span class="co"># wage equation</span></span>
+<span id="cb37-28"><a href="#cb37-28" aria-hidden="true" tabindex="-1"></a>df2<span class="sc">$</span>wage <span class="ot">&lt;-</span> <span class="fu">unname</span>(<span class="fu">rep</span>(stw, <span class="at">each =</span> T)) <span class="sc">+</span> (df2<span class="sc">$</span>wave <span class="sc">-</span> <span class="dv">1</span>)<span class="sc">*</span><span class="dv">50</span> <span class="sc">+</span> <span class="dv">200</span> <span class="sc">*</span> <span class="fu">ifelse</span>(df2<span class="sc">$</span>wave <span class="sc">&gt;=</span><span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">0</span>) <span class="sc">+</span> df2<span class="sc">$</span>marriage <span class="sc">*</span> <span class="dv">500</span></span>
+<span id="cb37-29"><a href="#cb37-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-30"><a href="#cb37-30" aria-hidden="true" tabindex="-1"></a><span class="co"># counterfactual parallel trend</span></span>
+<span id="cb37-31"><a href="#cb37-31" aria-hidden="true" tabindex="-1"></a>df2<span class="sc">$</span>pti <span class="ot">&lt;-</span> <span class="fu">unname</span>(<span class="fu">rep</span>(stw, <span class="at">each =</span> T)) <span class="sc">+</span> (df2<span class="sc">$</span>wave <span class="sc">-</span> <span class="dv">1</span>)<span class="sc">*</span><span class="dv">50</span> </span>
+<span id="cb37-32"><a href="#cb37-32" aria-hidden="true" tabindex="-1"></a>df2<span class="sc">$</span>pt <span class="ot">&lt;-</span> <span class="fu">unname</span>(<span class="fu">rep</span>(stw, <span class="at">each =</span> T)) <span class="sc">+</span> (df2<span class="sc">$</span>wave <span class="sc">-</span> <span class="dv">1</span>)<span class="sc">*</span><span class="dv">50</span> <span class="sc">+</span> <span class="dv">200</span> <span class="sc">*</span> <span class="fu">ifelse</span>(df2<span class="sc">$</span>wave <span class="sc">&gt;=</span><span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">0</span>) </span>
+<span id="cb37-33"><a href="#cb37-33" aria-hidden="true" tabindex="-1"></a>df2<span class="sc">$</span>pti[df2<span class="sc">$</span>marriage_ever <span class="sc">==</span> <span class="dv">0</span> <span class="sc">|</span> df2<span class="sc">$</span>wave <span class="sc">&lt;</span> <span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
+<span id="cb37-34"><a href="#cb37-34" aria-hidden="true" tabindex="-1"></a>df2<span class="sc">$</span>pt[df2<span class="sc">$</span>marriage_ever <span class="sc">==</span> <span class="dv">0</span> <span class="sc">|</span> df2<span class="sc">$</span>wave <span class="sc">&lt;</span> <span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
+<span id="cb37-35"><a href="#cb37-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-36"><a href="#cb37-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-37"><a href="#cb37-37" aria-hidden="true" tabindex="-1"></a><span class="do">### Add individual slope / heterogeneous time trends</span></span>
+<span id="cb37-38"><a href="#cb37-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-39"><a href="#cb37-39" aria-hidden="true" tabindex="-1"></a><span class="co"># wage equation</span></span>
+<span id="cb37-40"><a href="#cb37-40" aria-hidden="true" tabindex="-1"></a>df2<span class="sc">$</span>wage2 <span class="ot">&lt;-</span> <span class="fu">unname</span>(<span class="fu">rep</span>(stw, <span class="at">each =</span> T)) <span class="sc">+</span> (df2<span class="sc">$</span>wave <span class="sc">-</span> <span class="dv">1</span>)<span class="sc">*</span><span class="dv">50</span>  <span class="sc">+</span> (df2<span class="sc">$</span>wave <span class="sc">-</span> <span class="dv">1</span>)<span class="sc">*</span><span class="dv">150</span><span class="sc">*</span>df2<span class="sc">$</span>marriage_ever <span class="sc">+</span> <span class="dv">200</span> <span class="sc">*</span> <span class="fu">ifelse</span>(df2<span class="sc">$</span>wave <span class="sc">&gt;=</span><span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">0</span>) <span class="sc">+</span> df2<span class="sc">$</span>marriage <span class="sc">*</span> <span class="dv">500</span></span>
+<span id="cb37-41"><a href="#cb37-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-42"><a href="#cb37-42" aria-hidden="true" tabindex="-1"></a><span class="co"># parallel trend</span></span>
+<span id="cb37-43"><a href="#cb37-43" aria-hidden="true" tabindex="-1"></a>df2<span class="sc">$</span>pt2 <span class="ot">&lt;-</span> <span class="fu">unname</span>(<span class="fu">rep</span>(stw, <span class="at">each =</span> T)) <span class="sc">+</span> (df2<span class="sc">$</span>wave <span class="sc">-</span> <span class="dv">1</span>)<span class="sc">*</span><span class="dv">50</span> <span class="sc">+</span> <span class="dv">200</span> <span class="sc">*</span> <span class="fu">ifelse</span>(df2<span class="sc">$</span>wave <span class="sc">&gt;=</span><span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">0</span>) <span class="sc">+</span> <span class="dv">2</span><span class="sc">*</span><span class="dv">150</span></span>
+<span id="cb37-44"><a href="#cb37-44" aria-hidden="true" tabindex="-1"></a>df2<span class="sc">$</span>pt2[df2<span class="sc">$</span>marriage_ever <span class="sc">==</span> <span class="dv">0</span> <span class="sc">|</span> df2<span class="sc">$</span>wave <span class="sc">&lt;</span> <span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
+<span id="cb37-45"><a href="#cb37-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-46"><a href="#cb37-46" aria-hidden="true" tabindex="-1"></a><span class="co"># actual trend</span></span>
+<span id="cb37-47"><a href="#cb37-47" aria-hidden="true" tabindex="-1"></a>df2<span class="sc">$</span>pt2_cr <span class="ot">&lt;-</span> <span class="fu">unname</span>(<span class="fu">rep</span>(stw, <span class="at">each =</span> T)) <span class="sc">+</span> (df2<span class="sc">$</span>wave <span class="sc">-</span> <span class="dv">1</span>)<span class="sc">*</span><span class="dv">50</span> <span class="sc">+</span> (df2<span class="sc">$</span>wave <span class="sc">-</span> <span class="dv">1</span>)<span class="sc">*</span><span class="dv">150</span><span class="sc">*</span>df2<span class="sc">$</span>marriage_ever <span class="sc">+</span> <span class="dv">200</span> <span class="sc">*</span> <span class="fu">ifelse</span>(df2<span class="sc">$</span>wave <span class="sc">&gt;=</span><span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
+<span id="cb37-48"><a href="#cb37-48" aria-hidden="true" tabindex="-1"></a>df2<span class="sc">$</span>pt2_cr[df2<span class="sc">$</span>marriage_ever <span class="sc">==</span> <span class="dv">0</span> <span class="sc">|</span> df2<span class="sc">$</span>wave <span class="sc">&lt;</span> <span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
+<span id="cb37-49"><a href="#cb37-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-50"><a href="#cb37-50" aria-hidden="true" tabindex="-1"></a><span class="co"># Marry to factor</span></span>
+<span id="cb37-51"><a href="#cb37-51" aria-hidden="true" tabindex="-1"></a>df2<span class="sc">$</span>marriage <span class="ot">&lt;-</span> <span class="fu">factor</span>(df2<span class="sc">$</span>marriage, <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&quot;not married&quot;</span>, <span class="st">&quot;married&quot;</span>))</span>
+<span id="cb37-52"><a href="#cb37-52" aria-hidden="true" tabindex="-1"></a>df2<span class="sc">$</span>marriage_ever <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(df2<span class="sc">$</span>marriage_ever)</span>
+<span id="cb37-53"><a href="#cb37-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-54"><a href="#cb37-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-55"><a href="#cb37-55" aria-hidden="true" tabindex="-1"></a><span class="do">### Plot </span></span>
+<span id="cb37-56"><a href="#cb37-56" aria-hidden="true" tabindex="-1"></a>zp1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df2, <span class="fu">aes</span>(wave, wage)) <span class="sc">+</span></span>
+<span id="cb37-57"><a href="#cb37-57" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> wave, <span class="at">y =</span> wage, <span class="at">group =</span> id), <span class="at">lty =</span> <span class="st">&quot;solid&quot;</span>, <span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">lwd =</span> <span class="dv">1</span>) <span class="sc">+</span> </span>
+<span id="cb37-58"><a href="#cb37-58" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>( <span class="fu">aes</span>(<span class="at">x =</span> wave, <span class="at">y =</span> wage, <span class="at">shape =</span> marriage, <span class="at">colour =</span> marriage), </span>
+<span id="cb37-59"><a href="#cb37-59" aria-hidden="true" tabindex="-1"></a>              <span class="at">size =</span> <span class="dv">2</span>, <span class="at">stroke =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb37-60"><a href="#cb37-60" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb37-61"><a href="#cb37-61" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.key =</span> <span class="fu">element_blank</span>(), <span class="at">legend.title =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb37-62"><a href="#cb37-62" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.position =</span> <span class="fu">c</span>(<span class="fl">0.05</span>,<span class="fl">0.95</span>), <span class="at">legend.justification =</span> <span class="fu">c</span>(<span class="st">&quot;left&quot;</span>, <span class="st">&quot;top&quot;</span>),</span>
+<span id="cb37-63"><a href="#cb37-63" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.background =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb37-64"><a href="#cb37-64" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.box.background =</span> <span class="fu">element_rect</span>(<span class="at">colour =</span> <span class="st">&quot;black&quot;</span>),</span>
+<span id="cb37-65"><a href="#cb37-65" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.spacing.y =</span> <span class="fu">unit</span>(<span class="sc">-</span><span class="fl">0.1</span>, <span class="st">&quot;cm&quot;</span>))</span>
+<span id="cb37-66"><a href="#cb37-66" aria-hidden="true" tabindex="-1"></a>zp1 </span></code></pre></div>
+<p><img src="Panel_part1_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+<div id="pooled-ols-again" class="section level3">
+<h3>Pooled OLS (again)</h3>
+<p>Let’s start with the conventional Pooled OLS (POLS) estimator on panel data</p>
+<p><span class="math display">\[
+y_{it} = \alpha + \beta x_{it} + \upsilon_{it}
+\]</span></p>
+<p>The main problem: this model relies on very strong assumptions for consistency, with the most important one being:</p>
+<ul>
+<li><span class="math inline">\(\mathrm{E}(\upsilon_{it} | x_{it}) = 0\)</span>, or <span class="math inline">\(Cov(x_{it}, \upsilon_{it}) = 0\)</span></li>
+</ul>
+<p>The error (including omitted variables) must not be correlated with <span class="math inline">\(x_{it}\)</span>. In observational studies, we have or cannot observe a lot of things. However, everything that influences <span class="math inline">\(y_{it}\)</span> but is unobserved ends up in <span class="math inline">\(\upsilon_{it}\)</span>. If anything correlates with <span class="math inline">\(x_{it}\)</span>, it is endogenous, and <span class="math inline">\(\hat{\beta}_x\)</span> will be biased.</p>
+<p>Take our marriage example.</p>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(wage <span class="sc">~</span> marriage, <span class="at">data =</span> df2))</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = wage ~ marriage, data = df2)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -1333.3  -633.3  -108.3   579.2  1766.7 
+## 
+## Coefficients:
+##                 Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)       3333.3      223.2  14.934 5.37e-13 ***
+## marriagemarried   2066.7      446.4   4.629  0.00013 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 947 on 22 degrees of freedom
+## Multiple R-squared:  0.4935, Adjusted R-squared:  0.4704 
+## F-statistic: 21.43 on 1 and 22 DF,  p-value: 0.0001297</code></pre>
+<p>We would estimate a marriage premium of more than 2,000. The true value is 500. The reason: those who marry at some point already had higher wages before they married.</p>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="do">### Plot </span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>zp2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df2, <span class="fu">aes</span>(wave, wage)) <span class="sc">+</span></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> wave, <span class="at">y =</span> wage, <span class="at">group =</span> id), <span class="at">lty =</span> <span class="st">&quot;solid&quot;</span>, <span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">lwd =</span> <span class="dv">1</span>) <span class="sc">+</span> </span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>( <span class="fu">aes</span>(<span class="at">x =</span> wave, <span class="at">y =</span> wage, <span class="at">shape =</span> marriage, <span class="at">colour =</span> marriage), </span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">size =</span> <span class="dv">2</span>, <span class="at">stroke =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_mark_hull</span>(<span class="at">expand =</span> <span class="fl">0.01</span>, <span class="fu">aes</span>(<span class="at">fill =</span> marriage), <span class="at">show.legend =</span> <span class="cn">FALSE</span>, <span class="at">colour =</span> <span class="cn">NA</span>) <span class="sc">+</span> </span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.key =</span> <span class="fu">element_blank</span>(), <span class="at">legend.title =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.position =</span> <span class="fu">c</span>(<span class="fl">0.05</span>,<span class="fl">0.95</span>), <span class="at">legend.justification =</span> <span class="fu">c</span>(<span class="st">&quot;left&quot;</span>, <span class="st">&quot;top&quot;</span>),</span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.background =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.box.background =</span> <span class="fu">element_rect</span>(<span class="at">colour =</span> <span class="st">&quot;black&quot;</span>),</span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.spacing.y =</span> <span class="fu">unit</span>(<span class="sc">-</span><span class="fl">0.1</span>, <span class="st">&quot;cm&quot;</span>))</span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a>zp2</span></code></pre></div>
+<p><img src="Panel_part1_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
+</div>
+<div id="one-ways-fixed-effects" class="section level3">
+<h3>One-ways fixed effects</h3>
+<p>To relax the strong assumption, we can decompose the error into two parts (between and within) with panel data: <span class="math inline">\(\upsilon_{it} = \alpha_i + \epsilon_{it} = 0\)</span>, where <span class="math inline">\(\alpha_i\)</span> is the time-constant (person-specific or between) part of the error, and <span class="math inline">\(\epsilon_{it} = 0\)</span> is the time-varying (idiosyncratic or within) part of the error.</p>
+<p>We can thus split up our main assumption for consistency:</p>
+<ul>
+<li><p><span class="math inline">\(\mathrm{E}(\alpha_{i} | x_{it}) = 0\)</span>: No time-constant unobserved heterogeneity</p></li>
+<li><p><span class="math inline">\(\mathrm{E}(\epsilon_{it} | x_{it}) = 0\)</span>: No time-varying unobserved heterogeneity</p></li>
+</ul>
+<p>And write the error component model:</p>
+<p><span class="math display">\[
+y_{it} = \beta x_{it} + \alpha_i + \epsilon_{it}
+\]</span> As we have seen above, we can include person-dummies to estimate the model above. However, this becomes computationally intense if we have thousands of individuals</p>
+<p>Thus, we usually use a transformation approach, where we first subtract the between variance by using use the person-specific means:</p>
+<p><span class="math display">\[
+\bar{y_{i}} = \beta \bar{x_{i}} + \alpha_i + \bar{\epsilon_{i}}
+\]</span></p>
+<p>We then subtract this between part from the pooled data:</p>
+<p><span class="math display">\[
+y_{it} - \bar{y_{i}} = \beta (x_{it}-\bar{x_{i}}) + (\alpha_i - \alpha_i) + (\epsilon_{it}-\bar{\epsilon_{i}})\\
+\tilde{y}_{it} = \beta \tilde{x}_{it} + \tilde{\epsilon}_{it}.
+\]</span></p>
+<p>This is called the within transformation. For each group (individual, district, firm), we subtract the group-specific mean from the original variable. This eliminates all between-group variance, including the person-specific part of the error term (<span class="math inline">\(\alpha_i\)</span>).</p>
+<p>The <span class="math inline">\(\hat{beta}_{FE}\)</span> is then just the OLS estimator on the transformed data:</p>
+<p><span class="math display">\[
+\hat{\boldsymbol{\mathbf{\beta}}} = (\boldsymbol{\mathbf{X}}^\intercal\boldsymbol{\mathbf{X}})^{-1}\boldsymbol{\mathbf{X}}^\intercal \boldsymbol{\mathbf{y}}
+\]</span></p>
+<p><strong>Note: this also means that every time-constant variable is wiped out - we cannot estimate their effects in FE models!</strong></p>
+<p><strong>Note: the FE estimator can only be applied to observations which are at least observed 2 times (<span class="math inline">\(T \geq 2\)</span>)!</strong></p>
+<p>The main assumption for consistency now is</p>
+<ul>
+<li><span class="math inline">\(\mathrm{E}(\epsilon_{it} | x_{it}, \alpha_i) = 0\)</span></li>
+</ul>
+<p>Idiosyncratic time-variation in <span class="math inline">\(\epsilon_i\)</span> must be uncorrelated with variation in <span class="math inline">\(x_i\)</span> across all time periods. However, <span class="math inline">\(\mathrm{E}(\alpha_{i} | x_{i})\)</span> can be any function of <span class="math inline">\(x_i\)</span>.</p>
+<ul>
+<li><p>Time-constant unobserved heterogeneity is allowed</p></li>
+<li><p>Only time-varying unobserved heterogeneity biases the estimator</p></li>
+</ul>
+<p>We can use the plm package with options <code>effect = "individual"</code> and <code>model = "within"</code> to estimate one-ways FE models:</p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>fe2 <span class="ot">&lt;-</span> <span class="fu">plm</span>(wage <span class="sc">~</span> marriage, <span class="at">data =</span> df2,</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">index =</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;wave&quot;</span>),</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">effect =</span> <span class="st">&quot;individual&quot;</span>, <span class="at">model =</span> <span class="st">&quot;within&quot;</span>)</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fe2)</span></code></pre></div>
+<pre><code>## Oneway (individual) effect Within Model
+## 
+## Call:
+## plm(formula = wage ~ marriage, data = df2, effect = &quot;individual&quot;, 
+##     model = &quot;within&quot;, index = c(&quot;id&quot;, &quot;wave&quot;))
+## 
+## Balanced Panel: n = 4, T = 6, N = 24
+## 
+## Residuals:
+##    Min. 1st Qu.  Median 3rd Qu.    Max. 
+## -225.00  -68.75    0.00   68.75  225.00 
+## 
+## Coefficients:
+##                 Estimate Std. Error t-value  Pr(&gt;|t|)    
+## marriagemarried  850.000     84.552  10.053 4.834e-09 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Total Sum of Squares:    2575000
+## Residual Sum of Squares: 407500
+## R-Squared:      0.84175
+## Adj. R-Squared: 0.80843
+## F-statistic: 101.061 on 1 and 19 DF, p-value: 4.8337e-09</code></pre>
+<p>Hm, 850 is closer to 500, but still quite far off! Let’s see why.</p>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="do">### Plot </span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>zp3 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df2, <span class="fu">aes</span>(wave, wage)) <span class="sc">+</span></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> wave, <span class="at">y =</span> wage, <span class="at">group =</span> id, <span class="at">alpha =</span> marriage_ever), <span class="at">lty =</span> <span class="st">&quot;solid&quot;</span>, <span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">lwd =</span> <span class="dv">1</span>) <span class="sc">+</span> </span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>( <span class="fu">aes</span>(<span class="at">x =</span> wave, <span class="at">y =</span> wage, <span class="at">shape =</span> marriage, <span class="at">colour =</span> marriage, <span class="at">alpha =</span> marriage_ever), </span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">size =</span> <span class="dv">2</span>, <span class="at">stroke =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> wave, <span class="at">y =</span> pti, <span class="at">group =</span> id, <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>), <span class="at">colour =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">lwd =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_linetype_identity</span>(<span class="at">labels =</span> <span class="st">&quot;Counterfactual&quot;</span>, <span class="at">guide =</span> <span class="st">&quot;legend&quot;</span>) <span class="sc">+</span></span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_alpha_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="dv">1</span>), <span class="at">guide =</span> <span class="st">&quot;none&quot;</span>) <span class="sc">+</span></span>
+<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># geom_mark_hull(data = df2[df2$marriage_ever == 1, ], aes(x = wave, y = wage, fill = marriage),</span></span>
+<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a>  <span class="co">#                expand = 0.01, show.legend = FALSE, colour = NA) + </span></span>
+<span id="cb43-11"><a href="#cb43-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb43-12"><a href="#cb43-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.key =</span> <span class="fu">element_blank</span>(), <span class="at">legend.title =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb43-13"><a href="#cb43-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.position =</span> <span class="fu">c</span>(<span class="fl">0.05</span>,<span class="fl">0.95</span>), <span class="at">legend.justification =</span> <span class="fu">c</span>(<span class="st">&quot;left&quot;</span>, <span class="st">&quot;top&quot;</span>),</span>
+<span id="cb43-14"><a href="#cb43-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.background =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb43-15"><a href="#cb43-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.box.background =</span> <span class="fu">element_rect</span>(<span class="at">colour =</span> <span class="st">&quot;black&quot;</span>),</span>
+<span id="cb43-16"><a href="#cb43-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.spacing.y =</span> <span class="fu">unit</span>(<span class="sc">-</span><span class="fl">0.1</span>, <span class="st">&quot;cm&quot;</span>))</span>
+<span id="cb43-17"><a href="#cb43-17" aria-hidden="true" tabindex="-1"></a>zp3</span></code></pre></div>
+<p><img src="Panel_part1_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
+<p>NOTE: A one-ways FE would effectively drop all those observations without within-variance on the independent variables. In our case, we would disregard those who never marry.</p>
+<p>However, they also experienced an increase in wages when the other two married.</p>
+</div>
+<div id="two-ways-fe" class="section level3">
+<h3>Two-ways FE</h3>
+<p>To circumvent the problem above, we want to add the never-married as a control group in our estimator.</p>
+<p><strong>In general, it is always a good idea to control for temporal shocks!</strong></p>
+<p>We can do so by including person fixed effects and time fixed effects:</p>
+<p><span class="math display">\[
+y_{it} = \beta x_{it} + \alpha_i + \zeta_t + \epsilon_{it},
+\]</span></p>
+<p>where <span class="math inline">\(\zeta_t\)</span> are time fixed effects (analogous to <span class="math inline">\(\alpha_i\)</span>). In terms of demeaning this would look like:</p>
+<p><span class="math display">\[
+(y_{it} - \bar{y}_i  - \bar{y}_t + \bar{y}) = \beta (x_{it} - \bar{x}_i - \bar{x}_t + \bar{x}) + (\epsilon_{it} - \bar{\epsilon}_i  - \bar{\epsilon}_t + \bar{\epsilon}).
+\]</span></p>
+<p>This removes common time shocks independent of treatment, and takes back in individuals without variation in <span class="math inline">\(x\)</span>. We basically add a `control-group’ to the estimation.</p>
+<p>We can just change the <code>effect</code> option in <code>plm</code> to “twoways” to achieve this:</p>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>fe3 <span class="ot">&lt;-</span> <span class="fu">plm</span>(wage <span class="sc">~</span> marriage, <span class="at">data =</span> df2,</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">index =</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;wave&quot;</span>),</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">effect =</span> <span class="st">&quot;twoways&quot;</span>, <span class="at">model =</span> <span class="st">&quot;within&quot;</span>)</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fe3)</span></code></pre></div>
+<pre><code>## Twoways effects Within Model
+## 
+## Call:
+## plm(formula = wage ~ marriage, data = df2, effect = &quot;twoways&quot;, 
+##     model = &quot;within&quot;, index = c(&quot;id&quot;, &quot;wave&quot;))
+## 
+## Balanced Panel: n = 4, T = 6, N = 24
+## 
+## Residuals:
+##        Min.     1st Qu.      Median     3rd Qu.        Max. 
+## -1.1603e-14 -1.1603e-14  1.1603e-14  1.1603e-14  2.6687e-13 
+## 
+## Coefficients:
+##                   Estimate Std. Error   t-value  Pr(&gt;|t|)    
+## marriagemarried 5.0000e+02 5.9489e-14 8.405e+15 &lt; 2.2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Total Sum of Squares:    375000
+## Residual Sum of Squares: 7.4317e-26
+## R-Squared:      1
+## Adj. R-Squared: 1
+## F-statistic: 7.06433e+31 on 1 and 14 DF, p-value: &lt; 2.22e-16</code></pre>
+<p>And here we go with our 500 marriage wage premium. What we do graphically is</p>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="do">### Plot </span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>zp4 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df2, <span class="fu">aes</span>(wave, wage)) <span class="sc">+</span></span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> wave, <span class="at">y =</span> wage, <span class="at">group =</span> id), <span class="at">lty =</span> <span class="st">&quot;solid&quot;</span>, <span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">lwd =</span> <span class="dv">1</span>) <span class="sc">+</span> </span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>( <span class="fu">aes</span>(<span class="at">x =</span> wave, <span class="at">y =</span> wage, <span class="at">shape =</span> marriage, <span class="at">colour =</span> marriage), </span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">size =</span> <span class="dv">2</span>, <span class="at">stroke =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> wave, <span class="at">y =</span> pt, <span class="at">group =</span> id, <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>), <span class="at">colour =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">lwd =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_linetype_identity</span>(<span class="at">labels =</span> <span class="st">&quot;Counterfactual&quot;</span>, <span class="at">guide =</span> <span class="st">&quot;legend&quot;</span>) <span class="sc">+</span></span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.key =</span> <span class="fu">element_blank</span>(), <span class="at">legend.title =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.position =</span> <span class="fu">c</span>(<span class="fl">0.05</span>,<span class="fl">0.95</span>), <span class="at">legend.justification =</span> <span class="fu">c</span>(<span class="st">&quot;left&quot;</span>, <span class="st">&quot;top&quot;</span>),</span>
+<span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.background =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb46-12"><a href="#cb46-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.box.background =</span> <span class="fu">element_rect</span>(<span class="at">colour =</span> <span class="st">&quot;black&quot;</span>),</span>
+<span id="cb46-13"><a href="#cb46-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.spacing.y =</span> <span class="fu">unit</span>(<span class="sc">-</span><span class="fl">0.1</span>, <span class="st">&quot;cm&quot;</span>))</span>
+<span id="cb46-14"><a href="#cb46-14" aria-hidden="true" tabindex="-1"></a>zp4</span></code></pre></div>
+<p><img src="Panel_part1_files/figure-html/unnamed-chunk-29-1.png" width="672" /></p>
+</div>
+<div id="still-a-very-critical-assumption" class="section level3">
+<h3>Still a very critical assumption</h3>
+<p>In the example above, the twoways FE model works very well. However, adding the control group back in comes with another (relatively strong) assumption:</p>
+<p><strong>Parallel trends between “treatment” and “control” units</strong></p>
+<p>Comparing the 3 waves before the treatment above, this assumption here holds. Both - those who marry and those who never marry - have the same time trend in wages before the “treated” marry.</p>
+<p>However, consider the following example. We still have a marriage premium of 500.</p>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>zp5 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df2, <span class="fu">aes</span>(wave, wage2)) <span class="sc">+</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> wave, <span class="at">y =</span> wage2, <span class="at">group =</span> id), <span class="at">lty =</span> <span class="st">&quot;solid&quot;</span>, <span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">lwd =</span> <span class="dv">1</span>) <span class="sc">+</span> </span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>( <span class="fu">aes</span>(<span class="at">x =</span> wave, <span class="at">y =</span> wage2, <span class="at">shape =</span> marriage, <span class="at">colour =</span> marriage), </span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>              <span class="at">size =</span> <span class="dv">2</span>, <span class="at">stroke =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># geom_line(aes(x = wave, y = pt2, group = id, linetype = &quot;dashed&quot;), colour = &quot;blue&quot;, lwd = 1) +</span></span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># geom_line(aes(x = wave, y = pt2_cr, group = id, linetype = &quot;dashed&quot;), colour = &quot;grey&quot;, lwd = 1, show.legend = FALSE, alpha = 0.7) +</span></span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_linetype_identity</span>(<span class="at">labels =</span> <span class="st">&quot;Counterfactual&quot;</span>, <span class="at">guide =</span> <span class="st">&quot;legend&quot;</span>) <span class="sc">+</span></span>
+<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># scale_alpha_manual(values = c(0.3, 1), guide = &quot;none&quot;) +</span></span>
+<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ylim(3.3, 9.2) + expand_limits(y = c(0, 0)) + </span></span>
+<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb47-11"><a href="#cb47-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;wage&quot;</span>) <span class="sc">+</span></span>
+<span id="cb47-12"><a href="#cb47-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.key =</span> <span class="fu">element_blank</span>(), <span class="at">legend.title =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb47-13"><a href="#cb47-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.position =</span> <span class="fu">c</span>(<span class="fl">0.05</span>,<span class="fl">0.95</span>), <span class="at">legend.justification =</span> <span class="fu">c</span>(<span class="st">&quot;left&quot;</span>, <span class="st">&quot;top&quot;</span>),</span>
+<span id="cb47-14"><a href="#cb47-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.background =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb47-15"><a href="#cb47-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.box.background =</span> <span class="fu">element_rect</span>(<span class="at">colour =</span> <span class="st">&quot;black&quot;</span>),</span>
+<span id="cb47-16"><a href="#cb47-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.spacing.y =</span> <span class="fu">unit</span>(<span class="sc">-</span><span class="fl">0.1</span>, <span class="st">&quot;cm&quot;</span>))</span>
+<span id="cb47-17"><a href="#cb47-17" aria-hidden="true" tabindex="-1"></a>zp5</span></code></pre></div>
+<p><img src="Panel_part1_files/figure-html/unnamed-chunk-30-1.png" width="672" /></p>
+<p>A two-ways FE will now give us:</p>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>fe3 <span class="ot">&lt;-</span> <span class="fu">plm</span>(wage2 <span class="sc">~</span> marriage, <span class="at">data =</span> df2,</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">index =</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;wave&quot;</span>),</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">effect =</span> <span class="st">&quot;twoways&quot;</span>, <span class="at">model =</span> <span class="st">&quot;within&quot;</span>)</span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fe3)</span></code></pre></div>
+<pre><code>## Twoways effects Within Model
+## 
+## Call:
+## plm(formula = wage2 ~ marriage, data = df2, effect = &quot;twoways&quot;, 
+##     model = &quot;within&quot;, index = c(&quot;id&quot;, &quot;wave&quot;))
+## 
+## Balanced Panel: n = 4, T = 6, N = 24
+## 
+## Residuals:
+##    Min. 1st Qu.  Median 3rd Qu.    Max. 
+##     -75     -75       0      75      75 
+## 
+## Coefficients:
+##                 Estimate Std. Error t-value  Pr(&gt;|t|)    
+## marriagemarried  950.000     65.465  14.511 7.881e-10 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Total Sum of Squares:    1443800
+## Residual Sum of Squares: 90000
+## R-Squared:      0.93766
+## Adj. R-Squared: 0.89759
+## F-statistic: 210.583 on 1 and 14 DF, p-value: 7.8808e-10</code></pre>
+<p>The problem: the model does not take into account that the treatment group already had a steeper wage trajectory than the control group. The parallel trends assumption fails.</p>
+<div class="sourceCode" id="cb50"><pre class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>zp5 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df2, <span class="fu">aes</span>(wave, wage2)) <span class="sc">+</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> wave, <span class="at">y =</span> wage2, <span class="at">group =</span> id), <span class="at">lty =</span> <span class="st">&quot;solid&quot;</span>, <span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">lwd =</span> <span class="dv">1</span>) <span class="sc">+</span> </span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>( <span class="fu">aes</span>(<span class="at">x =</span> wave, <span class="at">y =</span> wage2, <span class="at">shape =</span> marriage, <span class="at">colour =</span> marriage), </span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>              <span class="at">size =</span> <span class="dv">2</span>, <span class="at">stroke =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> wave, <span class="at">y =</span> pt2, <span class="at">group =</span> id, <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>), <span class="at">colour =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">lwd =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> wave, <span class="at">y =</span> pt2_cr, <span class="at">group =</span> id, <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>), <span class="at">colour =</span> <span class="st">&quot;grey&quot;</span>, <span class="at">lwd =</span> <span class="dv">1</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_linetype_identity</span>(<span class="at">labels =</span> <span class="st">&quot;Counterfactual&quot;</span>, <span class="at">guide =</span> <span class="st">&quot;legend&quot;</span>) <span class="sc">+</span></span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># scale_alpha_manual(values = c(0.3, 1), guide = &quot;none&quot;) +</span></span>
+<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ylim(3.3, 9.2) + expand_limits(y = c(0, 0)) + </span></span>
+<span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb50-11"><a href="#cb50-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;wage&quot;</span>) <span class="sc">+</span></span>
+<span id="cb50-12"><a href="#cb50-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.key =</span> <span class="fu">element_blank</span>(), <span class="at">legend.title =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb50-13"><a href="#cb50-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.position =</span> <span class="fu">c</span>(<span class="fl">0.05</span>,<span class="fl">0.95</span>), <span class="at">legend.justification =</span> <span class="fu">c</span>(<span class="st">&quot;left&quot;</span>, <span class="st">&quot;top&quot;</span>),</span>
+<span id="cb50-14"><a href="#cb50-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.background =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb50-15"><a href="#cb50-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.box.background =</span> <span class="fu">element_rect</span>(<span class="at">colour =</span> <span class="st">&quot;black&quot;</span>),</span>
+<span id="cb50-16"><a href="#cb50-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.spacing.y =</span> <span class="fu">unit</span>(<span class="sc">-</span><span class="fl">0.1</span>, <span class="st">&quot;cm&quot;</span>))</span>
+<span id="cb50-17"><a href="#cb50-17" aria-hidden="true" tabindex="-1"></a>zp5</span></code></pre></div>
+<p><img src="Panel_part1_files/figure-html/unnamed-chunk-32-1.png" width="672" /></p>
+<p>A possible extension to tackle this problem are fixed effects individual slopes (FEIS) estimators. See the second part.</p>
+</div>
+<div id="difference-in-differences" class="section level3">
+<h3>Difference in Differences</h3>
+<p>The difference-in-differences (DD) design is a very basic and popular design to identify causal treatment effects in a panel data setting.</p>
+<p>The most basic setting, is a <span class="math inline">\(2\times 2\)</span> DD estimator. It consists of a setting where we have 2 groups: a treatment group (<span class="math inline">\(T\)</span>) and control group (<span class="math inline">\(C\)</span>). Each group has been observed at 2 time points: before treatment (<span class="math inline">\(pre\)</span>) and after treatment (<span class="math inline">\(post\)</span>).</p>
+<p>In this setting we can calculate the change in the treatment group: <span class="math display">\[
+\mathrm{E}(\Delta y_{T}) = \mathrm{E}(y_{T}^{post}) - \mathrm{E}(y_{T}^{pre}),
+\]</span></p>
+<p>and likewise in the control group: <span class="math display">\[
+\mathrm{E}(\Delta y_{C}) = \mathrm{E}(y_{C}^{post}) - \mathrm{E}(y_{C}^{pre}).
+\]</span> The simple DD estimator is then the difference between the differences in the treatment group and the differences in the control group:</p>
+<p><span class="math display">\[
+\hat{\delta}_{DD} = \mathrm{E}(\Delta y_{T}) - \mathrm{E}(\Delta y_{C}) = (\mathrm{E}(y_{T}^{post}) - \mathrm{E}(y_{T}^{pre})) - (\mathrm{E}(y_{C}^{post}) - \mathrm{E}(y_{C}^{pre})).
+\]</span></p>
+<p>In our marriage example:</p>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>df2<span class="sc">$</span>marry_post <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>df2<span class="sc">$</span>marry_post[df2<span class="sc">$</span>wave <span class="sc">&gt;=</span> <span class="dv">4</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>y_t_post <span class="ot">&lt;-</span> <span class="fu">mean</span>(df2<span class="sc">$</span>wage[df2<span class="sc">$</span>marry_post <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> df2<span class="sc">$</span>marriage_ever <span class="sc">==</span> <span class="dv">1</span>])</span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>y_t_pre <span class="ot">&lt;-</span> <span class="fu">mean</span>(df2<span class="sc">$</span>wage[df2<span class="sc">$</span>marry_post <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span> df2<span class="sc">$</span>marriage_ever <span class="sc">==</span> <span class="dv">1</span>])</span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a>y_c_post <span class="ot">&lt;-</span> <span class="fu">mean</span>(df2<span class="sc">$</span>wage[df2<span class="sc">$</span>marry_post <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> df2<span class="sc">$</span>marriage_ever <span class="sc">==</span> <span class="dv">0</span>])</span>
+<span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a>y_c_pre <span class="ot">&lt;-</span> <span class="fu">mean</span>(df2<span class="sc">$</span>wage[df2<span class="sc">$</span>marry_post <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span> df2<span class="sc">$</span>marriage_ever <span class="sc">==</span> <span class="dv">0</span>])</span>
+<span id="cb51-9"><a href="#cb51-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-10"><a href="#cb51-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Diff in Diff</span></span>
+<span id="cb51-11"><a href="#cb51-11" aria-hidden="true" tabindex="-1"></a>(y_t_post <span class="sc">-</span> y_t_pre) <span class="sc">-</span> (y_c_post <span class="sc">-</span> y_c_pre)</span></code></pre></div>
+<pre><code>## [1] 500</code></pre>
+<p>In a setting where <span class="math inline">\(T=2\)</span> or in a setting where every observation is treated at the same time, the DD equals the two-ways FE. In general, DD and two-ways DD are often seen as equivalents. However, the situation becomes more complicated when treatment timing varies <span class="citation">(<a href="#ref-GoodmanBacon.2021" role="doc-biblioref">Goodman-Bacon 2021</a>)</span>.</p>
+<p>We can receive the same estimator in a simple regression. Lets assume <span class="math inline">\(D \in {0, 1}\)</span> is a binary indicator of the treatment group and <span class="math inline">\(Post \in {0, 1}\)</span> a binary indicator of pre- or post-treatment period. Then we can get the DD estimator with an interaction between those two two variables:</p>
+<p><span class="math display">\[
+y_{it} = \alpha + \beta_1 D_{i} + \beta_2 Post_{t} + \delta_{DD} (D_{i} \times Post_{t}) + \upsilon_{it}.
+\]</span> the coefficients correspond to:</p>
+<ul>
+<li><p><span class="math inline">\(\alpha\)</span>: average outcome of control group in pre-treatment period</p></li>
+<li><p><span class="math inline">\(\beta_1\)</span>: average difference between treatment and control group in pre-treatment period</p></li>
+<li><p><span class="math inline">\(\beta_2\)</span>: average difference between post- pre-treatment period in control group</p></li>
+<li><p><span class="math inline">\(\delta_{DD}\)</span>: difference between treatment and control group in difference between post- pre-treatment period</p></li>
+</ul>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(wage <span class="sc">~</span> marriage_ever<span class="sc">*</span>marry_post, <span class="at">data =</span> df2))</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = wage ~ marriage_ever * marry_post, data = df2)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+##   -550   -500      0    500    550 
+## 
+## Coefficients:
+##                           Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                 2550.0      224.4  11.366 3.53e-10 ***
+## marriage_ever1              2000.0      317.3   6.304 3.74e-06 ***
+## marry_post                   350.0      317.3   1.103    0.283    
+## marriage_ever1:marry_post    500.0      448.7   1.114    0.278    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 549.5 on 20 degrees of freedom
+## Multiple R-squared:  0.8449, Adjusted R-squared:  0.8217 
+## F-statistic: 36.32 on 3 and 20 DF,  p-value: 2.757e-08</code></pre>
+</div>
+</div>
+<div id="random-effects-estimator" class="section level1">
+<h1>Random effects estimator</h1>
+<p>There is another popular estimation strategy for panel data: the random effects (RE) estimator. The RE estimator is not only popular for panel data but also very commonly used for hierarchical data, where it is usually called a “multilevel model.” More precisely, the RE estimator in the panel context equals a “multilevel model with random intercepts.”</p>
+<p>The RE estimator has two main “advantages” over the FE estimator:</p>
+<ol style="list-style-type: decimal">
+<li><p>It is more efficient if <span class="math inline">\(\mathrm{E}(\alpha_{i} | x_{it}) = 0\)</span>: it has lower standard errors</p></li>
+<li><p>It allows to estimate the effects of time-constant variables</p></li>
+</ol>
+<p>However, it obscures the main advantage of panel data: the relaxation of assumptions for consistency of estimators. The RE model needs the same assumptions as POLS for consistency:</p>
+<ul>
+<li><p><span class="math inline">\(\mathrm{E}(\alpha_{i} | x_{it}) = 0\)</span>: No time-constant unobserved heterogeneity</p></li>
+<li><p><span class="math inline">\(\mathrm{E}(\epsilon_{it} | x_{it}) = 0\)</span>: No time-varying unobserved heterogeneity</p></li>
+</ul>
+<p>The RE model is usually written as:</p>
+<p><span class="math display">\[
+\]</span></p>
+<p>We can also write the RE as q quasi-demeaned estimator:</p>
+<p><span class="math display">\[
+(y_{it} - \lambda\bar{y}_i) = \beta (x_{it} - \lambda\bar{x}_i) + (\epsilon_{it} - \lambda\bar{\epsilon}_i)  
+\]</span> where <span class="math inline">\(\hat{\lambda} = 1 - \sqrt{\frac{\sigma^2_\epsilon}{\sigma^2_\epsilon + T\sigma^2_\alpha}}\)</span>, with <span class="math inline">\(\sigma^2_\epsilon\)</span> denoting the residual variance, and <span class="math inline">\(\sigma^2_\alpha\)</span> denoting the variance of the individual effects <span class="math inline">\(\alpha_i\)</span>.</p>
+<p>The RE (as POLS) is thus a weighted average of between and within estimator. The weights are determined by the residual variance in FE as share of total residual variance:</p>
+<p><span class="math display">\[
+\beta_{RE} = \omega_{GLS} \beta_{FE} + (1-\omega_{GLS}) \beta_{BE},\\
+\omega_{GLS} = \frac{\sigma^2_{\tilde{x}}}{\sigma^2_{\tilde{x}} + \phi^2 (\sigma^2_x-\sigma^2_{\tilde{x}})},\\
+\phi = \sqrt{\frac{\hat{\sigma}^2_{FE}}{\hat{\sigma}^2_{BE}}},
+\]</span></p>
+<p>It thus follows that:</p>
+<ul>
+<li><p><span class="math inline">\(T\)</span> large, <span class="math inline">\(\sigma^2_\alpha\)</span> large, then RE <span class="math inline">\(\rightarrow\)</span> FE</p></li>
+<li><p><span class="math inline">\(\sigma^2_\alpha\)</span> small, then RE <span class="math inline">\(\rightarrow\)</span> POLS</p></li>
+</ul>
+<p>The RE uses all the available information - between and within variance - and weights the two components by its “predictive power.” This makes it the most efficient estimator.</p>
+<p>We could, by the way, do the same for the POLS estimator. Here, however, the weights are just determined by the overall and the within variance in the independent variable: <span class="math display">\[
+\beta_{POLS} = \omega_{OLS} \beta_{FE} + (1-\omega_{OLS}) \beta_{BE},\\
+\omega_{OLS} = \sigma^2_{\tilde{x}} / \sigma^2_x.
+\]</span></p>
+<p>Let’s estimate the RE for the happiness - age example, again using the <code>plm</code> package.</p>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>re1 <span class="ot">&lt;-</span> <span class="fu">plm</span>(happiness <span class="sc">~</span> age, <span class="at">data =</span> df,</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">index =</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;wave&quot;</span>),</span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">effect =</span> <span class="st">&quot;individual&quot;</span>, <span class="at">model =</span> <span class="st">&quot;random&quot;</span>)</span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(re1)</span></code></pre></div>
+<pre><code>## Oneway (individual) effect Random Effect Model 
+##    (Swamy-Arora&#39;s transformation)
+## 
+## Call:
+## plm(formula = happiness ~ age, data = df, effect = &quot;individual&quot;, 
+##     model = &quot;random&quot;, index = c(&quot;id&quot;, &quot;wave&quot;))
+## 
+## Balanced Panel: n = 6, T = 4, N = 24
+## 
+## Effects:
+##                   var std.dev share
+## idiosyncratic 0.03641 0.19081 0.096
+## individual    0.34396 0.58648 0.904
+## theta: 0.8394
+## 
+## Residuals:
+##      Min.   1st Qu.    Median   3rd Qu.      Max. 
+## -1.054061 -0.353296  0.013426  0.316500  0.898703 
+## 
+## Coefficients:
+##              Estimate Std. Error z-value  Pr(&gt;|z|)    
+## (Intercept)  6.933947   1.534054  4.5200 6.183e-06 ***
+## age         -0.015621   0.031277 -0.4994    0.6175    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Total Sum of Squares:    5.1257
+## Residual Sum of Squares: 5.0683
+## R-Squared:      0.011211
+## Adj. R-Squared: -0.033734
+## Chisq: 0.249442 on 1 DF, p-value: 0.61747</code></pre>
+<p>This indicates that there is barely any relation between age and happiness. This is because the within and the between estimates cancel our each other.</p>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">6</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>T <span class="ot">&lt;-</span> <span class="dv">4</span></span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a><span class="do">### Models</span></span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Total line for plot</span></span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>lm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(happiness <span class="sc">~</span> age, <span class="at">data =</span> df)</span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>lm2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(happiness <span class="sc">~</span> age <span class="sc">+</span> cohort, <span class="at">data =</span> df)</span>
+<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a>lm3 <span class="ot">&lt;-</span> <span class="fu">lm</span>(happiness <span class="sc">~</span> age <span class="sc">+</span> idname, <span class="at">data =</span> df)</span>
+<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a>lm4 <span class="ot">&lt;-</span> <span class="fu">lm</span>(m_happiness <span class="sc">~</span> m_age, <span class="at">data =</span> df)</span>
+<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a>re <span class="ot">&lt;-</span> <span class="fu">plm</span>(happiness <span class="sc">~</span> age, df, <span class="at">model =</span> <span class="st">&quot;random&quot;</span>, <span class="at">effect =</span> <span class="st">&quot;individual&quot;</span>)</span>
+<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-11"><a href="#cb57-11" aria-hidden="true" tabindex="-1"></a><span class="do">### Compare POLS, BE, FE, and RE</span></span>
+<span id="cb57-12"><a href="#cb57-12" aria-hidden="true" tabindex="-1"></a>estimates <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">ncol =</span> <span class="dv">3</span>, <span class="at">nrow =</span> <span class="dv">4</span>))</span>
+<span id="cb57-13"><a href="#cb57-13" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(estimates) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Model&quot;</span>, <span class="st">&quot;Intercept&quot;</span>, <span class="st">&quot;slope&quot;</span>)</span>
+<span id="cb57-14"><a href="#cb57-14" aria-hidden="true" tabindex="-1"></a>estimates[<span class="dv">1</span>,] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;POLS&quot;</span>,</span>
+<span id="cb57-15"><a href="#cb57-15" aria-hidden="true" tabindex="-1"></a>                   lm1<span class="sc">$</span>coefficients[<span class="dv">1</span>],</span>
+<span id="cb57-16"><a href="#cb57-16" aria-hidden="true" tabindex="-1"></a>                   lm1<span class="sc">$</span>coefficients[<span class="dv">2</span>])</span>
+<span id="cb57-17"><a href="#cb57-17" aria-hidden="true" tabindex="-1"></a>estimates[<span class="dv">2</span>,] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;BE&quot;</span>,</span>
+<span id="cb57-18"><a href="#cb57-18" aria-hidden="true" tabindex="-1"></a>                   lm4<span class="sc">$</span>coefficients[<span class="dv">1</span>], </span>
+<span id="cb57-19"><a href="#cb57-19" aria-hidden="true" tabindex="-1"></a>                   lm4<span class="sc">$</span>coefficients[<span class="dv">2</span>])</span>
+<span id="cb57-20"><a href="#cb57-20" aria-hidden="true" tabindex="-1"></a>estimates[<span class="dv">3</span>,] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;FE&quot;</span>,</span>
+<span id="cb57-21"><a href="#cb57-21" aria-hidden="true" tabindex="-1"></a>                   lm3<span class="sc">$</span>coefficients[<span class="dv">1</span>] <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> lm3<span class="sc">$</span>coefficients[<span class="dv">3</span>]  <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> lm3<span class="sc">$</span>coefficients[<span class="dv">4</span>] </span>
+<span id="cb57-22"><a href="#cb57-22" aria-hidden="true" tabindex="-1"></a>                   <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> lm3<span class="sc">$</span>coefficients[<span class="dv">5</span>]  <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> lm3<span class="sc">$</span>coefficients[<span class="dv">6</span>]  <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> lm3<span class="sc">$</span>coefficients[<span class="dv">7</span>], </span>
+<span id="cb57-23"><a href="#cb57-23" aria-hidden="true" tabindex="-1"></a>                   lm3<span class="sc">$</span>coefficients[<span class="dv">2</span>])</span>
+<span id="cb57-24"><a href="#cb57-24" aria-hidden="true" tabindex="-1"></a>estimates[<span class="dv">4</span>,] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;RE&quot;</span>,</span>
+<span id="cb57-25"><a href="#cb57-25" aria-hidden="true" tabindex="-1"></a>                   re<span class="sc">$</span>coefficients[<span class="dv">1</span>], </span>
+<span id="cb57-26"><a href="#cb57-26" aria-hidden="true" tabindex="-1"></a>                   re<span class="sc">$</span>coefficients[<span class="dv">2</span>])</span>
+<span id="cb57-27"><a href="#cb57-27" aria-hidden="true" tabindex="-1"></a>estimates[, <span class="sc">-</span><span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fu">apply</span>(estimates[, <span class="sc">-</span><span class="dv">1</span>], <span class="dv">2</span>, <span class="at">FUN =</span> <span class="cf">function</span>(x) <span class="fu">as.numeric</span>(x))</span>
+<span id="cb57-28"><a href="#cb57-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-29"><a href="#cb57-29" aria-hidden="true" tabindex="-1"></a>newdf <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">ncol =</span> <span class="dv">2</span>, <span class="at">nrow =</span> <span class="dv">2</span>))</span>
+<span id="cb57-30"><a href="#cb57-30" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(newdf) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>)</span>
+<span id="cb57-31"><a href="#cb57-31" aria-hidden="true" tabindex="-1"></a>newdf<span class="sc">$</span>x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">min</span>(df<span class="sc">$</span>age), <span class="fu">max</span>(df<span class="sc">$</span>age))</span>
+<span id="cb57-32"><a href="#cb57-32" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(estimates)){</span>
+<span id="cb57-33"><a href="#cb57-33" aria-hidden="true" tabindex="-1"></a>  newdf<span class="sc">$</span>y <span class="ot">&lt;-</span> estimates[i, <span class="st">&quot;Intercept&quot;</span>] <span class="sc">+</span> estimates[i, <span class="st">&quot;slope&quot;</span>]<span class="sc">*</span>newdf<span class="sc">$</span>x</span>
+<span id="cb57-34"><a href="#cb57-34" aria-hidden="true" tabindex="-1"></a>  newdf<span class="sc">$</span>Model <span class="ot">&lt;-</span> estimates[i, <span class="st">&quot;Model&quot;</span>]</span>
+<span id="cb57-35"><a href="#cb57-35" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(i <span class="sc">==</span> <span class="dv">1</span>){</span>
+<span id="cb57-36"><a href="#cb57-36" aria-hidden="true" tabindex="-1"></a>    pred <span class="ot">&lt;-</span> newdf</span>
+<span id="cb57-37"><a href="#cb57-37" aria-hidden="true" tabindex="-1"></a>  }<span class="cf">else</span>{pred <span class="ot">&lt;-</span> <span class="fu">rbind</span>(pred, newdf)}</span>
+<span id="cb57-38"><a href="#cb57-38" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb57-39"><a href="#cb57-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-40"><a href="#cb57-40" aria-hidden="true" tabindex="-1"></a>estimates<span class="sc">$</span>Model <span class="ot">&lt;-</span> <span class="fu">factor</span>(estimates<span class="sc">$</span>Model, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;POLS&quot;</span>, <span class="st">&quot;BE&quot;</span>, <span class="st">&quot;FE&quot;</span>, <span class="st">&quot;RE&quot;</span>))</span>
+<span id="cb57-41"><a href="#cb57-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-42"><a href="#cb57-42" aria-hidden="true" tabindex="-1"></a>gg_color_hue <span class="ot">&lt;-</span> <span class="cf">function</span>(n) {</span>
+<span id="cb57-43"><a href="#cb57-43" aria-hidden="true" tabindex="-1"></a>  hues <span class="ot">=</span> <span class="fu">seq</span>(<span class="dv">15</span>, <span class="dv">375</span>, <span class="at">length =</span> n <span class="sc">+</span> <span class="dv">1</span>)</span>
+<span id="cb57-44"><a href="#cb57-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hcl</span>(<span class="at">h =</span> hues, <span class="at">l =</span> <span class="dv">65</span>, <span class="at">c =</span> <span class="dv">100</span>)[<span class="dv">1</span><span class="sc">:</span>n]</span>
+<span id="cb57-45"><a href="#cb57-45" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb57-46"><a href="#cb57-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-47"><a href="#cb57-47" aria-hidden="true" tabindex="-1"></a>zp6 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df, <span class="fu">aes</span>(age, happiness)) <span class="sc">+</span></span>
+<span id="cb57-48"><a href="#cb57-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> happiness, <span class="at">shape =</span> idname),</span>
+<span id="cb57-49"><a href="#cb57-49" aria-hidden="true" tabindex="-1"></a>             <span class="at">colour =</span> <span class="fu">rep</span>(<span class="fu">gg_color_hue</span>(<span class="dv">6</span>), <span class="at">each =</span> T),</span>
+<span id="cb57-50"><a href="#cb57-50" aria-hidden="true" tabindex="-1"></a>              <span class="at">size =</span> <span class="dv">2</span>, <span class="at">stroke =</span> <span class="dv">1</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb57-51"><a href="#cb57-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">&#39;lm&#39;</span>, <span class="at">formula =</span> y <span class="sc">~</span> x, <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb57-52"><a href="#cb57-52" aria-hidden="true" tabindex="-1"></a>              <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>, <span class="fu">aes</span>(<span class="at">group =</span> idname), <span class="at">colour =</span> <span class="fu">alpha</span>(<span class="st">&quot;gray&quot;</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb57-53"><a href="#cb57-53" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">data =</span> estimates, <span class="at">lwd =</span> <span class="fl">1.2</span>,</span>
+<span id="cb57-54"><a href="#cb57-54" aria-hidden="true" tabindex="-1"></a>              <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">intercept =</span> Intercept, <span class="at">slope =</span> slope, </span>
+<span id="cb57-55"><a href="#cb57-55" aria-hidden="true" tabindex="-1"></a>                            <span class="at">colour =</span> Model, <span class="at">linetype =</span> Model)) <span class="sc">+</span></span>
+<span id="cb57-56"><a href="#cb57-56" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_linetype_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;solid&quot;</span>, <span class="st">&quot;twodash&quot;</span>, <span class="st">&quot;longdash&quot;</span>, <span class="st">&quot;dotdash&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb57-57"><a href="#cb57-57" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="fl">3.3</span>, <span class="fl">9.2</span>) <span class="sc">+</span> <span class="fu">expand_limits</span>(<span class="at">y =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>)) <span class="sc">+</span> </span>
+<span id="cb57-58"><a href="#cb57-58" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb57-59"><a href="#cb57-59" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.key =</span> <span class="fu">element_blank</span>(), <span class="at">legend.title =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb57-60"><a href="#cb57-60" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.position =</span> <span class="fu">c</span>(<span class="fl">0.95</span>,<span class="fl">0.05</span>), <span class="at">legend.justification =</span> <span class="fu">c</span>(<span class="st">&quot;right&quot;</span>, <span class="st">&quot;bottom&quot;</span>),</span>
+<span id="cb57-61"><a href="#cb57-61" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.background =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb57-62"><a href="#cb57-62" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.box.background =</span> <span class="fu">element_rect</span>(<span class="at">colour =</span> <span class="st">&quot;black&quot;</span>),</span>
+<span id="cb57-63"><a href="#cb57-63" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>))</span>
+<span id="cb57-64"><a href="#cb57-64" aria-hidden="true" tabindex="-1"></a>zp6</span></code></pre></div>
+<p><img src="Panel_part1_files/figure-html/unnamed-chunk-36-1.png" width="672" /></p>
+<p>There are two main problems with the RE estimator:</p>
+<ol style="list-style-type: decimal">
+<li><p>Interpretation: how to interpret an estimator based on a mix of <strong>within</strong> and <strong>between</strong> variance?</p></li>
+<li><p>Strong assumptions for consistency of no time-constant unobserved heterogeneity: very likely to be biased in practice</p></li>
+</ol>
+<p>I personally would generally suggest against the use of RE. Rather, ask yourself whether you are interested in a between or a within question and use the theoretically relevant method.</p>
+<div id="hausman-test" class="section level3">
+<h3>Hausman test</h3>
+<p>If one has a strong reason to use the RE, it is at least advisable to perform a specification test. The Hausman test <span class="citation">(<a href="#ref-Hausman.1978.0" role="doc-biblioref">Hausman 1978</a>)</span> is the most common specification test to test the consistency of the RE estimator.</p>
+<p><span class="math display">\[
+H = (\hat{\boldsymbol{\mathbf{\beta}}}_1 - \hat{\boldsymbol{\mathbf{\beta}}}_0)^\intercal (N^{-1} {\boldsymbol{\mathbf{V}}}_{\hat{\boldsymbol{\mathbf{\beta}}}_1 - \hat{\boldsymbol{\mathbf{\beta}}}_0})^{-1} (\hat{\boldsymbol{\mathbf{\beta}}}_1 - \hat{\boldsymbol{\mathbf{\beta}}}_0),
+\]</span> where <span class="math inline">\(\hat{\boldsymbol{\mathbf{\beta}}}_1\)</span> is consistent, and <span class="math inline">\(\hat{\boldsymbol{\mathbf{\beta}}}_0\)</span> is efficient, <span class="math inline">\(N^{-1} {\boldsymbol{\mathbf{V}}}_{\hat{\boldsymbol{\mathbf{\beta}}}_1 - \hat{\boldsymbol{\mathbf{\beta}}}_0} = \mathrm{Var}(\hat{\boldsymbol{\mathbf{\beta}}}_1 - \hat{\boldsymbol{\mathbf{\beta}}}_0)\)</span>, and with RE being fully efficient: <span class="math inline">\(\mathrm{Var}(\hat{\boldsymbol{\mathbf{\beta}}}_1 - \hat{\boldsymbol{\mathbf{\beta}}}_0) = \mathrm{Var}(\hat{\boldsymbol{\mathbf{\beta}}}_1) - \mathrm{Var}(\hat{\boldsymbol{\mathbf{\beta}}}_0)\)</span>.</p>
+<p>This basically perform a test of the Null H<span class="math inline">\(_0\)</span>: <span class="math inline">\(\hat{\beta}_{FE} = \hat{\beta}_{RE}\)</span>, and shows us if the two estimates differ significantly.</p>
+<p><strong>Use FE if Hausman test significant, and H<span class="math inline">\(_0\)</span> rejected.</strong></p>
+<p>Let’s check in our example:</p>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">phtest</span>(fe1, re1)</span></code></pre></div>
+<pre><code>## 
+##  Hausman Test
+## 
+## data:  happiness ~ age
+## chisq = 26.063, df = 1, p-value = 3.304e-07
+## alternative hypothesis: one model is inconsistent</code></pre>
+<p>The test is highly significant and thus suggest that we should use the FE rather than the RE.</p>
+<p>Obviously, this test is not helpful if both estimates are biased.</p>
+</div>
+</div>
+<div id="hybrid-models" class="section level1">
+<h1>Hybrid models</h1>
+<p>One of the stated advantages of the RE is that we can also estimate the effect for time-constant variables. However, there is an easy way of combining the benefits of both worlds: we can just estimate the within effects of time-varying variables in a RE model.</p>
+<p>This is often called the correlated random effects (CRE) model <span class="citation">(<a href="#ref-Chamberlain.1982" role="doc-biblioref">Chamberlain 1982</a>; <a href="#ref-Mundlak.1978.0" role="doc-biblioref">Mundlak 1978</a>)</span>. In sociology, the very similar hybrid model <span class="citation">(<a href="#ref-Allison.2009.128" role="doc-biblioref">Allison 2009</a>)</span> is more common.</p>
+<p>In general, we just add the person specific means as additional covariates, and estimate a random effects model:</p>
+<p><span class="math display">\[
+y_{it} = \alpha + \beta x_{it} + \gamma \bar{x}_{i} + \xi_{it}  
+\]</span></p>
+<p>We split up the individual effect <span class="math inline">\(\alpha_i = \gamma \bar{x}_{i} + \eta_i\)</span>, and thus only control partially for time-constant heterogeneity by adding the person-specific means <span class="math inline">\(\bar{x}_{i}\)</span>.</p>
+<p><strong><span class="math inline">\(\hat{\beta}\)</span> gives us the within estimate for <span class="math inline">\(x\)</span></strong></p>
+<p>See our happiness example</p>
+<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Person specific means</span></span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>m_age <span class="ot">&lt;-</span> <span class="fu">ave</span>(df<span class="sc">$</span>age,</span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>                df<span class="sc">$</span>id,</span>
+<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">FUN =</span> mean)</span>
+<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-6"><a href="#cb60-6" aria-hidden="true" tabindex="-1"></a>cre <span class="ot">&lt;-</span> <span class="fu">plm</span>(happiness <span class="sc">~</span> age <span class="sc">+</span> m_age, <span class="at">data =</span> df,</span>
+<span id="cb60-7"><a href="#cb60-7" aria-hidden="true" tabindex="-1"></a>           <span class="at">index =</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;wave&quot;</span>),</span>
+<span id="cb60-8"><a href="#cb60-8" aria-hidden="true" tabindex="-1"></a>           <span class="at">effect =</span> <span class="st">&quot;individual&quot;</span>, <span class="at">model =</span> <span class="st">&quot;random&quot;</span>)</span>
+<span id="cb60-9"><a href="#cb60-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-10"><a href="#cb60-10" aria-hidden="true" tabindex="-1"></a><span class="fu">screenreg</span>(<span class="fu">list</span>(fe1, btw2, re, cre), <span class="at">digits =</span> <span class="dv">3</span>,</span>
+<span id="cb60-11"><a href="#cb60-11" aria-hidden="true" tabindex="-1"></a>          <span class="at">custom.model.names =</span> <span class="fu">c</span>(<span class="st">&quot;FE&quot;</span>, <span class="st">&quot;BTW&quot;</span>, <span class="st">&quot;RE&quot;</span>, <span class="st">&quot;CRE&quot;</span>))</span></code></pre></div>
+<pre><code>## 
+## ==========================================================
+##              FE          BTW        RE          CRE       
+## ----------------------------------------------------------
+## age          -0.148 ***   0.122 **  -0.016      -0.148 ***
+##              (0.017)     (0.018)    (0.031)     (0.017)   
+## (Intercept)               0.733      6.934 ***   0.733    
+##                          (0.835)    (1.534)     (0.835)   
+## m_age                                            0.270 ***
+##                                                 (0.025)   
+## ----------------------------------------------------------
+## R^2           0.810       0.922      0.011       0.851    
+## Adj. R^2      0.743       0.903     -0.034       0.837    
+## Num. obs.    24           6         24          24        
+## s_idios                              0.191       0.191    
+## s_id                                 0.586       0.586    
+## ==========================================================
+## *** p &lt; 0.001; ** p &lt; 0.01; * p &lt; 0.05</code></pre>
+<p>The estimate for <span class="math inline">\(\beta_{CRE}\)</span> equals the within effect. Note that the coefficient for the mean does not equal the between effect. It equals <span class="math inline">\(\hat{\beta}_{BTW} - \hat{\beta}_{FE}\)</span>. This differs from <span class="citation"><a href="#ref-Allison.2009.128" role="doc-biblioref">Allison</a> (<a href="#ref-Allison.2009.128" role="doc-biblioref">2009</a>)</span> hybrid model.</p>
+<p>For consistency of <span class="math inline">\(\hat{\beta}_x\)</span> we only need <span class="math inline">\(\mathrm{E}(\epsilon_{it} | x_{i}, \bar{x}_{i}) = 0\)</span>: equals the FE assumption for variables additionally included as person-specific means. Usually, one would include person-specific means for all time-varying <span class="math inline">\(\boldsymbol{\mathbf{x}}\)</span> (except <span class="math inline">\(\mu_t\)</span> in case of a twoways specification).</p>
+<p>Note that the CRE can also be quite helpful in the case of non-linear models.</p>
+</div>
+<div id="statistical-inference" class="section level1">
+<h1>Statistical inference</h1>
+<p>The standard errors we have seen so far, were conventional standard error, not taking into account the panel structure.</p>
+<p>In the case of a simple linear regression of the form <span class="math inline">\(\boldsymbol{\mathbf{y}} = \boldsymbol{\mathbf{X}} \boldsymbol{\mathbf{\beta }}+ \boldsymbol{\mathbf{\upsilon}}\)</span> with the coefficients calculated by OLS <span class="math inline">\(\hat{\boldsymbol{\mathbf{\beta}}} = (\boldsymbol{\mathbf{X}}^\intercal\boldsymbol{\mathbf{X}})^{-1}\boldsymbol{\mathbf{X}}^\intercal \boldsymbol{\mathbf{y}}\)</span>, the covariance matrix is usually calculated as:</p>
+<p><span class="math display">\[
+\mathrm{Var}(\hat{\boldsymbol{\mathbf{\beta}}}) = \hat{\sigma}^2(\boldsymbol{\mathbf{X}}^\intercal \boldsymbol{\mathbf{X}})^{-1},
+\]</span> where <span class="math inline">\(\hat{\sigma}^2\)</span> is the estimated error variance:</p>
+<p><span class="math display">\[
+\hat{\sigma}^2 = \frac{1}{N-K}\sum^N_{i=1}(\hat\upsilon_i)^2
+\]</span></p>
+<p>However, with panel data, the idiosyncratic errors are probably:</p>
+<ul>
+<li><p>heteroskedastic: have a non-constant variance</p></li>
+<li><p>autocorrelated: error in one period correlate with errors in other periods</p></li>
+</ul>
+<p><strong>The conventional errors (as reported in <code>lm()</code> and <code>plm()</code>) are thus likely to be underestimated.</strong></p>
+<p>The easiest solution is to estimate panel-robust standard errors <span class="citation">(<a href="#ref-Millo.2017" role="doc-biblioref"><strong>Millo.2017?</strong></a>; <a href="#ref-Wooldridge.2010.384" role="doc-biblioref">Wooldridge 2010</a>)</span>.</p>
+<p>There are various ways for correcting heteroskedastic and autocorrelated standard errors. The most common version is based on work by Arellano and White and takes the form:</p>
+<p><span class="math display">\[
+\mathrm{Var}(\hat{\boldsymbol{\mathbf{\beta}}}_{FE}) = (\tilde{\boldsymbol{\mathbf{X}}}^\intercal \tilde{\boldsymbol{\mathbf{X}}})^{-1} 
+(\sum_{i=1}^N \tilde{\boldsymbol{\mathbf{X}}}^\intercal_i \hat{\tilde{\boldsymbol{\mathbf{\epsilon}}}}_i \hat{\tilde{\boldsymbol{\mathbf{\epsilon}}}}_i^\intercal \tilde{\boldsymbol{\mathbf{X}}}_i) 
+\hat{\sigma}^2(\tilde{\boldsymbol{\mathbf{X}}}^\intercal \tilde{\boldsymbol{\mathbf{X}}})^{-1},
+\]</span></p>
+<p>where <span class="math inline">\(\hat{\tilde{\boldsymbol{\mathbf{\epsilon}}}}_i\)</span> is the vector of FE residuals for each person <span class="math inline">\(i\)</span>, and <span class="math inline">\(\tilde{\boldsymbol{\mathbf{X}}}\)</span> are the transformed data.</p>
+<p>to calculate thos standard errors, we can use the <code>sandwich</code> and <code>coeftest</code> packages. For more information on the various types and options in the command see <span class="citation">(<a href="#ref-Millo.2017" role="doc-biblioref"><strong>Millo.2017?</strong></a>)</span>.</p>
+<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fe1)</span></code></pre></div>
+<pre><code>## Oneway (individual) effect Within Model
+## 
+## Call:
+## plm(formula = happiness ~ age, data = df, effect = &quot;individual&quot;, 
+##     model = &quot;within&quot;, index = c(&quot;id&quot;, &quot;wave&quot;))
+## 
+## Balanced Panel: n = 6, T = 4, N = 24
+## 
+## Residuals:
+##      Min.   1st Qu.    Median   3rd Qu.      Max. 
+## -0.287907 -0.118754  0.035834  0.141721  0.275941 
+## 
+## Coefficients:
+##      Estimate Std. Error t-value  Pr(&gt;|t|)    
+## age -0.148245   0.017418 -8.5108 1.556e-07 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Total Sum of Squares:    3.2561
+## Residual Sum of Squares: 0.61893
+## R-Squared:      0.80992
+## Adj. R-Squared: 0.74283
+## F-statistic: 72.4345 on 1 and 17 DF, p-value: 1.5556e-07</code></pre>
+<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get variance covariance matrix directly</span></span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>vcovx <span class="ot">&lt;-</span> <span class="fu">vcovHC</span>(fe1, <span class="at">cluster =</span> <span class="st">&quot;group&quot;</span>, <span class="at">method =</span> <span class="st">&quot;arellano&quot;</span>, <span class="at">type =</span> <span class="st">&quot;HC3&quot;</span>)</span>
+<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb64-4"><a href="#cb64-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Get model output with the robust SEs</span></span>
+<span id="cb64-5"><a href="#cb64-5" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(fe1, <span class="at">vcov =</span> <span class="cf">function</span>(x) <span class="fu">vcovHC</span>(x, <span class="at">method =</span> <span class="st">&quot;arellano&quot;</span>, <span class="at">type =</span> <span class="st">&quot;HC3&quot;</span>))</span></code></pre></div>
+<pre><code>## 
+## t test of coefficients:
+## 
+##      Estimate Std. Error t value  Pr(&gt;|t|)    
+## age -0.148245   0.016494 -8.9879 7.223e-08 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>In this case the robust SEs are actually smaller!! This is because this stylized example does not include heteroskedasticity or autocorrelation. However, we will see the difference with some real data.</p>
+<p>One hint for large data: <code>coeftest</code> and <code>sandwich</code> can get slow on large data. It can then be more efficient to use the package <code>lfe</code> right away. The <code>felm</code> requires a four part formula of the form <code>y ~ x1 + x2 | f1 + f2 | (Q|W ~ x3+x4) | clu1 + clu2</code>, where “x” are ordinary covariates, “f” are the fixed effects, the third part allows to instrument covariates, and “clu” are clusters for robust standard errors:</p>
+<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>fe1_2 <span class="ot">&lt;-</span> <span class="fu">felm</span>(happiness <span class="sc">~</span> age <span class="sc">|</span> id <span class="sc">|</span> <span class="dv">0</span> <span class="sc">|</span> id,</span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a>               <span class="at">data =</span> df, <span class="at">cmethod =</span> <span class="st">&#39;cgm2&#39;</span>)</span>
+<span id="cb66-3"><a href="#cb66-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fe1_2)</span></code></pre></div>
+<pre><code>## 
+## Call:
+##    felm(formula = happiness ~ age | id | 0 | id, data = df, cmethod = &quot;cgm2&quot;) 
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.28791 -0.11875  0.03583  0.14172  0.27594 
+## 
+## Coefficients:
+##     Estimate Cluster s.e. t value Pr(&gt;|t|)    
+## age -0.14824      0.01711  -8.665 0.000338 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.1908 on 17 degrees of freedom
+## Multiple R-squared(full model): 0.9918   Adjusted R-squared: 0.9889 
+## Multiple R-squared(proj model): 0.8099   Adjusted R-squared: 0.7428 
+## F-statistic(full model, *iid*):344.1 on 6 and 17 DF, p-value: &lt; 2.2e-16 
+## F-statistic(proj model): 75.08 on 1 and 5 DF, p-value: 0.0003384</code></pre>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1 class="unnumbered">References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Allison.2009.128" class="csl-entry">
+Allison, Paul David. 2009. <em><span>Fixed Effects Regression Models</span></em>. Vol. 160. <span class="nocase">Quantitative Applications in the Social Sciences</span>. Los Angeles: Sage.
+</div>
+<div id="ref-Chamberlain.1982" class="csl-entry">
+Chamberlain, Gary. 1982. <span>“<span class="nocase">Multivariate Regression Models for Panel Data</span>.”</span> <em><span>Journal of Econometrics</span></em> 18 (1): 5–46. <a href="https://doi.org/10.1016/0304-4076(82)90094-X">https://doi.org/10.1016/0304-4076(82)90094-X</a>.
+</div>
+<div id="ref-GoodmanBacon.2021" class="csl-entry">
+Goodman-Bacon, Andrew. 2021. <span>“<span class="nocase">Difference-in-differences with variation in treatment timing</span>.”</span> <em><span>Journal of Econometrics</span></em> 225 (2): 254–77. <a href="https://doi.org/10.1016/j.jeconom.2021.03.014">https://doi.org/10.1016/j.jeconom.2021.03.014</a>.
+</div>
+<div id="ref-Hausman.1978.0" class="csl-entry">
+Hausman, Jerry A. 1978. <span>“<span class="nocase">Specification Tests in Econometrics</span>.”</span> <em><span>Econometrica</span></em> 46 (6): 1251–71. <a href="https://doi.org/10.2307/1913827">https://doi.org/10.2307/1913827</a>.
+</div>
+<div id="ref-Ludwig.2018.0" class="csl-entry">
+Ludwig, Volker, and Josef Brüderl. 2018. <span>“<span class="nocase">Is There a Male Marital Wage Premium? New Evidence from the United States</span>.”</span> <em><span>American Sociological Review</span></em> 83 (4): 744–70. <a href="https://doi.org/10.1177/0003122418784909">https://doi.org/10.1177/0003122418784909</a>.
+</div>
+<div id="ref-Mundlak.1978.0" class="csl-entry">
+Mundlak, Yair. 1978. <span>“<span class="nocase">On the Pooling of Time Series and Cross Section Data</span>.”</span> <em><span>Econometrica</span></em> 46 (1): 69. <a href="https://doi.org/10.2307/1913646">https://doi.org/10.2307/1913646</a>.
+</div>
+<div id="ref-Wooldridge.2010.384" class="csl-entry">
+Wooldridge, Jeffrey M. 2010. <em><span class="nocase">Econometric Analysis of Cross Section and Panel Data</span></em>. Cambridge, Mass.: <span>MIT Press</span>.
+</div>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = false;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

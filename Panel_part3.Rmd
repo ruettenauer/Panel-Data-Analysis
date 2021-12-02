@@ -1,0 +1,160 @@
+---
+title: "Exercise"
+author: "Tobias Rüttenauer"
+date: "December 03, 2021"
+output_dir: docs
+output: 
+  html_document:
+    theme: flatly
+    highlight: haddock
+    code_folding: show
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
+    toc_depth: 2
+theme: united
+bibliography: Panel.bib
+link-citations: yes
+---
+
+### Required packages
+
+```{r, message = FALSE, warning = FALSE, results = 'hide'}
+pkgs <- c("plm", "feisr", "panelView", "texreg", "tidyr", "haven", "dplyr", "ggplot2", "ggforce") 
+lapply(pkgs, require, character.only = TRUE)
+```
+
+### Session info
+
+```{r}
+sessionInfo()
+
+```
+  
+### Load data
+
+For the purpose of this exercise, we will use a real-world data set. However, instead of constructing our own data, we use a shortcut and use data from the replication package of @Hospido.2012. The replication package can be found [here](http://qed.econ.queensu.ca/jae/datasets/hospido001/).
+
+THis is an unbalanced panel with 32,066 observations and 2066 individuals for the period 1968–1993 of the PSID. It consists of male heads aged 25–55 with at least 9 years of usable wages data.
+
+
+```{r}
+# Load stata file
+data.df <- read_dta("_data/h-data.dta")
+
+# Lets order this
+names <- names(data.df)
+names <- c("pid", "year", names[-which(names %in% c("pid", "year"))])
+data.df <- data.df[, names]
+
+data.df <- data.df[order(data.df$pid, data.df$year), ]
+
+```
+
+
+| variable name   |   description|
+|-----------------|-------------------------------------------------------|
+| pid             |   INDIVIDUAL IDENTIFIER|
+| year            |   YEAR OF INTERVIEW|
+| age             |   AGE OF INDIVIDUAL|
+| white           |   WHITE DUMMY|
+| dropout         |   DROPOUT DUMMY|
+| grad            |   GRADUATE DUMMY|
+| college         |   COLLEGE DUMMY|
+| married         |   MARRIED DUMMY|
+| child           |   NUMBER OF CHILDREN|
+| fsize           |   FAMILY SIZE|
+| hours           |   YEARLY HOURS OF WORK|
+| logwages        |   LOG OF REAL ANNUAL WAGES|
+| changejob       |   JOB CHANGE DUMMY|
+| ten1            |   TENURE DUMMY less than a year|
+| ten2            |   TENURE DUMMY a year|
+| ten3            |   TENURE DUMMY 2-3 years|
+| ten4            |   TENURE DUMMY 4 through 9 years|
+| ten5            |   TENURE DUMMY 10 through 19 years|
+| ten6            |   TENURE DUMMY 20 years or more|
+| profes          |   PROFESSIONAL, TECHNICAL, AND KINDRED WORKERS DUMMY|
+| admin           |   MANAGERS AND ADMINISTRATORS DUMMY|
+| sales           |   CLERICAL AND SALES WORKERS DUMMY|
+| crafts          |   CRAFTSMAN AND KINDRED WORKERS DUMMY|
+| operat          |   OPERATIVES WORKERS DUMMY|
+| servic          |   LABORERS AND SERVICES WORKERS DUMMY|
+| smsa            |   SMSA (Standard Metropolitan Statistical Area) DUMMY|
+| neast           |   NORTH-EAST DUMMY|
+| ncentr          |   NORTH-CENTRAL DUMMY|
+| south           |   SOUTH DUMMY|
+| west            |   WEST DUMMY|
+
+
+
+# Exercise 1
+
+Can we use this dataset to replicate our earlier analysis on the marital wage premium? What might be a problem here?
+
+```{r}
+
+```
+
+
+# Exercise 2
+
+However, we do something similar: is there a fatherhood wage premium? In other words, do men experience an increase in wages when they become fathers?
+
+    * Restrict the age at the start (first wage) to people aged 25-35
+    
+```{r}
+
+```
+    
+
+    * Use number of children to contruct a binary indicator of wether the is a child in the household or not
+    
+```{r}
+
+```
+    
+    * Make sure we start only with men who are not yet fathers.
+    
+```{r}
+
+```
+
+__Note: this feels like dropping a lot of information! However, it makes sense if we want to correctly identify the effect of interest.__
+
+    * Do we need to drop observations where people go from child to no child?
+    
+```{r}
+
+```    
+
+    * Calculate the effect of having a child on th wage of men (including controls if reasonable). 
+    
+    * Calculate effects for POLS, RE, and FE (if you have some extra time, also FEIS). (#Hint for feis: it needs a class `data.frame` as input data)
+    
+```{r}
+
+```
+    
+    
+    * Compare using Texreg.
+
+```{r}
+
+```
+  
+    * Interpret the results 
+
+
+
+  
+   * Try to perform a placebo test: what happens if you use the "lead" of becoming father. Why is this an interesting test?
+   
+```{r}
+
+```
+
+
+
+# References
+  

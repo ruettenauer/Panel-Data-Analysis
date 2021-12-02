@@ -1,0 +1,342 @@
+---
+title: "2) Extensions"
+author: "Tobias Rüttenauer"
+date: "December 03, 2021"
+output_dir: docs
+output: 
+  html_document:
+    theme: flatly
+    highlight: haddock
+    code_folding: show
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
+    toc_depth: 2
+theme: united
+bibliography: Panel.bib
+link-citations: yes
+---
+
+\newcommand{\Cov}{\mathrm{Cov}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\tr}{\mathrm{tr}}
+\newcommand{\plim}{\operatornamewithlimits{plim}}
+\newcommand{\diag}{\mathrm{diag}}
+\newcommand{\E}{\mathrm{E}}
+\newcommand{\Prob}{\mathrm{Prob}}
+\newcommand{\bm}[1]{\boldsymbol{\mathbf{#1}}}
+
+### Required packages
+
+```{r, message = FALSE, warning = FALSE, results = 'hide'}
+pkgs <- c("plm", "feisr", "panelView", "texreg", "tidyr", "dplyr", "ggplot2", "ggforce") 
+lapply(pkgs, require, character.only = TRUE)
+```
+
+### Session info
+
+```{r}
+sessionInfo()
+
+```
+
+# Outline
+
+* Fixed Effects Individual Slopes
+
+* Difference-in-Differences
+
+* Non-linear models
+
+
+# Fixed Effects Individual Slopes (FEIS)
+
+
+Remeber that we have to make the parallel trends assumption in twoways FE models. A violation of the parallel trends assumption leads to biased estimates. Usually, when controlling for time or time fixed effects, we make the assumption that every observation experiences the same "effect of time".
+
+However, we can relax this assumption by giving each individual their own intercept __and__ their own slope.
+
+The fixed effects individual slope (FEIS) estimator is a more general version of the well-known fixed effects estimator (FE), which allows to control for heterogeneous slopes in addition to time-constant heterogeneity [e.g. @Bruderl.2015.387; @Polachek.1994.0; @Ruttenauer.2020; @Wooldridge.2010.384]. Formally, the FEIS estimator can be expressed as 
+
+$$
+\begin{align} 
+\bm y_{i} =& \bm X_{i}\bm\beta + \bm W_i \bm\alpha_i + \bm \epsilon_{i},
+\end{align}
+$$
+where $\bm y_{i}$ is $T \times 1$, $\bm X_{i}$ is $T \times K$, and $\bm\epsilon_{i}$ is $T \times 1$. $\bm W_i$ is a $T \times J$ matrix of slope variables, and $\bm\alpha_i$ a $J \times 1$ vector of individual-specific slope parameters, for $J$ slope parameters including a constant term. If $\bm W_i$ consists of a constant term only, $\bm W_i = \bm 1$, thus $\bm\alpha_i$ reduces to $\alpha_{i1}$, and the above equation represents the well-known formula of a conventional FE model with individual fixed effects.
+
+As with the conventional FE, FEIS can be estimated using `lm()` by including $N-1$ individual-specific dummies and interaction terms of each slope variable with the $N-1$ individual-specific dummies ($(N-1) *J$ controls). This is however highly inefficient. As with the conventional FE estimator, we can achieve the same result by running an `lm()` on pre-transformed data. Therefore, specify the 'residual maker' matrix $\bm M_i = \bm I_T - \bm W_i(\bm W^\intercal_i \bm W_i)^{-1}\bm W^\intercal_i$, and estimate
+$$
+\begin{align} 
+y_{it} - \hat{y}_{it} =& (\bm x_{it} - \hat{\bm x}_{it})\bm\beta + \epsilon_{it} - \hat{\epsilon}_{it}, \\
+\bm M_i \bm y_i =& \bm M_i \bm X_i\bm\beta + \bm M_i \bm \epsilon_{i}, \\
+\tilde{\bm y}_{i} =& \tilde{\bm X}_{i}\bm\beta + \tilde{\bm \epsilon}_{i},
+\end{align} 
+$$
+where $\tilde{\bm y}_{i}$, $\tilde{\bm X}_{i}$, and $\tilde{\bm \epsilon}_{i}$ are the residuals of regressing $\bm y_{i}$, each column-vector of $\bm X_{i}$, and $\bm \epsilon_{i}$ on $\bm W_i$. Intuitively, we (1) estimate the individual-specific predicted values for the dependent variable and each covariate based on an individual intercept and the additional slope variables of $\bm W_i$, (2) 'detrend' the original data by these individual-specific predicted values, and (3) run an OLS model on the residual data. 
+
+Similarly, we can estimate a correlated random effects (CRE) model [@Chamberlain.1982; @Mundlak.1978.0; @Wooldridge.2010.384] including the individual specific predictions $\hat{\bm X}_{i}$ to obtain the FEIS estimator:
+$$
+\begin{align} 
+\bm y_{i} =& \bm X_{i}\bm\beta + \hat{\bm X}_{i}\bm\rho + \bm \epsilon_{i}.
+\end{align}
+$$
+
+
+### Example
+
+As an example, we use the `mwp` panel data, containing information on wages and family status of 268 men. This is a random sample drawn from the National Longitudinal Survey of Youth [@NLSY79.2012], and more details on the selection of observations and variable construction can be found in @Ludwig.2018.0. 
+
+```{r}
+data("mwp", package = "feisr")
+head(mwp)
+```
+
+The data set contains a unique person identifier (`id`) and survey year indicator (`year`). Furthermore, we have information about the log hourly wage rate (`lnwage`), work experience (`exp`) and its square (`expq`), family status (`marry`), enrollment in current education (`enrol`), years of formal education education (`yeduc`), age (`age`), birth cohort (`cohort`), and a grouped year indicator (`yeargr`).
+
+we exemplary investigate the 'marriage wage premium': we analyze whether marriage leads to an increase in the hourly wage for men. We use the function `feis` to estimate fixed effects individual slope models to control for the hypothesis that those men who are more likely to marry or marry earlier, also have a steeper wage growth over time.
+
+Let's start with our most common panel models (FE and RE):
+
+```{r}
+wages.fe <- plm(lnw ~ marry + enrol + yeduc + as.factor(yeargr)
+                + exp + I(exp^2), data = mwp, index = c("id", "year"),
+                model = "within", effect = "individual")
+wages.re <- plm(lnw ~ marry + enrol + yeduc + as.factor(yeargr)
+                + exp + I(exp^2), data = mwp, index = c("id", "year"),
+                model = "random", effect = "individual")
+summary(wages.fe)
+```
+
+and we calculate panel robust standard errors and attach them back to the model output:
+
+```{r}
+# Calculate vcov
+vcovx_fe <- vcovHC(wages.fe, cluster = "group", method = "arellano", type = "HC3")
+vcovx_re <- vcovHC(wages.re, cluster = "group", method = "arellano", type = "HC3")
+
+# Replace original vcov in output
+wages.fe$vcov <- vcovx_fe
+wages.re$vcov <- vcovx_re
+```
+
+Replacing has the advantage that we know use the cluster robust SEs in all following operations (like `summary()` or `screenreg`).
+
+```{r}
+summary(wages.fe)
+```
+
+And now, we allow the individual specific trends. To replicate the analysis of @Ludwig.2018.0, we use work experience (`exp`) and squared work experience as the slope variables.
+
+__One mayor advantage of using work experience as slope it that we can still control for (grouped) time fixed effects__
+
+__Assuming linear trends (only using exp), is a strong assumption. However, for each additional slope (e.g. polynomial), FEIS becomes more data hungry: each individual needs at least $T \geq K + 1$ observations to contribute to the model. If not, they are dropped!__
+
+Here we use `feis` with panel robust standard errors. The command `felm` from `lfe` can be used to calculate individual slopes as well.
+
+```{r}
+wages.feis <- feis(lnw ~ marry + enrol + yeduc + as.factor(yeargr)
+                   | exp + I(exp^2), data = mwp, id = "id",
+                   robust = TRUE)
+summary(wages.feis)
+```
+
+Let's compare the results.
+
+```{r}
+screenreg(list(wages.re, wages.fe, wages.feis), digits = 3,
+          custom.model.names = c("RE", "FE", "FEIS"))
+```
+
+Interpretation:
+
+* RE: Married observations have a significantly higher wage than unmarried observations.
+
+* FE: If people marry, they experience an increase in wages afterwards. The effect is significant and slightly lower than the RE.
+
+* FEIS: Accounting for the individual wage trend before marriage, we do not observe an increase in wages if people marry. The effect is small and non-significant.
+
+Overall, this indicated that there is a problem with non-parallel trends: Those with steeper wage trajectories are more likely to marry (or marry earlier).
+
+# Dynamic treatment effects
+
+Often, we are not only interested in the overall treatment effect, but we also want to know how treatment effects unfold after a treatment. For example, how does happiness change around specific life course events [@Clark.2013], or how do housing prices develop after the opening of an industrial plant [@Currie.2015]?
+
+There are various ways of calculating how a treatment effect develops over time:
+
+![Brüderl/Ludwig 2019, https://www.ls3.soziologie.uni-muenchen.de/studium-lehre/archiv/teaching-marterials/panel-analysis_april-2019.pdf](fig/Impact-function.PNG)
+
+Usually, it is best to not impose a structural form, but rather to use dummy impact functions. However, even with this, there is an ongoing debate on what is the best choice of specification [@Ludwig.2021], or see for instance [blog post by Pedro H. C. Sant’Anna and Brantly Callaway](https://pedrohcgs.github.io/posts/twfe).
+
+__Note that these settings usually require a staggered treatment adoption: individuals are treated once, and afterwards reamin treated__
+
+There are many cases where this does not apply. However, one can think about potential ways of artificially creating such designs:
+
+* Dichotomize continuous treatments (if theoretically plausible!)
+
+* Create id-period splits. E.g. if a person gets divorced, either drop from sample, or treat as a "new id" as a person can re-marry (note that this assumes that first and second marriage have equal effects).
+
+### Example
+
+We stick with our example and try to estimate how the wage changes around the year of marriage.
+
+To do so, we first estimate make sure the data is ordered by id and time
+
+```{r}
+mwp <- mwp[order(mwp$id, mwp$year), ]
+head(mwp[, 1:6], n = 20)
+```
+
+Then, we make sure that our data looks like a staggered treatment design. Are there people who jump from married to not married in the data?
+
+```{r}
+# Change in marriage status within an id
+mwp$fd_marry <- ave(mwp$marry,
+                    mwp$id,
+                    FUN = function(x) x - dplyr::lag(x, 1, default = 0)) # 0 insteat of NA for 1st year
+
+# Mark observations starting with a negative fd value (jump from marry=1 to marry =0)
+mwp$notstag_marry <- ave(ifelse(mwp$fd_marry == -1, 1, 0),
+                         mwp$id,
+                         FUN = function(x) cumsum(x))
+table(mwp$fd_marry)
+table(mwp$notstag_marry)
+```
+
+Luckily, the dataset is already cleaned: there are only transitions into marriage, not out of marriage.
+
+Next we want to make sure if there are any individuals who already start with the treatment (who are married right from their first wave on).
+
+__We only want to have those in our sample who potentially can go from not-treated to treated!__
+
+```{r}
+mwp <- mwp[order(mwp$id, mwp$year), ] # just to be sure
+
+# Person year number
+mwp$pynr <- ave(mwp$year,
+                mwp$id,
+                FUN = function(x) 1:length(x))
+
+# Marry status at first wave
+mwp$f_marry <- ifelse(mwp$pynr == 1, mwp$marry, NA)
+
+# Distribute across individual, using mean and na.rm = TRUE
+mwp$f_marry <- ave(mwp$f_marry,
+                   mwp$id,
+                   FUN = function(x) mean(x, na.rm = TRUE))
+
+table(mwp$f_marry)
+```
+
+Again, someone has already done the job. There are no individuals who start married in the first wave.
+
+We can also look at this graphically with `panelView` (mainly helpful for small N data):
+
+```{r, fig.height = 10, fig.width = 5}
+panelView(lnw ~ marry, 
+          data = mwp, index = c("id","year"),
+          type = "treat", theme.bw = TRUE)
+```
+
+Alright, so lets create a dummy impact function / a count variable around the treatment.
+
+```{r}
+mwp <- mwp[order(mwp$id, mwp$year), ] # just to be sure!!
+
+# Function that creates distance to the treatment (assuming 0=control, 1=treated)
+impfun <- function(x, default = -99){
+  nas <- which(is.na(x))  #save nas
+  ft <- which(x == 1)[1]  #first teatment index
+  if(is.na(ft)){          #replicate default if never treated
+    count <- rep(default, length(x))
+  }else{
+    ri <- 1:length(x)       #running index
+    count <- ri - ft        #distance to first treatment
+  }
+  if(length(nas) != 0){   #replace nas if any
+    count[nas] <- NA
+  }
+  return(count)           #return counter
+}
+
+# Apply to each individual
+mwp$marry_if <- ave(mwp$marry,
+                    mwp$id,
+                    FUN = function(x) impfun(x))
+
+head(mwp[, c("id", "year", "marry", "marry_if")], n = 50)
+```
+
+We can now use this time count function to estimate dynamic treatment effects. 
+
+Note that we need to make to important decisions ([blog post by Pedro H. C. Sant’Anna and Brantly Callaway](https://pedrohcgs.github.io/posts/twfe)):
+
+* Which dates to use a reference category
+
+* How many pre-treatment periods to include (to test for anticipation or potential pre-treatment differences)
+
+Here, re will just include two periods before marriage and use the rest as reference categories
+
+```{r}
+# Set all before -2 to -99
+mwp$marry_if[mwp$marry_if < -2 & mwp$marry_if > -99] <- -99
+
+# Make factor with -99 as reference category
+mwp$marry_if <- as.factor(mwp$marry_if)
+mwp$marry_if <- relevel(mwp$marry_if, "-99")
+
+```
+
+And we use this as our treatment variable in the FE estimator.
+
+```{r}
+# Standard marriage indicator
+wages.fe <- plm(lnw ~ marry + enrol + yeduc + as.factor(yeargr)
+                + exp + I(exp^2), data = mwp, index = c("id", "year"),
+                model = "within", effect = "individual")
+
+# with dummy impact function
+wages2.fe <- plm(lnw ~ marry_if + enrol + yeduc + as.factor(yeargr)
+                 + exp + I(exp^2), data = mwp, index = c("id", "year"),
+                 model = "within", effect = "individual")
+summary(wages2.fe)
+```
+
+Let's plot that
+
+```{r}
+# Set up results matrix
+coef.df <- data.frame(matrix(NA,
+                  nrow = (length(levels(mwp$marry_if)) - 1),
+                  ncol = 3))
+colnames(coef.df) <- c("time", "att", "se")
+
+# paste results
+coef.df$time <- c(-2:14)
+output <- summary(wages2.fe)$coefficients
+coef.df[, c("att", "se")] <- output[which(grepl("marry_if", rownames(output))), 1:2]
+
+# 95% CI
+interval2  <-  -qnorm((1-0.95)/2)  # 95% multiplier
+coef.df$ll <- coef.df$att - coef.df$se*interval2
+coef.df$ul <- coef.df$att + coef.df$se*interval2
+
+# Plot
+zp1 <- ggplot(coef.df[coef.df$time < 7, ], 
+              aes(x = time, y = att)) +  
+  geom_pointrange(aes(x = time, y = att, ymin = ll, ymax = ul),
+                                lwd = 1) +
+  geom_line(aes(x = time, y = att)) +
+  geom_hline(yintercept = 0, colour = gray(1/2), lty = 2, lwd = 1.2) +
+  geom_vline(xintercept = -0.5, colour = "black", lty = 1, lwd = 1.2) +
+  theme_bw()
+zp1
+```
+
+An interesting finding here. There is a positive anticipation effect: "The anticipation of marriage already increases the husbands wage".
+
+Is this plausible?
+
+# References
+
