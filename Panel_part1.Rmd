@@ -73,9 +73,9 @@ data("Males")
 head(Males[,1:5], n = 16)
 ```
 
-This is in long format, with nr as id and year as time indicator. Long format is what we usually need when analysing data.
+This is long format, with nr as id and year as time indicator. Long format is what we usually need when analysing data.
 
-Sometimes data comes in wide format. Luckily, we can easily switch between those formats using `tidyr'.
+Sometimes data comes in wide format. Luckily, we can easily switch between those formats using `tidyr`.
 
 ```{r}
 Males_wide <- pivot_wider(Males, id_cols = nr, names_from = year, 
@@ -89,7 +89,7 @@ And we can go back to long again:
 Males_long <- pivot_longer(Males_wide, cols = 2:ncol(Males_wide), 
                            names_to = c(".value", "year"), 
                            names_pattern = "(.*)_(.*)")
-head(Males_wide[,1:5], n = 16)
+head(Males_long[,1:5], n = 16)
 ```
 
 Moreover, there two types of panel data:
@@ -137,7 +137,20 @@ There are a lot of different panel data sources available. Some examples are:
 
 * [SHARE](http://www.share-project.org/home0.html)
 
-One thing that is often difficult: Many panel data come as a bunch of single (cross-sectional) files and have to be combined into a single dataset. However, many of those providers now offer simplified long-format data or pre-written scripts to merge data across waves (e.g. [here](https://www.understandingsociety.ac.uk/documentation/mainstage/syntax) for Understanding Society).
+* [National Longitudinal Survey of Youth](https://www.nlsinfo.org/content/cohorts/nlsy79)
+
+And there are various process generated data having a longitudinal / pnale dimension as well. For instance:
+
+* [Our world in data COVID](https://github.com/owid/covid-19-data)
+
+* [UK Census](https://www.nomisweb.co.uk/sources/census)
+
+* [London Air Pollution](https://data.london.gov.uk/air-quality/)
+
+* [European Tree Cover Density](https://land.copernicus.eu/pan-european/high-resolution-layers/forests/tree-cover-density/status-maps)
+
+One thing that is often difficult: Many panel data come as a bunch of single (cross-sectional) files and have to be combined into a single dataset. However, many of those providers (or nice colleagues) now offer simplified long-format data or pre-written scripts to merge data across waves (e.g. [here](https://www.understandingsociety.ac.uk/documentation/mainstage/syntax) for Understanding Society, or [here](https://www.ls3.soziologie.uni-muenchen.de/studium-lehre/lehrmaterialien/index.html) for SOEP).
+
 
 A second problem is panel attrition. Usually, the number of individuals participating repeatedly goes down over time.
 
@@ -147,7 +160,7 @@ The main question here: Is attrition (as good as) random or are drop-outs system
 
 # Decomposing variance
 
-Let's clarify the idea and advantage of panel data, lets start with an example. Assume we want to know the relationship between age (as our independent variable) and happiness (as our dependent variable), and we have data on 24 observations.
+Let's clarify the idea and advantage of panel data with an example. Assume we want to know the relationship between age (as our independent variable) and happiness (as our dependent variable), and we have data on 24 observations.
 
 ```{r class.source = 'fold-hide', message = FALSE, warning = FALSE}
 ################################
@@ -433,6 +446,11 @@ Between: The older a person, the higher their happiness.
 Within: Increasing age within a person goes along with declining happiness within the same person.
 
 The estimates for $\beta_{POLS}$ and $\beta_{BTW}$ are very similar here. We will see below why.
+
+### This is by the way how the relationship looks like with real world data (in Germany)
+
+
+![Working paper by @Kratz.2021](fig/kratz.PNG)
 
 
 # Fixed effects estimator

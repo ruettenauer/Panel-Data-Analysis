@@ -564,8 +564,8 @@ div.tocify {
 ## 14 17 1985     13     9    no
 ## 15 17 1986     13    10    no
 ## 16 17 1987     13    11    no</code></pre>
-<p>This is in long format, with nr as id and year as time indicator. Long format is what we usually need when analysing data.</p>
-<p>Sometimes data comes in wide format. Luckily, we can easily switch between those formats using `tidyr’.</p>
+<p>This is long format, with nr as id and year as time indicator. Long format is what we usually need when analysing data.</p>
+<p>Sometimes data comes in wide format. Luckily, we can easily switch between those formats using <code>tidyr</code>.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>Males_wide <span class="ot">&lt;-</span> <span class="fu">pivot_wider</span>(Males, <span class="at">id_cols =</span> nr, <span class="at">names_from =</span> year, </span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>                          <span class="at">values_from =</span> <span class="dv">3</span><span class="sc">:</span><span class="fu">ncol</span>(Males), <span class="at">names_sep =</span> <span class="st">&quot;_&quot;</span>)</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(Males_wide[,<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>], <span class="at">n =</span> <span class="dv">16</span>)</span></code></pre></div>
@@ -592,26 +592,26 @@ div.tocify {
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>Males_long <span class="ot">&lt;-</span> <span class="fu">pivot_longer</span>(Males_wide, <span class="at">cols =</span> <span class="dv">2</span><span class="sc">:</span><span class="fu">ncol</span>(Males_wide), </span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>                           <span class="at">names_to =</span> <span class="fu">c</span>(<span class="st">&quot;.value&quot;</span>, <span class="st">&quot;year&quot;</span>), </span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>                           <span class="at">names_pattern =</span> <span class="st">&quot;(.*)_(.*)&quot;</span>)</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(Males_wide[,<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>], <span class="at">n =</span> <span class="dv">16</span>)</span></code></pre></div>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(Males_long[,<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>], <span class="at">n =</span> <span class="dv">16</span>)</span></code></pre></div>
 <pre><code>## # A tibble: 16 x 5
-##       nr school_1980 school_1981 school_1982 school_1983
-##    &lt;int&gt;       &lt;int&gt;       &lt;int&gt;       &lt;int&gt;       &lt;int&gt;
-##  1    13          14          14          14          14
-##  2    17          13          13          13          13
-##  3    18          12          12          12          12
-##  4    45          12          12          12          12
-##  5   110          12          12          12          12
-##  6   120          10          10          10          10
-##  7   126          13          13          13          13
-##  8   150          12          12          12          12
-##  9   162          11          11          11          11
-## 10   166          10          10          10          10
-## 11   189          14          14          14          14
-## 12   193          14          14          14          14
-## 13   209          11          11          11          11
-## 14   212          11          11          11          11
-## 15   218          15          15          15          15
-## 16   243          12          12          12          12</code></pre>
+##       nr year  school exper union
+##    &lt;int&gt; &lt;chr&gt;  &lt;int&gt; &lt;int&gt; &lt;fct&gt;
+##  1    13 1980      14     1 no   
+##  2    13 1981      14     2 yes  
+##  3    13 1982      14     3 no   
+##  4    13 1983      14     4 no   
+##  5    13 1984      14     5 no   
+##  6    13 1985      14     6 no   
+##  7    13 1986      14     7 no   
+##  8    13 1987      14     8 no   
+##  9    17 1980      13     4 no   
+## 10    17 1981      13     5 no   
+## 11    17 1982      13     6 no   
+## 12    17 1983      13     7 no   
+## 13    17 1984      13     8 no   
+## 14    17 1985      13     9 no   
+## 15    17 1986      13    10 no   
+## 16    17 1987      13    11 no</code></pre>
 <p>Moreover, there two types of panel data:</p>
 <ul>
 <li><p>Balanced: Contains information for each unit at each time period</p></li>
@@ -663,8 +663,16 @@ div.tocify {
 <li><p><a href="https://www.understandingsociety.ac.uk/">Understanding Society</a></p></li>
 <li><p><a href="https://www.diw.de/en/diw_01.c.615551.en/research_infrastructure__socio-economic_panel__soep.html">SOEP</a></p></li>
 <li><p><a href="http://www.share-project.org/home0.html">SHARE</a></p></li>
+<li><p><a href="https://www.nlsinfo.org/content/cohorts/nlsy79">National Longitudinal Survey of Youth</a></p></li>
 </ul>
-<p>One thing that is often difficult: Many panel data come as a bunch of single (cross-sectional) files and have to be combined into a single dataset. However, many of those providers now offer simplified long-format data or pre-written scripts to merge data across waves (e.g. <a href="https://www.understandingsociety.ac.uk/documentation/mainstage/syntax">here</a> for Understanding Society).</p>
+<p>And there are various process generated data having a longitudinal / pnale dimension as well. For instance:</p>
+<ul>
+<li><p><a href="https://github.com/owid/covid-19-data">Our world in data COVID</a></p></li>
+<li><p><a href="https://www.nomisweb.co.uk/sources/census">UK Census</a></p></li>
+<li><p><a href="https://data.london.gov.uk/air-quality/">London Air Pollution</a></p></li>
+<li><p><a href="https://land.copernicus.eu/pan-european/high-resolution-layers/forests/tree-cover-density/status-maps">European Tree Cover Density</a></p></li>
+</ul>
+<p>One thing that is often difficult: Many panel data come as a bunch of single (cross-sectional) files and have to be combined into a single dataset. However, many of those providers (or nice colleagues) now offer simplified long-format data or pre-written scripts to merge data across waves (e.g. <a href="https://www.understandingsociety.ac.uk/documentation/mainstage/syntax">here</a> for Understanding Society, or <a href="https://www.ls3.soziologie.uni-muenchen.de/studium-lehre/lehrmaterialien/index.html">here</a> for SOEP).</p>
 <p>A second problem is panel attrition. Usually, the number of individuals participating repeatedly goes down over time.</p>
 <div class="figure">
 <img src="fig/soep.PNG" alt="" />
@@ -674,7 +682,7 @@ div.tocify {
 </div>
 <div id="decomposing-variance" class="section level1">
 <h1>Decomposing variance</h1>
-<p>Let’s clarify the idea and advantage of panel data, lets start with an example. Assume we want to know the relationship between age (as our independent variable) and happiness (as our dependent variable), and we have data on 24 observations.</p>
+<p>Let’s clarify the idea and advantage of panel data with an example. Assume we want to know the relationship between age (as our independent variable) and happiness (as our dependent variable), and we have data on 24 observations.</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="do">################################</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="do">### Example 1: Age happiness </span><span class="al">###</span></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="do">################################</span></span>
@@ -1057,6 +1065,13 @@ y_{it} = \alpha_i + \beta_{WI} x_{it} + \epsilon_{it},
 <p>Between: The older a person, the higher their happiness.</p>
 <p>Within: Increasing age within a person goes along with declining happiness within the same person.</p>
 <p>The estimates for <span class="math inline">\(\beta_{POLS}\)</span> and <span class="math inline">\(\beta_{BTW}\)</span> are very similar here. We will see below why.</p>
+</div>
+<div id="this-is-by-the-way-how-the-relationship-looks-like-with-real-world-data-in-germany" class="section level3">
+<h3>This is by the way how the relationship looks like with real world data (in Germany)</h3>
+<div class="figure">
+<img src="fig/kratz.PNG" alt="" />
+<p class="caption">Working paper by <span class="citation"><a href="#ref-Kratz.2021" role="doc-biblioref">Kratz and Brüderl</a> (<a href="#ref-Kratz.2021" role="doc-biblioref">2021</a>)</span></p>
+</div>
 </div>
 </div>
 </div>
@@ -1682,7 +1697,7 @@ y_{it} = \alpha + \beta x_{it} + \gamma \bar{x}_{i} + \xi_{it}
 <li><p>autocorrelated: error in one period correlate with errors in other periods</p></li>
 </ul>
 <p><strong>The conventional errors (as reported in <code>lm()</code> and <code>plm()</code>) are thus likely to be underestimated.</strong></p>
-<p>The easiest solution is to estimate panel-robust standard errors <span class="citation">(<a href="#ref-Millo.2017" role="doc-biblioref"><strong>Millo.2017?</strong></a>; <a href="#ref-Wooldridge.2010.384" role="doc-biblioref">Wooldridge 2010</a>)</span>.</p>
+<p>The easiest solution is to estimate panel-robust standard errors <span class="citation">(<a href="#ref-Millo.2017" role="doc-biblioref">Millo 2017</a>; <a href="#ref-Wooldridge.2010.384" role="doc-biblioref">Wooldridge 2010</a>)</span>.</p>
 <p>There are various ways for correcting heteroskedastic and autocorrelated standard errors. The most common version is based on work by Arellano and White and takes the form:</p>
 <p><span class="math display">\[
 \mathrm{Var}(\hat{\boldsymbol{\mathbf{\beta}}}_{FE}) = (\tilde{\boldsymbol{\mathbf{X}}}^\intercal \tilde{\boldsymbol{\mathbf{X}}})^{-1} 
@@ -1690,7 +1705,7 @@ y_{it} = \alpha + \beta x_{it} + \gamma \bar{x}_{i} + \xi_{it}
 \hat{\sigma}^2(\tilde{\boldsymbol{\mathbf{X}}}^\intercal \tilde{\boldsymbol{\mathbf{X}}})^{-1},
 \]</span></p>
 <p>where <span class="math inline">\(\hat{\tilde{\boldsymbol{\mathbf{\epsilon}}}}_i\)</span> is the vector of FE residuals for each person <span class="math inline">\(i\)</span>, and <span class="math inline">\(\tilde{\boldsymbol{\mathbf{X}}}\)</span> are the transformed data.</p>
-<p>to calculate thos standard errors, we can use the <code>sandwich</code> and <code>coeftest</code> packages. For more information on the various types and options in the command see <span class="citation">(<a href="#ref-Millo.2017" role="doc-biblioref"><strong>Millo.2017?</strong></a>)</span>.</p>
+<p>to calculate thos standard errors, we can use the <code>sandwich</code> and <code>coeftest</code> packages. For more information on the various types and options in the command see <span class="citation"><a href="#ref-Millo.2017" role="doc-biblioref">Millo</a> (<a href="#ref-Millo.2017" role="doc-biblioref">2017</a>)</span>.</p>
 <div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fe1)</span></code></pre></div>
 <pre><code>## Oneway (individual) effect Within Model
 ## 
@@ -1767,8 +1782,14 @@ Goodman-Bacon, Andrew. 2021. <span>“<span class="nocase">Difference-in-differe
 <div id="ref-Hausman.1978.0" class="csl-entry">
 Hausman, Jerry A. 1978. <span>“<span class="nocase">Specification Tests in Econometrics</span>.”</span> <em><span>Econometrica</span></em> 46 (6): 1251–71. <a href="https://doi.org/10.2307/1913827">https://doi.org/10.2307/1913827</a>.
 </div>
+<div id="ref-Kratz.2021" class="csl-entry">
+Kratz, Fabian, and Josef Brüderl. 2021. <span>“<span class="nocase">The Age Trajectory of Happiness</span>.”</span> <em><span>PsyArXiv</span></em>. <a href="https://doi.org/10.31234/osf.io/d8f2z">https://doi.org/10.31234/osf.io/d8f2z</a>.
+</div>
 <div id="ref-Ludwig.2018.0" class="csl-entry">
 Ludwig, Volker, and Josef Brüderl. 2018. <span>“<span class="nocase">Is There a Male Marital Wage Premium? New Evidence from the United States</span>.”</span> <em><span>American Sociological Review</span></em> 83 (4): 744–70. <a href="https://doi.org/10.1177/0003122418784909">https://doi.org/10.1177/0003122418784909</a>.
+</div>
+<div id="ref-Millo.2017" class="csl-entry">
+Millo, Giovanni. 2017. <span>“<span class="nocase">Robust Standard Error Estimators for Panel Models: A Unifying Approach</span>.”</span> <em><span>Journal of Statistical Software</span></em> 82 (3). <a href="https://doi.org/10.18637/jss.v082.i03">https://doi.org/10.18637/jss.v082.i03</a>.
 </div>
 <div id="ref-Mundlak.1978.0" class="csl-entry">
 Mundlak, Yair. 1978. <span>“<span class="nocase">On the Pooling of Time Series and Cross Section Data</span>.”</span> <em><span>Econometrica</span></em> 46 (1): 69. <a href="https://doi.org/10.2307/1913646">https://doi.org/10.2307/1913646</a>.
