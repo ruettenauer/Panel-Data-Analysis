@@ -30,7 +30,7 @@ link-citations: yes
 ### Required packages
 
 ```{r, message = FALSE, warning = FALSE, results = 'hide'}
-pkgs <- c("plm", "feisr", "panelView", "texreg", "tidyr", "dplyr", "ggplot2", "ggforce") 
+pkgs <- c("plm", "feisr", "did", "panelView", "texreg", "tidyr", "dplyr", "ggplot2", "ggforce") 
 lapply(pkgs, require, character.only = TRUE)
 ```
 
@@ -46,6 +46,12 @@ sessionInfo()
 * Fixed Effects Individual Slopes
 
 * Dynamic treatment effects
+
+* TBD: Dynamic Diff-in-Diff
+
+* TBD: Synthetic Control
+
+* TBD: Generalized Synthetic Control
 
 
 # Fixed Effects Individual Slopes (FEIS)
@@ -274,11 +280,11 @@ Note that we need to make to important decisions ([blog post by Pedro H. C. Sant
 
 * How many pre-treatment periods to include (to test for anticipation or potential pre-treatment differences)
 
-Here, re will just include two periods before marriage and use the rest as reference categories
+Here, re will just include three periods before marriage and use the rest as reference categories
 
 ```{r}
-# Set all before -2 to -99
-mwp$marry_if[mwp$marry_if < -2 & mwp$marry_if > -99] <- -99
+# Set all before -3 to -99
+mwp$marry_if[mwp$marry_if < -3 & mwp$marry_if > -99] <- -99
 
 # Make factor with -99 as reference category
 mwp$marry_if <- as.factor(mwp$marry_if)
@@ -298,6 +304,12 @@ wages.fe <- plm(lnw ~ marry + enrol + yeduc + as.factor(yeargr)
 wages2.fe <- plm(lnw ~ marry_if + enrol + yeduc + as.factor(yeargr)
                  + exp + I(exp^2), data = mwp, index = c("id", "year"),
                  model = "within", effect = "individual")
+
+# add cluster robust SEs
+vcovx_fe2 <- vcovHC(wages2.fe, cluster = "group", method = "arellano", type = "HC3")
+wages2.fe$vcov <- vcovx_fe2
+
+
 summary(wages2.fe)
 ```
 
@@ -311,7 +323,7 @@ coef.df <- data.frame(matrix(NA,
 colnames(coef.df) <- c("time", "att", "se")
 
 # paste results
-coef.df$time <- c(-2:14)
+coef.df$time <- c(-3:14)
 output <- summary(wages2.fe)$coefficients
 coef.df[, c("att", "se")] <- output[which(grepl("marry_if", rownames(output))), 1:2]
 
@@ -324,10 +336,10 @@ coef.df$ul <- coef.df$att + coef.df$se*interval2
 zp1 <- ggplot(coef.df[coef.df$time < 7, ], 
               aes(x = time, y = att)) +  
   geom_pointrange(aes(x = time, y = att, ymin = ll, ymax = ul),
-                                lwd = 1) +
+                                lwd = 1, fatten = 2) +
   geom_line(aes(x = time, y = att)) +
-  geom_hline(yintercept = 0, colour = gray(1/2), lty = 2, lwd = 1.2) +
-  geom_vline(xintercept = -0.5, colour = "black", lty = 1, lwd = 1.2) +
+  geom_hline(yintercept = 0, colour = gray(1/2), lty = 2, lwd = 1) +
+  geom_vline(xintercept = -0.5, colour = "black", lty = 1, lwd = 1) +
   theme_bw()
 zp1
 ```
@@ -335,6 +347,148 @@ zp1
 An interesting finding here. There is a positive anticipation effect: "The anticipation of marriage already increases the husbands wage".
 
 Is this plausible?
+
+__FEIS__
+
+Obviously, we can also use these dummy impact function in other estimators.
+
+
+```{r}
+### FEIS with dummy impact function
+wages2.feis <- feis(lnw ~ marry_if + enrol + yeduc + as.factor(yeargr)
+                   | exp + I(exp^2), 
+                   data = mwp, id = "id",
+                  robust = TRUE)
+summary(wages2.feis)
+
+### Plot
+
+# Set up results matrix
+coef2.df <- data.frame(matrix(NA,
+                  nrow = (length(levels(mwp$marry_if)) - 1),
+                  ncol = 3))
+colnames(coef2.df) <- c("time", "att", "se")
+
+# paste results
+coef2.df$time <- c(-3:14)
+output <- summary(wages2.feis)$coefficients
+coef2.df[, c("att", "se")] <- output[which(grepl("marry_if", rownames(output))), 1:2]
+
+# 95% CI
+interval2  <-  -qnorm((1-0.95)/2)  # 95% multiplier
+coef2.df$ll <- coef2.df$att - coef2.df$se*interval2
+coef2.df$ul <- coef2.df$att + coef2.df$se*interval2
+
+# Plot
+zp2 <- ggplot(coef2.df[coef2.df$time < 7, ], 
+              aes(x = time, y = att)) +  
+  geom_pointrange(aes(x = time, y = att, ymin = ll, ymax = ul),
+                                lwd = 1, fatten = 2) +
+  geom_line(aes(x = time, y = att)) +
+  geom_hline(yintercept = 0, colour = gray(1/2), lty = 2, lwd = 1) +
+  geom_vline(xintercept = -0.5, colour = "black", lty = 1, lwd = 1) +
+  theme_bw()
+zp2
+```
+
+This gives us what we already expected: using FEIS, the marital wage premium disappears.
+
+# Dynamic Diff-in-Diff
+
+There is an ongoing discussion on how the Difference in Differences estimator relates to the two-ways FE estimator when treatment timing varies: different individuals receive the treatment at different periods. 
+
+@GoodmanBacon.2021 shows that the two-ways FE is a weighted average of all possbile two-group/two-period DD estimators. The weights determining how much each of these single combinations contributes to the two-ways FE are determined by the group size (e.g. how long do we observe each combination before and after treatment) and the variance in the treatment.
+
+![Two-ways FE and DD with varying treatment timing [@GoodmanBacon.2021].](fig/goodman.jpg)
+
+For instance, those who are treated in later time periods are not only compared to those who are never treated but also to those who have already been treated in earlier periods.
+
+Especially for "trend-breaking" treatment effects like in the following figure, this will lead to biased estimates of the average treatment effect [@GoodmanBacon.2021; @Meer.2016].
+
+![Bias of two-ways FE with trend-breaking treatment [@GoodmanBacon.2021].](fig/goodman2.jpg)
+
+In this example, in the middle period, we compare the break in treand in the early tread with the late treated, and we see the divergence between those two groups. However, for the later treated (right third), the earlier treated are the control cases, and we do not observe that there is actually a break in trend.
+
+One way of counteracting this problem is to use event study / impact function designs (see above) to explicitly model time varying treatment effects.
+
+A second way is the application of __flexible Diff-in-Diff__ estimators as proposed by @Callaway.2020.
+
+Formally, we do
+
+__TBD__
+
+Intuitively, this means, we estimate an individual treatment effect for each combination of treatment-timing-group and potential control group.
+
+Obviously, this gives us a large number of different treatment effects. So, in a second step, we re-aggregate these individual combinations back to goup or time averaged treatment effect.
+
+For a more detailled introdution see @Callaway.2020 or the respective [package introcution](https://cran.r-project.org/web/packages/did/vignettes/multi-period-did.html).
+
+
+### Example
+
+How does that look in our marriage example? To estimate the dynamic DD we use the `did` package, as describes in more detail [here](https://cran.r-project.org/web/packages/did/vignettes/did-basics.html) or in the authors [blog](https://pedrohcgs.github.io/posts/twfe).
+
+__Note: This package works witch staggered treatment adoption! We thus should perform all the steps we have performed above to restrict and prepare the data!__
+
+As a first step, we need to define a variable that contains the treatment timing: the first year an ever-treated individual is treated.
+
+This should be a positive number for all observations in treated groups. It defines which "group" a unit belongs to. It should be 0 for units in the untreated group.
+
+```{r}
+# treatment timing = year if married
+mwp$treat_timing <- ifelse(mwp$marry == 1, mwp$year, NA)
+
+# set never treated to zero
+mwp$treat_timing[mwp$evermarry == 0] <- 0
+
+# if married is not NA, used min year per id (removing NAs)
+mwp$treat_timing[!is.na(mwp$marry)] <- ave(mwp$treat_timing[!is.na(mwp$marry)],
+                                           mwp$id[!is.na(mwp$marry)],
+                                           FUN = function(x) min(x, na.rm = TRUE))
+
+
+head(mwp[, c("id", "year", "marry", "evermarry", "treat_timing")], n = 35)
+```
+
+
+
+```{r}
+# estimate group-time average treatment effects using att_gt method
+wages.attgt <- att_gt(yname = "lnw",
+                      tname = "year",
+                      idname = "id",
+                      gname = "treat_timing",
+                      xformla = ~ enrol + yeduc + exp + I(exp^2), # note that we omit the yeargroup here
+                      data = mwp,
+                      allow_unbalanced_panel = TRUE,
+                      control_group = "notyettreated",
+                      est_method = "ipw"
+                        )
+```
+
+One huge advantage: We do not need to make a decision about which periods (before treatment) we want to include, and which observations go into the reference category. 
+
+To make this more interpretable, we re-aggregate the individuals results to a dynamic time-averaged effect (we now restrict this to observations from -3 to 6).
+
+```{r}
+wages.dyn <- aggte(wages.attgt, type = "dynamic", na.rm = TRUE,
+                   min_e = -3, max_e = 6)
+summary(wages.dyn)
+```
+
+The `did` package also comes with a handy command `ggdid()` to plot the results 
+
+```{r}
+zp3 <- ggdid(wages.dyn) 
+  
+zp3 <- zp3 + 
+  geom_hline(yintercept = 0, colour = gray(1/2), lty = 2) +
+  geom_vline(xintercept = -0.5, colour = "black", lty = 1)
+
+zp3
+```
+
+This doesn't look too different than our earlier FEIS results.
 
 # References
 

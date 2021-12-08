@@ -482,7 +482,7 @@ div.tocify {
 
 <div id="required-packages" class="section level3">
 <h3>Required packages</h3>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pkgs <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;plm&quot;</span>, <span class="st">&quot;feisr&quot;</span>, <span class="st">&quot;panelView&quot;</span>, <span class="st">&quot;texreg&quot;</span>, <span class="st">&quot;tidyr&quot;</span>, <span class="st">&quot;dplyr&quot;</span>, <span class="st">&quot;ggplot2&quot;</span>, <span class="st">&quot;ggforce&quot;</span>) </span>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pkgs <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;plm&quot;</span>, <span class="st">&quot;feisr&quot;</span>, <span class="st">&quot;did&quot;</span>, <span class="st">&quot;panelView&quot;</span>, <span class="st">&quot;texreg&quot;</span>, <span class="st">&quot;tidyr&quot;</span>, <span class="st">&quot;dplyr&quot;</span>, <span class="st">&quot;ggplot2&quot;</span>, <span class="st">&quot;ggforce&quot;</span>) </span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(pkgs, require, <span class="at">character.only =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 </div>
 <div id="session-info" class="section level3">
@@ -506,30 +506,38 @@ div.tocify {
 ## 
 ## other attached packages:
 ## [1] ggforce_0.3.3   ggplot2_3.3.5   dplyr_1.0.6     tidyr_1.1.3    
-## [5] texreg_1.37.5   panelView_1.1.2 feisr_1.2.0     plm_2.4-1      
+## [5] texreg_1.37.5   panelView_1.1.2 did_2.0.0       feisr_1.2.0    
+## [9] plm_2.4-1      
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] zoo_1.8-9         tidyselect_1.1.1  xfun_0.23         bslib_0.2.5.1    
-##  [5] purrr_0.3.4       lattice_0.20-44   colorspace_2.0-1  vctrs_0.3.8      
-##  [9] generics_0.1.0    htmltools_0.5.1.1 yaml_2.2.1        utf8_1.2.1       
-## [13] rlang_0.4.11      jquerylib_0.1.4   pillar_1.6.2      withr_2.4.2      
-## [17] glue_1.4.2        DBI_1.1.1         tweenr_1.0.2      lifecycle_1.0.0  
-## [21] stringr_1.4.0     munsell_0.5.0     gtable_0.3.0      bdsmatrix_1.3-4  
-## [25] evaluate_0.14     knitr_1.33        miscTools_0.6-26  lmtest_0.9-38    
-## [29] fansi_0.5.0       Rcpp_1.0.7        scales_1.1.1      jsonlite_1.7.2   
-## [33] farver_2.1.0      gridExtra_2.3     maxLik_1.4-8      digest_0.6.27    
-## [37] stringi_1.6.2     polyclip_1.10-0   rbibutils_2.2     grid_4.1.0       
-## [41] Rdpack_2.1.2      tools_4.1.0       sandwich_3.0-1    magrittr_2.0.1   
-## [45] sass_0.4.0        tibble_3.1.2      Formula_1.2-4     crayon_1.4.1     
-## [49] pkgconfig_2.0.3   MASS_7.3-54       ellipsis_0.3.2    httr_1.4.2       
-## [53] assertthat_0.2.1  rmarkdown_2.11    R6_2.5.1          nlme_3.1-152     
-## [57] compiler_4.1.0</code></pre>
+##  [1] httr_1.4.2        sass_0.4.0        jsonlite_1.7.2    carData_3.0-4    
+##  [5] bslib_0.2.5.1     Formula_1.2-4     Rdpack_2.1.2      assertthat_0.2.1 
+##  [9] cellranger_1.1.0  yaml_2.2.1        pillar_1.6.2      backports_1.2.1  
+## [13] lattice_0.20-44   glue_1.4.2        digest_0.6.27     polyclip_1.10-0  
+## [17] ggsignif_0.6.2    rbibutils_2.2     colorspace_2.0-1  sandwich_3.0-1   
+## [21] htmltools_0.5.1.1 pkgconfig_2.0.3   broom_0.7.7       haven_2.4.2      
+## [25] purrr_0.3.4       scales_1.1.1      tweenr_1.0.2      openxlsx_4.2.4   
+## [29] rio_0.5.26        tibble_3.1.2      farver_2.1.0      generics_0.1.0   
+## [33] car_3.0-11        ellipsis_0.3.2    ggpubr_0.4.0      withr_2.4.2      
+## [37] maxLik_1.4-8      magrittr_2.0.1    crayon_1.4.1      readxl_1.3.1     
+## [41] evaluate_0.14     fansi_0.5.0       nlme_3.1-152      MASS_7.3-54      
+## [45] rstatix_0.7.0     forcats_0.5.1     foreign_0.8-81    tools_4.1.0      
+## [49] data.table_1.14.0 hms_1.1.0         lifecycle_1.0.0   stringr_1.4.0    
+## [53] munsell_0.5.0     zip_2.2.0         compiler_4.1.0    jquerylib_0.1.4  
+## [57] rlang_0.4.11      grid_4.1.0        miscTools_0.6-26  rmarkdown_2.11   
+## [61] gtable_0.3.0      abind_1.4-5       DBI_1.1.1         curl_4.3.1       
+## [65] R6_2.5.1          gridExtra_2.3     zoo_1.8-9         knitr_1.33       
+## [69] bdsmatrix_1.3-4   utf8_1.2.1        stringi_1.6.2     Rcpp_1.0.7       
+## [73] vctrs_0.3.8       tidyselect_1.1.1  xfun_0.23         lmtest_0.9-38</code></pre>
 </div>
 <div id="outline" class="section level1">
 <h1>Outline</h1>
 <ul>
 <li><p>Fixed Effects Individual Slopes</p></li>
 <li><p>Dynamic treatment effects</p></li>
+<li><p>TBD: Dynamic Diff-in-Diff</p></li>
+<li><p>TBD: Synthetic Control</p></li>
+<li><p>TBD: Generalized Synthetic Control</p></li>
 </ul>
 </div>
 <div id="fixed-effects-individual-slopes-feis" class="section level1">
@@ -910,9 +918,9 @@ y_{it} - \hat{y}_{it} =&amp; (\boldsymbol{\mathbf{x}}_{it} - \hat{\boldsymbol{\m
 <li><p>Which dates to use a reference category</p></li>
 <li><p>How many pre-treatment periods to include (to test for anticipation or potential pre-treatment differences)</p></li>
 </ul>
-<p>Here, re will just include two periods before marriage and use the rest as reference categories</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set all before -2 to -99</span></span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>mwp<span class="sc">$</span>marry_if[mwp<span class="sc">$</span>marry_if <span class="sc">&lt;</span> <span class="sc">-</span><span class="dv">2</span> <span class="sc">&amp;</span> mwp<span class="sc">$</span>marry_if <span class="sc">&gt;</span> <span class="sc">-</span><span class="dv">99</span>] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">99</span></span>
+<p>Here, re will just include three periods before marriage and use the rest as reference categories</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set all before -3 to -99</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>mwp<span class="sc">$</span>marry_if[mwp<span class="sc">$</span>marry_if <span class="sc">&lt;</span> <span class="sc">-</span><span class="dv">3</span> <span class="sc">&amp;</span> mwp<span class="sc">$</span>marry_if <span class="sc">&gt;</span> <span class="sc">-</span><span class="dv">99</span>] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">99</span></span>
 <span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Make factor with -99 as reference category</span></span>
 <span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>mwp<span class="sc">$</span>marry_if <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(mwp<span class="sc">$</span>marry_if)</span>
@@ -927,7 +935,13 @@ y_{it} - \hat{y}_{it} =&amp; (\boldsymbol{\mathbf{x}}_{it} - \hat{\boldsymbol{\m
 <span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>wages2.fe <span class="ot">&lt;-</span> <span class="fu">plm</span>(lnw <span class="sc">~</span> marry_if <span class="sc">+</span> enrol <span class="sc">+</span> yeduc <span class="sc">+</span> <span class="fu">as.factor</span>(yeargr)</span>
 <span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>                 <span class="sc">+</span> exp <span class="sc">+</span> <span class="fu">I</span>(exp<span class="sc">^</span><span class="dv">2</span>), <span class="at">data =</span> mwp, <span class="at">index =</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;year&quot;</span>),</span>
 <span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>                 <span class="at">model =</span> <span class="st">&quot;within&quot;</span>, <span class="at">effect =</span> <span class="st">&quot;individual&quot;</span>)</span>
-<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(wages2.fe)</span></code></pre></div>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a><span class="co"># add cluster robust SEs</span></span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>vcovx_fe2 <span class="ot">&lt;-</span> <span class="fu">vcovHC</span>(wages2.fe, <span class="at">cluster =</span> <span class="st">&quot;group&quot;</span>, <span class="at">method =</span> <span class="st">&quot;arellano&quot;</span>, <span class="at">type =</span> <span class="st">&quot;HC3&quot;</span>)</span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>wages2.fe<span class="sc">$</span>vcov <span class="ot">&lt;-</span> vcovx_fe2</span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(wages2.fe)</span></code></pre></div>
 <pre><code>## Oneway (individual) effect Within Model
 ## 
 ## Call:
@@ -938,44 +952,45 @@ y_{it} - \hat{y}_{it} =&amp; (\boldsymbol{\mathbf{x}}_{it} - \hat{\boldsymbol{\m
 ## Unbalanced Panel: n = 268, T = 4-19, N = 3100
 ## 
 ## Residuals:
-##       Min.    1st Qu.     Median    3rd Qu.       Max. 
-## -2.5656690 -0.1609273  0.0082329  0.1742273  2.0065696 
+##      Min.   1st Qu.    Median   3rd Qu.      Max. 
+## -2.566752 -0.160001  0.010038  0.175003  2.011790 
 ## 
 ## Coefficients:
 ##                       Estimate  Std. Error t-value  Pr(&gt;|t|)    
-## marry_if-2          0.03957838  0.02996752  1.3207 0.1867061    
-## marry_if-1          0.07832762  0.03059293  2.5603 0.0105096 *  
-## marry_if0           0.07379160  0.03231455  2.2835 0.0224729 *  
-## marry_if1           0.14014248  0.03481233  4.0257 5.832e-05 ***
-## marry_if2           0.14018128  0.03792067  3.6967 0.0002226 ***
-## marry_if3           0.14964188  0.04146083  3.6092 0.0003125 ***
-## marry_if4           0.12780655  0.04454917  2.8689 0.0041500 ** 
-## marry_if5           0.12142562  0.04797581  2.5310 0.0114288 *  
-## marry_if6           0.13713667  0.05182496  2.6462 0.0081868 ** 
-## marry_if7           0.10939628  0.05558233  1.9682 0.0491451 *  
-## marry_if8           0.09838997  0.05973251  1.6472 0.0996338 .  
-## marry_if9           0.11804019  0.06454907  1.8287 0.0675522 .  
-## marry_if10          0.09287002  0.07354064  1.2628 0.2067518    
-## marry_if11          0.18168622  0.08624623  2.1066 0.0352409 *  
-## marry_if12          0.08374341  0.10121905  0.8273 0.4081100    
-## marry_if13          0.08058853  0.13832518  0.5826 0.5602080    
-## marry_if14         -0.16488098  0.35796896 -0.4606 0.6451203    
-## enrol              -0.20519204  0.02290081 -8.9600 &lt; 2.2e-16 ***
-## yeduc               0.05523753  0.00728318  7.5843 4.517e-14 ***
-## as.factor(yeargr)2 -0.13939376  0.03046625 -4.5753 4.961e-06 ***
-## as.factor(yeargr)3 -0.16615950  0.04712195 -3.5262 0.0004284 ***
-## as.factor(yeargr)4 -0.27554159  0.06222036 -4.4285 9.853e-06 ***
-## as.factor(yeargr)5 -0.29409443  0.07970281 -3.6899 0.0002286 ***
-## exp                 0.06873715  0.00887436  7.7456 1.319e-14 ***
-## I(exp^2)           -0.00114227  0.00037249 -3.0666 0.0021859 ** 
+## marry_if-3          0.03388225  0.03253942  1.0413 0.2978411    
+## marry_if-2          0.05166995  0.04238715  1.2190 0.2229466    
+## marry_if-1          0.09151624  0.04265046  2.1457 0.0319803 *  
+## marry_if0           0.08816919  0.05121551  1.7215 0.0852644 .  
+## marry_if1           0.15544954  0.05601346  2.7752 0.0055530 ** 
+## marry_if2           0.15658061  0.06078860  2.5758 0.0100509 *  
+## marry_if3           0.16687443  0.06762257  2.4677 0.0136564 *  
+## marry_if4           0.14591461  0.07412203  1.9686 0.0491005 *  
+## marry_if5           0.14033773  0.07930392  1.7696 0.0768992 .  
+## marry_if6           0.15706194  0.08660097  1.8136 0.0698418 .  
+## marry_if7           0.13008248  0.09727237  1.3373 0.1812327    
+## marry_if8           0.11979150  0.10451397  1.1462 0.2518197    
+## marry_if9           0.14007172  0.10390453  1.3481 0.1777412    
+## marry_if10          0.11550144  0.11151584  1.0357 0.3004126    
+## marry_if11          0.20483579  0.12281306  1.6679 0.0954538 .  
+## marry_if12          0.10767466  0.12345702  0.8722 0.3831940    
+## marry_if13          0.10542488  0.13897395  0.7586 0.4481589    
+## marry_if14         -0.13934447  0.12815514 -1.0873 0.2769929    
+## enrol              -0.20477142  0.02737332 -7.4807 9.833e-14 ***
+## yeduc               0.05500238  0.01059840  5.1897 2.257e-07 ***
+## as.factor(yeargr)2 -0.13830215  0.03594278 -3.8478 0.0001218 ***
+## as.factor(yeargr)3 -0.16356110  0.05379641 -3.0404 0.0023847 ** 
+## as.factor(yeargr)4 -0.27248909  0.06839547 -3.9840 6.948e-05 ***
+## as.factor(yeargr)5 -0.28895919  0.08907335 -3.2441 0.0011922 ** 
+## exp                 0.06728858  0.01357307  4.9575 7.565e-07 ***
+## I(exp^2)           -0.00111675  0.00061151 -1.8262 0.0679250 .  
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## Total Sum of Squares:    559.75
-## Residual Sum of Squares: 326.09
-## R-Squared:      0.41744
-## Adj. R-Squared: 0.35684
-## F-statistic: 80.4557 on 25 and 2807 DF, p-value: &lt; 2.22e-16</code></pre>
+## Residual Sum of Squares: 325.96
+## R-Squared:      0.41767
+## Adj. R-Squared: 0.35686
+## F-statistic: 75.8727 on 26 and 2806 DF, p-value: &lt; 2.22e-16</code></pre>
 <p>Let’s plot that</p>
 <div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set up results matrix</span></span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>coef.df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>,</span>
@@ -984,7 +999,7 @@ y_{it} - \hat{y}_{it} =&amp; (\boldsymbol{\mathbf{x}}_{it} - \hat{\boldsymbol{\m
 <span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(coef.df) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;time&quot;</span>, <span class="st">&quot;att&quot;</span>, <span class="st">&quot;se&quot;</span>)</span>
 <span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="co"># paste results</span></span>
-<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>coef.df<span class="sc">$</span>time <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">2</span><span class="sc">:</span><span class="dv">14</span>)</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>coef.df<span class="sc">$</span>time <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">3</span><span class="sc">:</span><span class="dv">14</span>)</span>
 <span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>output <span class="ot">&lt;-</span> <span class="fu">summary</span>(wages2.fe)<span class="sc">$</span>coefficients</span>
 <span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>coef.df[, <span class="fu">c</span>(<span class="st">&quot;att&quot;</span>, <span class="st">&quot;se&quot;</span>)] <span class="ot">&lt;-</span> output[<span class="fu">which</span>(<span class="fu">grepl</span>(<span class="st">&quot;marry_if&quot;</span>, <span class="fu">rownames</span>(output))), <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]</span>
 <span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a></span>
@@ -997,15 +1012,251 @@ y_{it} - \hat{y}_{it} =&amp; (\boldsymbol{\mathbf{x}}_{it} - \hat{\boldsymbol{\m
 <span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a>zp1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(coef.df[coef.df<span class="sc">$</span>time <span class="sc">&lt;</span> <span class="dv">7</span>, ], </span>
 <span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a>              <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> att)) <span class="sc">+</span>  </span>
 <span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_pointrange</span>(<span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> att, <span class="at">ymin =</span> ll, <span class="at">ymax =</span> ul),</span>
-<span id="cb29-21"><a href="#cb29-21" aria-hidden="true" tabindex="-1"></a>                                <span class="at">lwd =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb29-21"><a href="#cb29-21" aria-hidden="true" tabindex="-1"></a>                                <span class="at">lwd =</span> <span class="dv">1</span>, <span class="at">fatten =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
 <span id="cb29-22"><a href="#cb29-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> att)) <span class="sc">+</span></span>
-<span id="cb29-23"><a href="#cb29-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">colour =</span> <span class="fu">gray</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>), <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">lwd =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
-<span id="cb29-24"><a href="#cb29-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="sc">-</span><span class="fl">0.5</span>, <span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">lty =</span> <span class="dv">1</span>, <span class="at">lwd =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb29-23"><a href="#cb29-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">colour =</span> <span class="fu">gray</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>), <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">lwd =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb29-24"><a href="#cb29-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="sc">-</span><span class="fl">0.5</span>, <span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">lty =</span> <span class="dv">1</span>, <span class="at">lwd =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
 <span id="cb29-25"><a href="#cb29-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span>
 <span id="cb29-26"><a href="#cb29-26" aria-hidden="true" tabindex="-1"></a>zp1</span></code></pre></div>
 <p><img src="Panel_part2_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
 <p>An interesting finding here. There is a positive anticipation effect: “The anticipation of marriage already increases the husbands wage.”</p>
 <p>Is this plausible?</p>
+<p><strong>FEIS</strong></p>
+<p>Obviously, we can also use these dummy impact function in other estimators.</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="do">### FEIS with dummy impact function</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>wages2.feis <span class="ot">&lt;-</span> <span class="fu">feis</span>(lnw <span class="sc">~</span> marry_if <span class="sc">+</span> enrol <span class="sc">+</span> yeduc <span class="sc">+</span> <span class="fu">as.factor</span>(yeargr)</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>                   <span class="sc">|</span> exp <span class="sc">+</span> <span class="fu">I</span>(exp<span class="sc">^</span><span class="dv">2</span>), </span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">data =</span> mwp, <span class="at">id =</span> <span class="st">&quot;id&quot;</span>,</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>                  <span class="at">robust =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(wages2.feis)</span></code></pre></div>
+<pre><code>## 
+## 
+## Call:
+## feis(formula = lnw ~ marry_if + enrol + yeduc + as.factor(yeargr) | 
+##     exp + I(exp^2), data = mwp, id = &quot;id&quot;, robust = TRUE)
+## 
+## 
+## Residuals:
+##       Min.    1st Qu.     Median    3rd Qu.       Max. 
+## -2.0385140 -0.1070148  0.0063363  0.1116305  1.9422823 
+## 
+## Coefficients:
+##                       Estimate  Std. Error t-value  Pr(&gt;|t|)    
+## marry_if-3         -0.01009512  0.03282428 -0.3076   0.75845    
+## marry_if-2         -0.01269923  0.05387564 -0.2357   0.81368    
+## marry_if-1          0.00945697  0.06556529  0.1442   0.88533    
+## marry_if0          -0.00934465  0.08669423 -0.1078   0.91417    
+## marry_if1           0.05239527  0.10439373  0.5019   0.61579    
+## marry_if2           0.06024667  0.11996538  0.5022   0.61558    
+## marry_if3           0.05481404  0.14066586  0.3897   0.69681    
+## marry_if4           0.03469671  0.15894441  0.2183   0.82722    
+## marry_if5           0.04209049  0.18134196  0.2321   0.81648    
+## marry_if6           0.07219889  0.20694589  0.3489   0.72721    
+## marry_if7           0.05371600  0.22543835  0.2383   0.81169    
+## marry_if8           0.00422209  0.26924683  0.0157   0.98749    
+## marry_if9           0.05496285  0.29238662  0.1880   0.85091    
+## marry_if10          0.08980275  0.34176479  0.2628   0.79276    
+## marry_if11          0.18093806  0.40047134  0.4518   0.65145    
+## marry_if12          0.11491753  0.44824664  0.2564   0.79769    
+## marry_if13          0.07479506  0.51906834  0.1441   0.88544    
+## marry_if14          0.14775390  0.57381382  0.2575   0.79682    
+## enrol              -0.11902058  0.02363290 -5.0362 5.122e-07 ***
+## yeduc              -0.00082298  0.01772763 -0.0464   0.96298    
+## as.factor(yeargr)2 -0.04618140  0.04080643 -1.1317   0.25787    
+## as.factor(yeargr)3 -0.01934802  0.05387474 -0.3591   0.71953    
+## as.factor(yeargr)4 -0.13656650  0.06179928 -2.2098   0.02722 *  
+## as.factor(yeargr)5 -0.18414365  0.07407322 -2.4860   0.01299 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Cluster robust standard errors
+## Slope parameters:  exp, I(exp^2) 
+## Total Sum of Squares:    190.33
+## Residual Sum of Squares: 184.71
+## R-Squared:      0.029511
+## Adj. R-Squared: 0.021939</code></pre>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="do">### Plot</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Set up results matrix</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>coef2.df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>,</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>                  <span class="at">nrow =</span> (<span class="fu">length</span>(<span class="fu">levels</span>(mwp<span class="sc">$</span>marry_if)) <span class="sc">-</span> <span class="dv">1</span>),</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>                  <span class="at">ncol =</span> <span class="dv">3</span>))</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(coef2.df) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;time&quot;</span>, <span class="st">&quot;att&quot;</span>, <span class="st">&quot;se&quot;</span>)</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a><span class="co"># paste results</span></span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>coef2.df<span class="sc">$</span>time <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">3</span><span class="sc">:</span><span class="dv">14</span>)</span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>output <span class="ot">&lt;-</span> <span class="fu">summary</span>(wages2.feis)<span class="sc">$</span>coefficients</span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>coef2.df[, <span class="fu">c</span>(<span class="st">&quot;att&quot;</span>, <span class="st">&quot;se&quot;</span>)] <span class="ot">&lt;-</span> output[<span class="fu">which</span>(<span class="fu">grepl</span>(<span class="st">&quot;marry_if&quot;</span>, <span class="fu">rownames</span>(output))), <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]</span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a><span class="co"># 95% CI</span></span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>interval2  <span class="ot">&lt;-</span>  <span class="sc">-</span><span class="fu">qnorm</span>((<span class="dv">1</span><span class="fl">-0.95</span>)<span class="sc">/</span><span class="dv">2</span>)  <span class="co"># 95% multiplier</span></span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a>coef2.df<span class="sc">$</span>ll <span class="ot">&lt;-</span> coef2.df<span class="sc">$</span>att <span class="sc">-</span> coef2.df<span class="sc">$</span>se<span class="sc">*</span>interval2</span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a>coef2.df<span class="sc">$</span>ul <span class="ot">&lt;-</span> coef2.df<span class="sc">$</span>att <span class="sc">+</span> coef2.df<span class="sc">$</span>se<span class="sc">*</span>interval2</span>
+<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot</span></span>
+<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a>zp2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(coef2.df[coef2.df<span class="sc">$</span>time <span class="sc">&lt;</span> <span class="dv">7</span>, ], </span>
+<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a>              <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> att)) <span class="sc">+</span>  </span>
+<span id="cb32-22"><a href="#cb32-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_pointrange</span>(<span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> att, <span class="at">ymin =</span> ll, <span class="at">ymax =</span> ul),</span>
+<span id="cb32-23"><a href="#cb32-23" aria-hidden="true" tabindex="-1"></a>                                <span class="at">lwd =</span> <span class="dv">1</span>, <span class="at">fatten =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb32-24"><a href="#cb32-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> att)) <span class="sc">+</span></span>
+<span id="cb32-25"><a href="#cb32-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">colour =</span> <span class="fu">gray</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>), <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">lwd =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb32-26"><a href="#cb32-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="sc">-</span><span class="fl">0.5</span>, <span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">lty =</span> <span class="dv">1</span>, <span class="at">lwd =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb32-27"><a href="#cb32-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span>
+<span id="cb32-28"><a href="#cb32-28" aria-hidden="true" tabindex="-1"></a>zp2</span></code></pre></div>
+<p><img src="Panel_part2_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<p>This gives us what we already expected: using FEIS, the marital wage premium disappears.</p>
+</div>
+</div>
+<div id="dynamic-diff-in-diff" class="section level1">
+<h1>Dynamic Diff-in-Diff</h1>
+<p>There is an ongoing discussion on how the Difference in Differences estimator relates to the two-ways FE estimator when treatment timing varies: different individuals receive the treatment at different periods.</p>
+<p><span class="citation"><a href="#ref-GoodmanBacon.2021" role="doc-biblioref">Goodman-Bacon</a> (<a href="#ref-GoodmanBacon.2021" role="doc-biblioref">2021</a>)</span> shows that the two-ways FE is a weighted average of all possbile two-group/two-period DD estimators. The weights determining how much each of these single combinations contributes to the two-ways FE are determined by the group size (e.g. how long do we observe each combination before and after treatment) and the variance in the treatment.</p>
+<div class="figure">
+<img src="fig/goodman.jpg" alt="" />
+<p class="caption">Two-ways FE and DD with varying treatment timing <span class="citation">(<a href="#ref-GoodmanBacon.2021" role="doc-biblioref">Goodman-Bacon 2021</a>)</span>.</p>
+</div>
+<p>For instance, those who are treated in later time periods are not only compared to those who are never treated but also to those who have already been treated in earlier periods.</p>
+<p>Especially for “trend-breaking” treatment effects like in the following figure, this will lead to biased estimates of the average treatment effect <span class="citation">(<a href="#ref-GoodmanBacon.2021" role="doc-biblioref">Goodman-Bacon 2021</a>; <a href="#ref-Meer.2016" role="doc-biblioref">Meer and West 2016</a>)</span>.</p>
+<div class="figure">
+<img src="fig/goodman2.jpg" alt="" />
+<p class="caption">Bias of two-ways FE with trend-breaking treatment <span class="citation">(<a href="#ref-GoodmanBacon.2021" role="doc-biblioref">Goodman-Bacon 2021</a>)</span>.</p>
+</div>
+<p>In this example, in the middle period, we compare the break in treand in the early tread with the late treated, and we see the divergence between those two groups. However, for the later treated (right third), the earlier treated are the control cases, and we do not observe that there is actually a break in trend.</p>
+<p>One way of counteracting this problem is to use event study / impact function designs (see above) to explicitly model time varying treatment effects.</p>
+<p>A second way is the application of <strong>flexible Diff-in-Diff</strong> estimators as proposed by <span class="citation">(<a href="#ref-Callaway.2020" role="doc-biblioref"><strong>Callaway.2020?</strong></a>)</span>.</p>
+<p>Formally, we do</p>
+<p><strong>TBD</strong></p>
+<p>Intuitively, this means, we estimate an individual treatment effect for each combination of treatment-timing-group and potential control group.</p>
+<p>Obviously, this gives us a large number of different treatment effects. So, in a second step, we re-aggregate these individual combinations back to goup or time averaged treatment effect.</p>
+<p>For a more detailled introdution see <span class="citation">(<a href="#ref-Callaway.2020" role="doc-biblioref"><strong>Callaway.2020?</strong></a>)</span> or the respective <a href="https://cran.r-project.org/web/packages/did/vignettes/multi-period-did.html">package introcution</a>.</p>
+<div id="example-2" class="section level3">
+<h3>Example</h3>
+<p>How does that look in our marriage example? To estimate the dynamic DD we use the <code>did</code> package, as describes in more detail <a href="https://cran.r-project.org/web/packages/did/vignettes/did-basics.html">here</a> or in the authors <a href="https://pedrohcgs.github.io/posts/twfe">blog</a>.</p>
+<p><strong>Note: This package works witch staggered treatment adoption! We thus should perform all the steps we have performed above to restrict and prepare the data!</strong></p>
+<p>As a first step, we need to define a variable that contains the treatment timing: the first year an ever-treated individual is treated.</p>
+<p>This should be a positive number for all observations in treated groups. It defines which “group” a unit belongs to. It should be 0 for units in the untreated group.</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># treatment timing = year if married</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>mwp<span class="sc">$</span>treat_timing <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(mwp<span class="sc">$</span>marry <span class="sc">==</span> <span class="dv">1</span>, mwp<span class="sc">$</span>year, <span class="cn">NA</span>)</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="co"># set never treated to zero</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>mwp<span class="sc">$</span>treat_timing[mwp<span class="sc">$</span>evermarry <span class="sc">==</span> <span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a><span class="co"># if married is not NA, used min year per id (removing NAs)</span></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>mwp<span class="sc">$</span>treat_timing[<span class="sc">!</span><span class="fu">is.na</span>(mwp<span class="sc">$</span>marry)] <span class="ot">&lt;-</span> <span class="fu">ave</span>(mwp<span class="sc">$</span>treat_timing[<span class="sc">!</span><span class="fu">is.na</span>(mwp<span class="sc">$</span>marry)],</span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>                                           mwp<span class="sc">$</span>id[<span class="sc">!</span><span class="fu">is.na</span>(mwp<span class="sc">$</span>marry)],</span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>                                           <span class="at">FUN =</span> <span class="cf">function</span>(x) <span class="fu">min</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(mwp[, <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;year&quot;</span>, <span class="st">&quot;marry&quot;</span>, <span class="st">&quot;evermarry&quot;</span>, <span class="st">&quot;treat_timing&quot;</span>)], <span class="at">n =</span> <span class="dv">35</span>)</span></code></pre></div>
+<pre><code>##    id year marry evermarry treat_timing
+## 1   1 1981     0         1         1988
+## 2   1 1983     0         1         1988
+## 3   1 1984     0         1         1988
+## 4   1 1985     0         1         1988
+## 5   1 1986     0         1         1988
+## 6   1 1987     0         1         1988
+## 7   1 1988     1         1         1988
+## 8   1 1989     1         1         1988
+## 9   1 1990     1         1         1988
+## 10  1 1991     1         1         1988
+## 11  1 1992     1         1         1988
+## 12  2 1979     0         0            0
+## 13  2 1981     0         0            0
+## 14  2 1982     0         0            0
+## 15  2 1983     0         0            0
+## 16  2 1984     0         0            0
+## 17  2 1985     0         0            0
+## 18  2 1989     0         0            0
+## 19  3 1979     0         0            0
+## 20  3 1980     0         0            0
+## 21  3 1981     0         0            0
+## 22  3 1982     0         0            0
+## 23  3 1983     0         0            0
+## 24  3 1984     0         0            0
+## 25  3 1985     0         0            0
+## 26  3 1986     0         0            0
+## 27  3 1987     0         0            0
+## 28  3 1988     0         0            0
+## 29  3 1989     0         0            0
+## 30  3 1993     0         0            0
+## 31  3 1994     0         0            0
+## 32  3 2000     0         0            0
+## 33  4 1979     0         1         1982
+## 34  4 1981     0         1         1982
+## 35  4 1982     1         1         1982</code></pre>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># estimate group-time average treatment effects using att_gt method</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>wages.attgt <span class="ot">&lt;-</span> <span class="fu">att_gt</span>(<span class="at">yname =</span> <span class="st">&quot;lnw&quot;</span>,</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>                      <span class="at">tname =</span> <span class="st">&quot;year&quot;</span>,</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>                      <span class="at">idname =</span> <span class="st">&quot;id&quot;</span>,</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>                      <span class="at">gname =</span> <span class="st">&quot;treat_timing&quot;</span>,</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>                      <span class="at">xformla =</span> <span class="sc">~</span> enrol <span class="sc">+</span> yeduc <span class="sc">+</span> exp <span class="sc">+</span> <span class="fu">I</span>(exp<span class="sc">^</span><span class="dv">2</span>), <span class="co"># note that we omit the yeargroup here</span></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>                      <span class="at">data =</span> mwp,</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>                      <span class="at">allow_unbalanced_panel =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>                      <span class="at">control_group =</span> <span class="st">&quot;notyettreated&quot;</span>,</span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>                      <span class="at">est_method =</span> <span class="st">&quot;ipw&quot;</span></span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a>                        )</span></code></pre></div>
+<pre><code>## Warning in pre_process_did(yname = yname, tname = tname, idname = idname, : Be aware that there are some small groups in your dataset.
+##   Check groups: 1980,1981,1982,1984,1986,1990,1991,1992,1993,1994,1996,1998.</code></pre>
+<pre><code>## Warning in compute.att_gt(dp): No units in group 1980 in time period 1996</code></pre>
+<pre><code>## Warning in compute.att_gt(dp): No units in group 1980 in time period 1998</code></pre>
+<pre><code>## Warning in compute.att_gt(dp): No units in group 1980 in time period 2000</code></pre>
+<pre><code>## Warning in compute.att_gt(dp): No units in group 1981 in time period 1996</code></pre>
+<pre><code>## Warning in compute.att_gt(dp): No units in group 1981 in time period 1998</code></pre>
+<pre><code>## Warning in compute.att_gt(dp): No units in group 1981 in time period 2000</code></pre>
+<pre><code>## Warning in compute.att_gt(dp): No units in group 1982 in time period 1994</code></pre>
+<pre><code>## Warning in compute.att_gt(dp): No units in group 1982 in time period 1996</code></pre>
+<pre><code>## Warning in compute.att_gt(dp): No units in group 1982 in time period 1998</code></pre>
+<pre><code>## Warning in compute.att_gt(dp): No units in group 1982 in time period 2000</code></pre>
+<pre><code>## Warning in compute.att_gt(dp): No units in group 1983 in time period 1998</code></pre>
+<pre><code>## Warning in compute.att_gt(dp): No units in group 1983 in time period 2000</code></pre>
+<pre><code>## Warning in compute.att_gt(dp): No units in group 1984 in time period 2000</code></pre>
+<pre><code>## Warning in compute.att_gt(dp): No units in group 1985 in time period 2000</code></pre>
+<pre><code>## Warning in compute.att_gt(dp): No units in group 1994 in time period 1979</code></pre>
+<p>One huge advantage: We do not need to make a decision about which periods (before treatment) we want to include, and which observations go into the reference category.</p>
+<p>To make this more interpretable, we re-aggregate the individuals results to a dynamic time-averaged effect (we now restrict this to observations from -3 to 6).</p>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>wages.dyn <span class="ot">&lt;-</span> <span class="fu">aggte</span>(wages.attgt, <span class="at">type =</span> <span class="st">&quot;dynamic&quot;</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>                   <span class="at">min_e =</span> <span class="sc">-</span><span class="dv">3</span>, <span class="at">max_e =</span> <span class="dv">6</span>)</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(wages.dyn)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## aggte(MP = wages.attgt, type = &quot;dynamic&quot;, min_e = -3, max_e = 6, 
+##     na.rm = TRUE)
+## 
+## Reference: Callaway, Brantly and Pedro H.C. Sant&#39;Anna.  &quot;Difference-in-Differences with Multiple Time Periods.&quot; Forthcoming at the Journal of Econometrics &lt;https://arxiv.org/abs/1803.09015&gt;, 2020. 
+## 
+## 
+## Overall ATT:  
+##     ATT Std. Error     [95%  Conf. Int.] 
+##  0.0425     0.0405   -0.0369      0.1218 
+## 
+## 
+## Dynamic Effects:
+##  event time    ATT Std. Error [95% Simult.  Conf. Band] 
+##          -3 0.0343     0.0515       -0.1020      0.1707 
+##          -2 0.0089     0.0465       -0.1141      0.1320 
+##          -1 0.0311     0.0351       -0.0617      0.1240 
+##           0 0.0093     0.0362       -0.0866      0.1052 
+##           1 0.0495     0.0418       -0.0611      0.1601 
+##           2 0.0712     0.0437       -0.0445      0.1869 
+##           3 0.0668     0.0536       -0.0750      0.2086 
+##           4 0.0261     0.0537       -0.1162      0.1684 
+##           5 0.0270     0.0593       -0.1301      0.1841 
+##           6 0.0473     0.0684       -0.1339      0.2285 
+## ---
+## Signif. codes: `*&#39; confidence band does not cover 0
+## 
+## Control Group:  Not Yet Treated,  Anticipation Periods:  0
+## Estimation Method:  Inverse Probability Weighting</code></pre>
+<p>The <code>did</code> package also comes with a handy command <code>ggdid()</code> to plot the results</p>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>zp3 <span class="ot">&lt;-</span> <span class="fu">ggdid</span>(wages.dyn) </span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>zp3 <span class="ot">&lt;-</span> zp3 <span class="sc">+</span> </span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">colour =</span> <span class="fu">gray</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>), <span class="at">lty =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="sc">-</span><span class="fl">0.5</span>, <span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">lty =</span> <span class="dv">1</span>)</span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a>zp3</span></code></pre></div>
+<p><img src="Panel_part2_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<p>This doesn’t look too different than our earlier FEIS results.</p>
 </div>
 </div>
 <div id="references" class="section level1 unnumbered">
@@ -1026,11 +1277,17 @@ Clark, Andrew E., and Yannis Georgellis. 2013. <span>“<span class="nocase">Bac
 <div id="ref-Currie.2015" class="csl-entry">
 Currie, Janet, Lucas Davis, Michael Greenstone, and Reed Walker. 2015. <span>“<span class="nocase">Environmental Health Risks and Housing Values: Evidence from 1,600 Toxic Plant Openings and Closings</span>.”</span> <em><span>American Economic Review</span></em> 105 (2): 678–709. <a href="https://doi.org/10.1257/aer.20121656">https://doi.org/10.1257/aer.20121656</a>.
 </div>
+<div id="ref-GoodmanBacon.2021" class="csl-entry">
+Goodman-Bacon, Andrew. 2021. <span>“<span class="nocase">Difference-in-differences with variation in treatment timing</span>.”</span> <em><span>Journal of Econometrics</span></em> 225 (2): 254–77. <a href="https://doi.org/10.1016/j.jeconom.2021.03.014">https://doi.org/10.1016/j.jeconom.2021.03.014</a>.
+</div>
 <div id="ref-Ludwig.2018.0" class="csl-entry">
 Ludwig, Volker, and Josef Brüderl. 2018. <span>“<span class="nocase">Is There a Male Marital Wage Premium? New Evidence from the United States</span>.”</span> <em><span>American Sociological Review</span></em> 83 (4): 744–70. <a href="https://doi.org/10.1177/0003122418784909">https://doi.org/10.1177/0003122418784909</a>.
 </div>
 <div id="ref-Ludwig.2021" class="csl-entry">
 ———. 2021. <span>“<span class="nocase">What You Need to Know When Estimating Impact Functions with Panel Data for Demographic Research</span>.”</span> <em><span>Comparative Population Studies</span></em> 46. <a href="https://doi.org/10.12765/CPoS-2021-16">https://doi.org/10.12765/CPoS-2021-16</a>.
+</div>
+<div id="ref-Meer.2016" class="csl-entry">
+Meer, Jonathan, and Jeremy West. 2016. <span>“<span class="nocase">Effects of the Minimum Wage on Employment Dynamics</span>.”</span> <em><span>Journal of Human Resources</span></em> 51 (2): 500–522. <a href="https://doi.org/10.3368/jhr.51.2.0414-6298R1">https://doi.org/10.3368/jhr.51.2.0414-6298R1</a>.
 </div>
 <div id="ref-Mundlak.1978.0" class="csl-entry">
 Mundlak, Yair. 1978. <span>“<span class="nocase">On the Pooling of Time Series and Cross Section Data</span>.”</span> <em><span>Econometrica</span></em> 46 (1): 69. <a href="https://doi.org/10.2307/1913646">https://doi.org/10.2307/1913646</a>.
