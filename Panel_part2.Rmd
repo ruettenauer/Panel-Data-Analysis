@@ -411,17 +411,38 @@ In this example, in the middle period, we compare the break in treand in the ear
 
 One way of counteracting this problem is to use event study / impact function designs (see above) to explicitly model time varying treatment effects.
 
+### Callaway & Sant’Anna dynamic Diff-in-Diff
+
 A second way is the application of __flexible Diff-in-Diff__ estimators as proposed by @Callaway.2020.
 
-Formally, we do
+Remember, formally we can write the $2 \times 2$ Diff-in-Diff estimator as
 
-__TBD__
+$$
+ATT = \E(\Delta y_{T}) - \E(\Delta y_{C}) = (\E(y_{T}^{post}) - \E(y_{T}^{pre})) - (\E(y_{C}^{post}) - \E(y_{C}^{pre})).
+$$
 
-Intuitively, this means, we estimate an individual treatment effect for each combination of treatment-timing-group and potential control group.
+@Callaway.2020 show that we can generalize this $2 \times 2$ Diff-in-Diff to a mutlti-group and multi-timing setting by computing group-time average treatment effects. We group all treatment units which receive treatment at the same period into a common group $g$, and for each treatment-group $g$ and time period $t$ we estimate group-specific and time-specific ATTs: 
 
-Obviously, this gives us a large number of different treatment effects. So, in a second step, we re-aggregate these individual combinations back to goup or time averaged treatment effect.
+$$
+ATT_{g,t} = \E(\Delta y_{g}) - \E(\Delta y_{C}) = (\E(y_{g}^{t}) - \E(y_{g}^{g-1})) - (\E(y_{C}^{t}) - \E(y_{C}^{g-1})),
+$$
+
+where the control group can either be the never-treated or the not-yet-treated.
+
+Intuitively, this means, we estimate an individual treatment effect for each combination of treatment-timing-group and control group.
+
+Obviously, this gives us a large number of different treatment effects. So, in a second step, we re-aggregate these individual combinations back to goup or time averaged treatment effect. In an event study design, propose the following dynamic treatment effect:
+
+$$
+  \theta_D(e) := \sum_{g=2}^T \mathbf{1} \{ g + e \leq T \} ATT(g,g+e) P(G=g | G+e \leq T),
+$$
+where $e$ specifies for how long a unit has been exposed to the treatment.
 
 For a more detailled introdution see @Callaway.2020 or the respective [package introcution](https://cran.r-project.org/web/packages/did/vignettes/multi-period-did.html).
+
+Assumptions:
+
+TBD
 
 
 ### Example
