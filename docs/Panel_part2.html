@@ -1123,12 +1123,12 @@ y_{it} - \hat{y}_{it} =&amp; (\boldsymbol{\mathbf{x}}_{it} - \hat{\boldsymbol{\m
 </div>
 <p>In this example, in the middle period, we compare the break in treand in the early tread with the late treated, and we see the divergence between those two groups. However, for the later treated (right third), the earlier treated are the control cases, and we do not observe that there is actually a break in trend.</p>
 <p>One way of counteracting this problem is to use event study / impact function designs (see above) to explicitly model time varying treatment effects.</p>
-<p>A second way is the application of <strong>flexible Diff-in-Diff</strong> estimators as proposed by <span class="citation">(<a href="#ref-Callaway.2020" role="doc-biblioref"><strong>Callaway.2020?</strong></a>)</span>.</p>
+<p>A second way is the application of <strong>flexible Diff-in-Diff</strong> estimators as proposed by <span class="citation"><a href="#ref-Callaway.2020" role="doc-biblioref">Callaway and Sant’Anna</a> (<a href="#ref-Callaway.2020" role="doc-biblioref">2020</a>)</span>.</p>
 <p>Formally, we do</p>
 <p><strong>TBD</strong></p>
 <p>Intuitively, this means, we estimate an individual treatment effect for each combination of treatment-timing-group and potential control group.</p>
 <p>Obviously, this gives us a large number of different treatment effects. So, in a second step, we re-aggregate these individual combinations back to goup or time averaged treatment effect.</p>
-<p>For a more detailled introdution see <span class="citation">(<a href="#ref-Callaway.2020" role="doc-biblioref"><strong>Callaway.2020?</strong></a>)</span> or the respective <a href="https://cran.r-project.org/web/packages/did/vignettes/multi-period-did.html">package introcution</a>.</p>
+<p>For a more detailled introdution see <span class="citation"><a href="#ref-Callaway.2020" role="doc-biblioref">Callaway and Sant’Anna</a> (<a href="#ref-Callaway.2020" role="doc-biblioref">2020</a>)</span> or the respective <a href="https://cran.r-project.org/web/packages/did/vignettes/multi-period-did.html">package introcution</a>.</p>
 <div id="example-2" class="section level3">
 <h3>Example</h3>
 <p>How does that look in our marriage example? To estimate the dynamic DD we use the <code>did</code> package, as describes in more detail <a href="https://cran.r-project.org/web/packages/did/vignettes/did-basics.html">here</a> or in the authors <a href="https://pedrohcgs.github.io/posts/twfe">blog</a>.</p>
@@ -1189,14 +1189,14 @@ y_{it} - \hat{y}_{it} =&amp; (\boldsymbol{\mathbf{x}}_{it} - \hat{\boldsymbol{\m
 <span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>                      <span class="at">tname =</span> <span class="st">&quot;year&quot;</span>,</span>
 <span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>                      <span class="at">idname =</span> <span class="st">&quot;id&quot;</span>,</span>
 <span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>                      <span class="at">gname =</span> <span class="st">&quot;treat_timing&quot;</span>,</span>
-<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>                      <span class="at">xformla =</span> <span class="sc">~</span> enrol <span class="sc">+</span> yeduc <span class="sc">+</span> exp <span class="sc">+</span> <span class="fu">I</span>(exp<span class="sc">^</span><span class="dv">2</span>), <span class="co"># note that we omit the yeargroup here</span></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>                      <span class="co">#xformla = ~ enrol + yeduc + exp + I(exp^2), # note that we omit the yeargroup here</span></span>
 <span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>                      <span class="at">data =</span> mwp,</span>
 <span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>                      <span class="at">allow_unbalanced_panel =</span> <span class="cn">TRUE</span>,</span>
 <span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>                      <span class="at">control_group =</span> <span class="st">&quot;notyettreated&quot;</span>,</span>
 <span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>                      <span class="at">est_method =</span> <span class="st">&quot;ipw&quot;</span></span>
 <span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a>                        )</span></code></pre></div>
 <pre><code>## Warning in pre_process_did(yname = yname, tname = tname, idname = idname, : Be aware that there are some small groups in your dataset.
-##   Check groups: 1980,1981,1982,1984,1986,1990,1991,1992,1993,1994,1996,1998.</code></pre>
+##   Check groups: 1980,1982,1990,1994.</code></pre>
 <pre><code>## Warning in compute.att_gt(dp): No units in group 1980 in time period 1996</code></pre>
 <pre><code>## Warning in compute.att_gt(dp): No units in group 1980 in time period 1998</code></pre>
 <pre><code>## Warning in compute.att_gt(dp): No units in group 1980 in time period 2000</code></pre>
@@ -1213,10 +1213,392 @@ y_{it} - \hat{y}_{it} =&amp; (\boldsymbol{\mathbf{x}}_{it} - \hat{\boldsymbol{\m
 <pre><code>## Warning in compute.att_gt(dp): No units in group 1985 in time period 2000</code></pre>
 <pre><code>## Warning in compute.att_gt(dp): No units in group 1994 in time period 1979</code></pre>
 <p>One huge advantage: We do not need to make a decision about which periods (before treatment) we want to include, and which observations go into the reference category.</p>
+<p>However, we get a lot of individual treatment effects.</p>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="co"># showing the first 30</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(wages.attgt)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## att_gt(yname = &quot;lnw&quot;, tname = &quot;year&quot;, idname = &quot;id&quot;, gname = &quot;treat_timing&quot;, 
+##     data = mwp, allow_unbalanced_panel = TRUE, control_group = &quot;notyettreated&quot;, 
+##     est_method = &quot;ipw&quot;)
+## 
+## Reference: Callaway, Brantly and Pedro H.C. Sant&#39;Anna.  &quot;Difference-in-Differences with Multiple Time Periods.&quot; Forthcoming at the Journal of Econometrics &lt;https://arxiv.org/abs/1803.09015&gt;, 2020. 
+## 
+## Group-Time Average Treatment Effects:
+##  Group Time ATT(g,t) Std. Error [95% Simult.  Conf. Band]     
+##   1980 1980   0.0458     0.1608       -0.4559      0.5475     
+##   1980 1981   0.0231     0.2634       -0.7991      0.8452     
+##   1980 1982   0.1336     0.1523       -0.3416      0.6089     
+##   1980 1983  -0.0032     0.2948       -0.9233      0.9169     
+##   1980 1984   0.1506     0.1505       -0.3190      0.6202     
+##   1980 1985   0.1559     0.1589       -0.3399      0.6517     
+##   1980 1986   0.0510     0.1584       -0.4433      0.5453     
+##   1980 1987   0.0072     0.1580       -0.4860      0.5003     
+##   1980 1988  -0.0259     0.1771       -0.5785      0.5266     
+##   1980 1989  -0.0530     0.2015       -0.6817      0.5757     
+##   1980 1990  -0.0255     0.1625       -0.5325      0.4815     
+##   1980 1991   0.0051     0.1767       -0.5465      0.5566     
+##   1980 1992   0.0074     0.2594       -0.8020      0.8168     
+##   1980 1993   0.1456     0.1929       -0.4564      0.7476     
+##   1980 1994  -0.2120     0.2050       -0.8517      0.4278     
+##   1980 1996       NA         NA            NA          NA &lt;NA&gt;
+##   1980 1998       NA         NA            NA          NA &lt;NA&gt;
+##   1980 2000       NA         NA            NA          NA &lt;NA&gt;
+##   1981 1980  -0.1289     0.1110       -0.4753      0.2175     
+##   1981 1981   0.0490     0.0893       -0.2296      0.3275     
+##   1981 1982   0.1016     0.1381       -0.3294      0.5325     
+##   1981 1983  -0.0413     0.1633       -0.5509      0.4683     
+##   1981 1984   0.0303     0.1678       -0.4935      0.5540     
+##   1981 1985  -0.0700     0.1576       -0.5618      0.4217     
+##   1981 1986  -0.1021     0.1459       -0.5575      0.3532     
+##   1981 1987  -0.0572     0.1702       -0.5883      0.4739     
+##   1981 1988  -0.0552     0.1662       -0.5738      0.4635     
+##   1981 1989  -0.1644     0.1477       -0.6254      0.2965     
+##   1981 1990  -0.1310     0.1315       -0.5413      0.2792     
+##   1981 1991  -0.2290     0.1857       -0.8086      0.3505     
+##   1981 1992  -0.0732     0.1657       -0.5902      0.4438     
+##   1981 1993   0.0749     0.1661       -0.4435      0.5932     
+##   1981 1994  -0.1662     0.1770       -0.7184      0.3861     
+##   1981 1996       NA         NA            NA          NA &lt;NA&gt;
+##   1981 1998       NA         NA            NA          NA &lt;NA&gt;
+##   1981 2000       NA         NA            NA          NA &lt;NA&gt;
+##   1982 1980  -0.1950     0.2125       -0.8581      0.4680     
+##   1982 1981   0.2637     0.2196       -0.4218      0.9491     
+##   1982 1982   0.1626     0.3420       -0.9048      1.2300     
+##   1982 1983   0.1908     0.4072       -1.0800      1.4616     
+##   1982 1984   0.0543     0.3402       -1.0075      1.1161     
+##   1982 1985   0.3166     0.3633       -0.8173      1.4505     
+##   1982 1986  -0.0989     0.2230       -0.7950      0.5971     
+##   1982 1987   0.0248     0.2323       -0.7001      0.7498     
+##   1982 1988   0.0292     0.2418       -0.7254      0.7837     
+##   1982 1989   0.1573     0.2382       -0.5862      0.9008     
+##   1982 1990  -0.0694     0.2333       -0.7974      0.6585     
+##   1982 1991   0.0606     0.2294       -0.6552      0.7765     
+##   1982 1992   0.1227     0.2357       -0.6129      0.8583     
+##   1982 1993   0.0560     0.2330       -0.6711      0.7831     
+##   1982 1994       NA         NA            NA          NA &lt;NA&gt;
+##   1982 1996       NA         NA            NA          NA &lt;NA&gt;
+##   1982 1998       NA         NA            NA          NA &lt;NA&gt;
+##   1982 2000       NA         NA            NA          NA &lt;NA&gt;
+##   1983 1980   0.1212     0.0901       -0.1599      0.4023     
+##   1983 1981  -0.0378     0.0726       -0.2645      0.1889     
+##   1983 1982   0.1181     0.0756       -0.1180      0.3541     
+##   1983 1983  -0.0772     0.0945       -0.3722      0.2178     
+##   1983 1984  -0.0860     0.0963       -0.3866      0.2146     
+##   1983 1985  -0.0279     0.1112       -0.3751      0.3193     
+##   1983 1986  -0.0125     0.1365       -0.4383      0.4133     
+##   1983 1987  -0.0215     0.1767       -0.5731      0.5300     
+##   1983 1988  -0.1636     0.1670       -0.6848      0.3577     
+##   1983 1989  -0.1976     0.1486       -0.6614      0.2661     
+##   1983 1990  -0.2338     0.1538       -0.7137      0.2462     
+##   1983 1991  -0.1548     0.1783       -0.7113      0.4016     
+##   1983 1992  -0.1332     0.1839       -0.7071      0.4406     
+##   1983 1993  -0.0297     0.2194       -0.7144      0.6549     
+##   1983 1994   0.0511     0.2877       -0.8468      0.9490     
+##   1983 1996   0.0934     0.2686       -0.7450      0.9318     
+##   1983 1998       NA         NA            NA          NA &lt;NA&gt;
+##   1983 2000       NA         NA            NA          NA &lt;NA&gt;
+##   1984 1980   0.1525     0.0633       -0.0451      0.3500     
+##   1984 1981  -0.2389     0.2066       -0.8836      0.4058     
+##   1984 1982   0.4429     0.2214       -0.2480      1.1338     
+##   1984 1983  -0.1672     0.1172       -0.5331      0.1987     
+##   1984 1984  -0.2668     0.3681       -1.4156      0.8821     
+##   1984 1985   0.1108     0.1180       -0.2574      0.4790     
+##   1984 1986   0.1001     0.1577       -0.3920      0.5922     
+##   1984 1987  -0.0674     0.2811       -0.9446      0.8098     
+##   1984 1988   0.1631     0.2474       -0.6089      0.9351     
+##   1984 1989   0.1929     0.1220       -0.1878      0.5737     
+##   1984 1990   0.1890     0.1690       -0.3385      0.7165     
+##   1984 1991   0.2210     0.1209       -0.1563      0.5983     
+##   1984 1992   0.3217     0.1402       -0.1159      0.7594     
+##   1984 1993   0.1625     0.1587       -0.3329      0.6579     
+##   1984 1994   0.3103     0.2214       -0.3805      1.0011     
+##   1984 1996   0.3587     0.2062       -0.2848      1.0022     
+##   1984 1998   0.3045     0.2114       -0.3553      0.9642     
+##   1984 2000       NA         NA            NA          NA &lt;NA&gt;
+##   1985 1980   0.1140     0.1575       -0.3775      0.6054     
+##   1985 1981  -0.0779     0.1463       -0.5344      0.3785     
+##   1985 1982   0.0244     0.1141       -0.3318      0.3806     
+##   1985 1983   0.0026     0.0799       -0.2469      0.2520     
+##   1985 1984  -0.0224     0.0715       -0.2456      0.2009     
+##   1985 1985  -0.0594     0.0604       -0.2478      0.1291     
+##   1985 1986   0.0003     0.0927       -0.2888      0.2894     
+##   1985 1987   0.0666     0.1104       -0.2781      0.4112     
+##   1985 1988   0.1122     0.1247       -0.2769      0.5013     
+##   1985 1989   0.1080     0.1453       -0.3454      0.5614     
+##   1985 1990   0.0859     0.1636       -0.4247      0.5965     
+##   1985 1991   0.0433     0.1782       -0.5128      0.5995     
+##   1985 1992   0.2087     0.2123       -0.4538      0.8713     
+##   1985 1993   0.3690     0.2206       -0.3194      1.0574     
+##   1985 1994   0.3064     0.2308       -0.4137      1.0265     
+##   1985 1996   0.0689     0.2311       -0.6524      0.7902     
+##   1985 1998   0.2565     0.3025       -0.6875      1.2006     
+##   1985 2000       NA         NA            NA          NA &lt;NA&gt;
+##   1986 1980  -0.0355     0.2034       -0.6701      0.5991     
+##   1986 1981   0.1164     0.1794       -0.4436      0.6764     
+##   1986 1982  -0.0427     0.1532       -0.5207      0.4352     
+##   1986 1983  -0.1012     0.1228       -0.4845      0.2821     
+##   1986 1984   0.0884     0.1600       -0.4108      0.5876     
+##   1986 1985   0.0113     0.0885       -0.2650      0.2875     
+##   1986 1986  -0.2075     0.0940       -0.5007      0.0858     
+##   1986 1987  -0.0586     0.1065       -0.3910      0.2738     
+##   1986 1988  -0.0168     0.1393       -0.4514      0.4177     
+##   1986 1989  -0.3852     0.1506       -0.8551      0.0846     
+##   1986 1990  -0.1849     0.1497       -0.6521      0.2823     
+##   1986 1991  -0.2494     0.1439       -0.6985      0.1997     
+##   1986 1992  -0.1631     0.1695       -0.6920      0.3658     
+##   1986 1993  -0.3148     0.1986       -0.9346      0.3049     
+##   1986 1994  -0.1290     0.2442       -0.8910      0.6330     
+##   1986 1996  -0.3379     0.4272       -1.6709      0.9952     
+##   1986 1998  -0.4934     0.6034       -2.3764      1.3896     
+##   1986 2000   0.1782     0.2723       -0.6714      1.0279     
+##   1987 1980  -0.0870     0.1282       -0.4871      0.3131     
+##   1987 1981  -0.1077     0.1375       -0.5368      0.3215     
+##   1987 1982  -0.2367     0.1315       -0.6472      0.1737     
+##   1987 1983  -0.0504     0.1158       -0.4119      0.3111     
+##   1987 1984   0.0422     0.1804       -0.5207      0.6050     
+##   1987 1985   0.3759     0.1408       -0.0635      0.8152     
+##   1987 1986  -0.0060     0.0999       -0.3179      0.3059     
+##   1987 1987  -0.0954     0.1515       -0.5683      0.3775     
+##   1987 1988  -0.1029     0.1150       -0.4618      0.2559     
+##   1987 1989  -0.1012     0.1141       -0.4575      0.2550     
+##   1987 1990  -0.0826     0.1089       -0.4226      0.2573     
+##   1987 1991   0.0224     0.1020       -0.2959      0.3406     
+##   1987 1992   0.0868     0.1273       -0.3105      0.4841     
+##   1987 1993   0.0554     0.1388       -0.3778      0.4885     
+##   1987 1994   0.0322     0.1743       -0.5116      0.5760     
+##   1987 1996   0.0578     0.1411       -0.3826      0.4982     
+##   1987 1998   0.1176     0.1843       -0.4575      0.6927     
+##   1987 2000  -0.0506     0.2080       -0.6998      0.5987     
+##   1988 1980   0.1629     0.2521       -0.6238      0.9495     
+##   1988 1981   0.1777     0.1462       -0.2786      0.6339     
+##   1988 1982   0.0052     0.1522       -0.4699      0.4803     
+##   1988 1983   0.0105     0.1386       -0.4219      0.4429     
+##   1988 1984  -0.0048     0.1051       -0.3327      0.3230     
+##   1988 1985   0.1437     0.0950       -0.1527      0.4400     
+##   1988 1986  -0.2029     0.1381       -0.6340      0.2282     
+##   1988 1987  -0.0009     0.0907       -0.2839      0.2822     
+##   1988 1988   0.1335     0.0682       -0.0795      0.3464     
+##   1988 1989   0.3157     0.1235       -0.0698      0.7012     
+##   1988 1990   0.3005     0.1033       -0.0218      0.6229     
+##   1988 1991   0.3596     0.1059        0.0292      0.6901    *
+##   1988 1992   0.2546     0.1272       -0.1422      0.6515     
+##   1988 1993   0.3282     0.1349       -0.0928      0.7492     
+##   1988 1994   0.3124     0.1739       -0.2304      0.8551     
+##   1988 1996   0.3425     0.1399       -0.0940      0.7791     
+##   1988 1998   0.1312     0.2587       -0.6760      0.9385     
+##   1988 2000   0.1996     0.1579       -0.2933      0.6924     
+##   1989 1980   0.0841     0.1709       -0.4493      0.6174     
+##   1989 1981  -0.1884     0.2545       -0.9825      0.6058     
+##   1989 1982   0.2056     0.2323       -0.5194      0.9306     
+##   1989 1983   0.0025     0.2935       -0.9135      0.9185     
+##   1989 1984   0.0223     0.0922       -0.2654      0.3101     
+##   1989 1985  -0.2832     0.2140       -0.9512      0.3848     
+##   1989 1986   0.0454     0.2654       -0.7827      0.8735     
+##   1989 1987  -0.0350     0.1357       -0.4584      0.3883     
+##   1989 1988   0.0708     0.0954       -0.2269      0.3685     
+##   1989 1989   0.0486     0.1119       -0.3006      0.3979     
+##   1989 1990   0.0521     0.1326       -0.3616      0.4659     
+##   1989 1991   0.0720     0.1654       -0.4442      0.5883     
+##   1989 1992   0.2708     0.2724       -0.5792      1.1207     
+##   1989 1993   0.0143     0.2094       -0.6392      0.6677     
+##   1989 1994   0.1855     0.3261       -0.8320      1.2031     
+##   1989 1996   0.2842     0.4128       -1.0040      1.5723     
+##   1989 1998   0.3437     0.3078       -0.6170      1.3043     
+##   1989 2000   0.0745     0.4141       -1.2179      1.3668     
+##   1990 1980   0.0271     0.3159       -0.9588      1.0130     
+##   1990 1981  -0.0903     0.1396       -0.5259      0.3454     
+##   1990 1982  -0.3019     0.1335       -0.7186      0.1148     
+##   1990 1983   0.2384     0.2008       -0.3881      0.8649     
+##   1990 1984   0.4904     0.2573       -0.3126      1.2934     
+##   1990 1985  -0.5329     0.2247       -1.2340      0.1682     
+##   1990 1986  -0.1602     0.1940       -0.7655      0.4452     
+##   1990 1987  -0.0241     0.1180       -0.3924      0.3442     
+##   1990 1988   0.0585     0.3212       -0.9440      1.0610     
+##   1990 1989   0.0291     0.2553       -0.7675      0.8257     
+##   1990 1990   0.0951     0.2224       -0.5990      0.7892     
+##   1990 1991   0.0717     0.3872       -1.1365      1.2799     
+##   1990 1992   0.2766     0.2384       -0.4676      1.0207     
+##   1990 1993   0.3321     0.3844       -0.8675      1.5317     
+##   1990 1994   0.2388     0.4037       -1.0209      1.4985     
+##   1990 1996   0.2235     0.3668       -0.9213      1.3683     
+##   1990 1998   0.2999     0.3640       -0.8360      1.4357     
+##   1990 2000   0.0711     0.3742       -1.0967      1.2389     
+##   1991 1980   0.0674     0.3231       -0.9411      1.0758     
+##   1991 1981   0.1846     0.1216       -0.1948      0.5640     
+##   1991 1982  -0.3465     0.2394       -1.0935      0.4005     
+##   1991 1983   0.1857     0.1975       -0.4306      0.8020     
+##   1991 1984  -0.3355     0.1367       -0.7622      0.0913     
+##   1991 1985   0.2739     0.2292       -0.4413      0.9892     
+##   1991 1986   0.0838     0.1654       -0.4323      0.5999     
+##   1991 1987   0.0179     0.1880       -0.5689      0.6047     
+##   1991 1988   0.0641     0.1625       -0.4429      0.5711     
+##   1991 1989  -0.1817     0.1553       -0.6662      0.3029     
+##   1991 1990   0.2377     0.1104       -0.1069      0.5822     
+##   1991 1991  -0.0155     0.1069       -0.3491      0.3182     
+##   1991 1992  -0.0115     0.1422       -0.4555      0.4324     
+##   1991 1993   0.0052     0.1534       -0.4737      0.4840     
+##   1991 1994  -0.1098     0.1838       -0.6836      0.4639     
+##   1991 1996  -0.2591     0.1672       -0.7810      0.2627     
+##   1991 1998  -0.1275     0.1672       -0.6494      0.3945     
+##   1991 2000  -0.2352     0.2253       -0.9383      0.4679     
+##   1992 1980   0.0273     0.2230       -0.6686      0.7232     
+##   1992 1981  -0.0104     0.2003       -0.6356      0.6148     
+##   1992 1982   0.1930     0.1411       -0.2473      0.6333     
+##   1992 1983  -0.0356     0.1452       -0.4888      0.4175     
+##   1992 1984  -0.1464     0.1006       -0.4603      0.1674     
+##   1992 1985   0.0910     0.1867       -0.4915      0.6735     
+##   1992 1986  -0.0967     0.1745       -0.6413      0.4479     
+##   1992 1987  -0.0081     0.2502       -0.7889      0.7728     
+##   1992 1988   0.0831     0.1395       -0.3521      0.5184     
+##   1992 1989  -0.0646     0.0958       -0.3635      0.2343     
+##   1992 1990   0.1328     0.0891       -0.1453      0.4109     
+##   1992 1991   0.0683     0.1409       -0.3713      0.5078     
+##   1992 1992   0.1507     0.1050       -0.1769      0.4783     
+##   1992 1993  -0.0434     0.1197       -0.4169      0.3301     
+##   1992 1994  -0.0208     0.1480       -0.4826      0.4410     
+##   1992 1996  -0.0925     0.1860       -0.6730      0.4879     
+##   1992 1998  -0.1061     0.2204       -0.7937      0.5816     
+##   1992 2000  -0.1084     0.1755       -0.6562      0.4394     
+##   1993 1980   0.0885     0.1251       -0.3018      0.4788     
+##   1993 1981  -0.1510     0.0519       -0.3129      0.0109     
+##   1993 1982  -0.2665     0.2042       -0.9038      0.3709     
+##   1993 1983   0.5454     0.2439       -0.2156      1.3064     
+##   1993 1984  -0.2586     0.1300       -0.6641      0.1470     
+##   1993 1985   0.3506     0.2187       -0.3318      1.0329     
+##   1993 1986   0.1320     0.3095       -0.8338      1.0977     
+##   1993 1987  -0.0727     0.2783       -0.9410      0.7957     
+##   1993 1988  -0.0676     0.0989       -0.3762      0.2409     
+##   1993 1989   0.0641     0.0844       -0.1994      0.3276     
+##   1993 1990  -0.0863     0.0770       -0.3267      0.1540     
+##   1993 1991  -0.0007     0.0864       -0.2703      0.2689     
+##   1993 1992  -0.0081     0.1383       -0.4398      0.4235     
+##   1993 1993  -0.1149     0.1640       -0.6267      0.3969     
+##   1993 1994  -0.1264     0.1758       -0.6751      0.4224     
+##   1993 1996   0.0338     0.1733       -0.5070      0.5747     
+##   1993 1998  -0.0599     0.2185       -0.7419      0.6221     
+##   1993 2000  -0.2164     0.2516       -1.0017      0.5689     
+##   1994 1980       NA         NA            NA          NA &lt;NA&gt;
+##   1994 1981   0.2721     0.0676        0.0610      0.4832    *
+##   1994 1982  -0.2316     0.0938       -0.5243      0.0611     
+##   1994 1983   0.2402     0.1253       -0.1509      0.6313     
+##   1994 1984  -0.4270     0.0526       -0.5913     -0.2628    *
+##   1994 1985  -0.1525     0.1565       -0.6408      0.3358     
+##   1994 1986   0.4009     0.1945       -0.2062      1.0080     
+##   1994 1987   0.2158     0.3370       -0.8359      1.2675     
+##   1994 1988   0.1474     0.1208       -0.2296      0.5244     
+##   1994 1989   0.0033     0.0859       -0.2649      0.2714     
+##   1994 1990  -0.0831     0.0560       -0.2577      0.0916     
+##   1994 1991   0.0904     0.0622       -0.1036      0.2845     
+##   1994 1992   0.3169     0.1340       -0.1013      0.7351     
+##   1994 1993  -0.1169     0.0921       -0.4044      0.1705     
+##   1994 1994  -0.1990     0.1643       -0.7118      0.3139     
+##   1994 1996  -0.0386     0.1360       -0.4630      0.3858     
+##   1994 1998  -0.1785     0.2654       -1.0067      0.6498     
+##   1994 2000  -0.5138     0.3389       -1.5713      0.5437     
+##   1996 1980  -0.5476     0.2785       -1.4166      0.3213     
+##   1996 1981   0.2139     0.1686       -0.3124      0.7401     
+##   1996 1982   0.0462     0.1522       -0.4289      0.5213     
+##   1996 1983  -0.3550     0.2067       -1.0000      0.2901     
+##   1996 1984   0.1749     0.1234       -0.2101      0.5599     
+##   1996 1985  -0.1094     0.2346       -0.8414      0.6227     
+##   1996 1986  -0.0334     0.2638       -0.8565      0.7897     
+##   1996 1987   0.4432     0.3468       -0.6391      1.5255     
+##   1996 1988  -0.5265     0.3579       -1.6433      0.5904     
+##   1996 1989   0.3380     0.2533       -0.4525      1.1284     
+##   1996 1990  -0.0997     0.0892       -0.3781      0.1786     
+##   1996 1991  -0.0993     0.1411       -0.5397      0.3411     
+##   1996 1992  -0.0424     0.1814       -0.6085      0.5236     
+##   1996 1993   0.2969     0.3786       -0.8845      1.4783     
+##   1996 1994  -0.1758     0.3817       -1.3669      1.0153     
+##   1996 1996   0.3742     0.2612       -0.4410      1.1894     
+##   1996 1998   0.1061     0.2280       -0.6054      0.8177     
+##   1996 2000   0.0994     0.2816       -0.7795      0.9784     
+##   1998 1980  -0.3484     0.1255       -0.7402      0.0433     
+##   1998 1981   0.2643     0.1032       -0.0577      0.5864     
+##   1998 1982   0.1757     0.1781       -0.3801      0.7316     
+##   1998 1983  -0.1331     0.2072       -0.7796      0.5134     
+##   1998 1984  -0.0396     0.1224       -0.4217      0.3425     
+##   1998 1985  -0.2229     0.0984       -0.5300      0.0842     
+##   1998 1986   0.4393     0.1617       -0.0653      0.9438     
+##   1998 1987  -0.1735     0.1282       -0.5737      0.2266     
+##   1998 1988   0.2486     0.0868       -0.0222      0.5194     
+##   1998 1989  -0.1116     0.3996       -1.3588      1.1355     
+##   1998 1990  -0.1982     0.4013       -1.4504      1.0541     
+##   1998 1991   0.1722     0.1336       -0.2447      0.5891     
+##   1998 1992   0.0115     0.1063       -0.3202      0.3431     
+##   1998 1993  -0.0237     0.1159       -0.3853      0.3379     
+##   1998 1994   0.2398     0.3144       -0.7413      1.2209     
+##   1998 1996  -0.3608     0.3487       -1.4488      0.7272     
+##   1998 1998  -0.0142     0.1533       -0.4925      0.4641     
+##   1998 2000   0.1968     0.3394       -0.8622      1.2559     
+## ---
+## Signif. codes: `*&#39; confidence band does not cover 0
+## 
+## P-value for pre-test of parallel trends assumption:  1
+## Control Group:  Not Yet Treated,  Anticipation Periods:  0
+## Estimation Method:  Inverse Probability Weighting</code></pre>
+<p>These individual effects are similar to running a lot of individual regressions, where we compute a lot of individual <span class="math inline">\(2 \times 2\)</span> DD estimators, e.g. for group 1981:</p>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>t <span class="ot">&lt;-</span> <span class="dv">1981</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a><span class="co"># run individual effects</span></span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="fu">sort</span>(<span class="fu">unique</span>(mwp<span class="sc">$</span>year))[<span class="sc">-</span><span class="dv">1</span>]){</span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># not yet treated</span></span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a>  mwp<span class="sc">$</span>notyettreated <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(mwp<span class="sc">$</span>treat_timing <span class="sc">&gt;</span> t <span class="sc">&amp;</span> mwp<span class="sc">$</span>treat_timing <span class="sc">&gt;</span> i, <span class="dv">1</span>, <span class="dv">0</span>)</span>
+<span id="cb54-8"><a href="#cb54-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb54-9"><a href="#cb54-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># select 1980 group, never-treated and not yet treated</span></span>
+<span id="cb54-10"><a href="#cb54-10" aria-hidden="true" tabindex="-1"></a>  oo <span class="ot">&lt;-</span> <span class="fu">which</span>(mwp<span class="sc">$</span>treat_timing <span class="sc">==</span> t <span class="sc">|</span> mwp<span class="sc">$</span>treat_timing <span class="sc">==</span> <span class="dv">0</span> <span class="sc">|</span> mwp<span class="sc">$</span>notyettreated <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb54-11"><a href="#cb54-11" aria-hidden="true" tabindex="-1"></a>  df <span class="ot">&lt;-</span> mwp[oo, ]</span>
+<span id="cb54-12"><a href="#cb54-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb54-13"><a href="#cb54-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># after set to 1 for year rolling year i</span></span>
+<span id="cb54-14"><a href="#cb54-14" aria-hidden="true" tabindex="-1"></a>  df<span class="sc">$</span>after <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
+<span id="cb54-15"><a href="#cb54-15" aria-hidden="true" tabindex="-1"></a>  df<span class="sc">$</span>after[df<span class="sc">$</span>year <span class="sc">==</span> i] <span class="ot">&lt;-</span> <span class="dv">1</span> </span>
+<span id="cb54-16"><a href="#cb54-16" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb54-17"><a href="#cb54-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># control year</span></span>
+<span id="cb54-18"><a href="#cb54-18" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(i <span class="sc">&lt;</span> t){</span>
+<span id="cb54-19"><a href="#cb54-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># if i is still before actual treatment, compare to previous year</span></span>
+<span id="cb54-20"><a href="#cb54-20" aria-hidden="true" tabindex="-1"></a>    tc <span class="ot">&lt;-</span> i <span class="sc">-</span> <span class="dv">1</span></span>
+<span id="cb54-21"><a href="#cb54-21" aria-hidden="true" tabindex="-1"></a>  }<span class="cf">else</span>{</span>
+<span id="cb54-22"><a href="#cb54-22" aria-hidden="true" tabindex="-1"></a>    <span class="co"># if i is beyond actual treatment, compare to year before actual treatment (t-1)</span></span>
+<span id="cb54-23"><a href="#cb54-23" aria-hidden="true" tabindex="-1"></a>    tc <span class="ot">&lt;-</span> t <span class="sc">-</span> <span class="dv">1</span></span>
+<span id="cb54-24"><a href="#cb54-24" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb54-25"><a href="#cb54-25" aria-hidden="true" tabindex="-1"></a>  df<span class="sc">$</span>after[df<span class="sc">$</span>year <span class="sc">==</span> tc] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb54-26"><a href="#cb54-26" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb54-27"><a href="#cb54-27" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Restrict to the two years we want to compare</span></span>
+<span id="cb54-28"><a href="#cb54-28" aria-hidden="true" tabindex="-1"></a>  df <span class="ot">&lt;-</span> df[<span class="sc">!</span><span class="fu">is.na</span>(df<span class="sc">$</span>after), ]</span>
+<span id="cb54-29"><a href="#cb54-29" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb54-30"><a href="#cb54-30" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Define treated group</span></span>
+<span id="cb54-31"><a href="#cb54-31" aria-hidden="true" tabindex="-1"></a>  df<span class="sc">$</span>treat <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(df<span class="sc">$</span>treat_timing <span class="sc">==</span> t, <span class="dv">1</span>, <span class="dv">0</span>)</span>
+<span id="cb54-32"><a href="#cb54-32" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb54-33"><a href="#cb54-33" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Estiamte 2x2 DD</span></span>
+<span id="cb54-34"><a href="#cb54-34" aria-hidden="true" tabindex="-1"></a>  tmp.lm <span class="ot">&lt;-</span> <span class="fu">lm</span>(lnw <span class="sc">~</span> treat<span class="sc">*</span>after, <span class="at">data =</span> df)</span>
+<span id="cb54-35"><a href="#cb54-35" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb54-36"><a href="#cb54-36" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Print</span></span>
+<span id="cb54-37"><a href="#cb54-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="fu">paste0</span>(i, <span class="st">&quot;: &quot;</span>, <span class="fu">round</span>(tmp.lm<span class="sc">$</span>coefficients[<span class="dv">4</span>], <span class="dv">4</span>)))</span>
+<span id="cb54-38"><a href="#cb54-38" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<pre><code>## [1] &quot;1980: -0.1289&quot;
+## [1] &quot;1981: 0.049&quot;
+## [1] &quot;1982: 0.1016&quot;
+## [1] &quot;1983: -0.0413&quot;
+## [1] &quot;1984: 0.0303&quot;
+## [1] &quot;1985: -0.07&quot;
+## [1] &quot;1986: -0.1021&quot;
+## [1] &quot;1987: -0.0572&quot;
+## [1] &quot;1988: -0.0552&quot;
+## [1] &quot;1989: -0.1644&quot;
+## [1] &quot;1990: -0.131&quot;
+## [1] &quot;1991: -0.229&quot;
+## [1] &quot;1992: -0.0732&quot;
+## [1] &quot;1993: 0.0749&quot;
+## [1] &quot;1994: -0.1662&quot;
+## [1] &quot;1996: NA&quot;
+## [1] &quot;1998: NA&quot;
+## [1] &quot;2000: NA&quot;</code></pre>
 <p>To make this more interpretable, we re-aggregate the individuals results to a dynamic time-averaged effect (we now restrict this to observations from -3 to 6).</p>
-<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>wages.dyn <span class="ot">&lt;-</span> <span class="fu">aggte</span>(wages.attgt, <span class="at">type =</span> <span class="st">&quot;dynamic&quot;</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>                   <span class="at">min_e =</span> <span class="sc">-</span><span class="dv">3</span>, <span class="at">max_e =</span> <span class="dv">6</span>)</span>
-<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(wages.dyn)</span></code></pre></div>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>wages.dyn <span class="ot">&lt;-</span> <span class="fu">aggte</span>(wages.attgt, <span class="at">type =</span> <span class="st">&quot;dynamic&quot;</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>                   <span class="at">min_e =</span> <span class="sc">-</span><span class="dv">3</span>, <span class="at">max_e =</span> <span class="dv">6</span>)</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(wages.dyn)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## aggte(MP = wages.attgt, type = &quot;dynamic&quot;, min_e = -3, max_e = 6, 
@@ -1227,36 +1609,36 @@ y_{it} - \hat{y}_{it} =&amp; (\boldsymbol{\mathbf{x}}_{it} - \hat{\boldsymbol{\m
 ## 
 ## Overall ATT:  
 ##     ATT Std. Error     [95%  Conf. Int.] 
-##  0.0425     0.0405   -0.0369      0.1218 
+##  0.0431     0.0429   -0.0409      0.1271 
 ## 
 ## 
 ## Dynamic Effects:
-##  event time    ATT Std. Error [95% Simult.  Conf. Band] 
-##          -3 0.0343     0.0515       -0.1020      0.1707 
-##          -2 0.0089     0.0465       -0.1141      0.1320 
-##          -1 0.0311     0.0351       -0.0617      0.1240 
-##           0 0.0093     0.0362       -0.0866      0.1052 
-##           1 0.0495     0.0418       -0.0611      0.1601 
-##           2 0.0712     0.0437       -0.0445      0.1869 
-##           3 0.0668     0.0536       -0.0750      0.2086 
-##           4 0.0261     0.0537       -0.1162      0.1684 
-##           5 0.0270     0.0593       -0.1301      0.1841 
-##           6 0.0473     0.0684       -0.1339      0.2285 
+##  event time     ATT Std. Error [95% Simult.  Conf. Band] 
+##          -3  0.0409     0.0509       -0.0953      0.1770 
+##          -2  0.0107     0.0465       -0.1136      0.1350 
+##          -1  0.0195     0.0305       -0.0621      0.1011 
+##           0 -0.0043     0.0334       -0.0935      0.0849 
+##           1  0.0356     0.0407       -0.0732      0.1445 
+##           2  0.0697     0.0422       -0.0432      0.1826 
+##           3  0.0658     0.0515       -0.0719      0.2034 
+##           4  0.0557     0.0557       -0.0932      0.2047 
+##           5  0.0429     0.0664       -0.1345      0.2203 
+##           6  0.0361     0.0722       -0.1569      0.2291 
 ## ---
 ## Signif. codes: `*&#39; confidence band does not cover 0
 ## 
 ## Control Group:  Not Yet Treated,  Anticipation Periods:  0
 ## Estimation Method:  Inverse Probability Weighting</code></pre>
 <p>The <code>did</code> package also comes with a handy command <code>ggdid()</code> to plot the results</p>
-<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>zp3 <span class="ot">&lt;-</span> <span class="fu">ggdid</span>(wages.dyn) </span>
-<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>zp3 <span class="ot">&lt;-</span> zp3 <span class="sc">+</span> </span>
-<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">colour =</span> <span class="fu">gray</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>), <span class="at">lty =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="sc">-</span><span class="fl">0.5</span>, <span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">lty =</span> <span class="dv">1</span>)</span>
-<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a>zp3</span></code></pre></div>
-<p><img src="Panel_part2_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
-<p>This doesn’t look too different than our earlier FEIS results.</p>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>zp3 <span class="ot">&lt;-</span> <span class="fu">ggdid</span>(wages.dyn) </span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>zp3 <span class="ot">&lt;-</span> zp3 <span class="sc">+</span> </span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">colour =</span> <span class="fu">gray</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>), <span class="at">lty =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="sc">-</span><span class="fl">0.5</span>, <span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">lty =</span> <span class="dv">1</span>)</span>
+<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a>zp3</span></code></pre></div>
+<p><img src="Panel_part2_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+<p>Although it is definitely not the same, this doesn’t look too different from our earlier FEIS results.</p>
 </div>
 </div>
 <div id="references" class="section level1 unnumbered">
@@ -1267,6 +1649,9 @@ Brüderl, Josef, and Volker Ludwig. 2015. <span>“<span>Fixed-Effects Panel Reg
 </div>
 <div id="ref-NLSY79.2012" class="csl-entry">
 Bureau of Labor Statistics. 2014. <em><span class="nocase">National Longitudinal Survey of Youth 1979 Cohort, 1979-2012 (rounds 1-23)</span></em>. Columbus, OH: <span>Center for Human Resource Research, The Ohio State University</span>.
+</div>
+<div id="ref-Callaway.2020" class="csl-entry">
+Callaway, Brantly, and Pedro H. C. Sant’Anna. 2020. <span>“<span class="nocase">Difference-in-Differences with multiple time periods</span>.”</span> <em><span>Journal of Econometrics</span></em> 72 (5): 1. <a href="https://doi.org/10.1016/j.jeconom.2020.12.001">https://doi.org/10.1016/j.jeconom.2020.12.001</a>.
 </div>
 <div id="ref-Chamberlain.1982" class="csl-entry">
 Chamberlain, Gary. 1982. <span>“<span class="nocase">Multivariate Regression Models for Panel Data</span>.”</span> <em><span>Journal of Econometrics</span></em> 18 (1): 5–46. <a href="https://doi.org/10.1016/0304-4076(82)90094-X">https://doi.org/10.1016/0304-4076(82)90094-X</a>.

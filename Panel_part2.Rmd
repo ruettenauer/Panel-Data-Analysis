@@ -458,7 +458,7 @@ wages.attgt <- att_gt(yname = "lnw",
                       tname = "year",
                       idname = "id",
                       gname = "treat_timing",
-                      xformla = ~ enrol + yeduc + exp + I(exp^2), # note that we omit the yeargroup here
+                      #xformla = ~ enrol + yeduc + exp + I(exp^2), # note that we omit the yeargroup here
                       data = mwp,
                       allow_unbalanced_panel = TRUE,
                       control_group = "notyettreated",
@@ -467,6 +467,56 @@ wages.attgt <- att_gt(yname = "lnw",
 ```
 
 One huge advantage: We do not need to make a decision about which periods (before treatment) we want to include, and which observations go into the reference category. 
+
+However, we get a lot of individual treatment effects.
+
+```{r}
+# showing the first 30
+summary(wages.attgt)
+```
+
+These individual effects are similar to running a lot of individual regressions, where we compute a lot of individual $2 \times 2$ DD estimators, e.g. for group 1981:
+
+```{r}
+t <- 1981
+
+# run individual effects
+for(i in sort(unique(mwp$year))[-1]){
+  
+  # not yet treated
+  mwp$notyettreated <- ifelse(mwp$treat_timing > t & mwp$treat_timing > i, 1, 0)
+  
+  # select 1980 group, never-treated and not yet treated
+  oo <- which(mwp$treat_timing == t | mwp$treat_timing == 0 | mwp$notyettreated == 1)
+  df <- mwp[oo, ]
+  
+  # after set to 1 for year rolling year i
+  df$after <- NA
+  df$after[df$year == i] <- 1 
+  
+  # control year
+  if(i < t){
+    # if i is still before actual treatment, compare to previous year
+    tc <- i - 1
+  }else{
+    # if i is beyond actual treatment, compare to year before actual treatment (t-1)
+    tc <- t - 1
+  }
+  df$after[df$year == tc] <- 0
+  
+  # Restrict to the two years we want to compare
+  df <- df[!is.na(df$after), ]
+  
+  # Define treated group
+  df$treat <- ifelse(df$treat_timing == t, 1, 0)
+  
+  # Estiamte 2x2 DD
+  tmp.lm <- lm(lnw ~ treat*after, data = df)
+  
+  # Print
+  print(paste0(i, ": ", round(tmp.lm$coefficients[4], 4)))
+}
+```
 
 To make this more interpretable, we re-aggregate the individuals results to a dynamic time-averaged effect (we now restrict this to observations from -3 to 6).
 
@@ -488,7 +538,7 @@ zp3 <- zp3 +
 zp3
 ```
 
-This doesn't look too different than our earlier FEIS results.
+Although it is definitely not the same, this doesn't look too different from our earlier FEIS results. 
 
 # References
 
