@@ -2,7 +2,7 @@
 
 This is a short-course on panel data analysis, originally prepared for the Warwick Q-Step Masterclass.
 
-* This is work in progress *
+__This is work in progress__
 
 ---
 

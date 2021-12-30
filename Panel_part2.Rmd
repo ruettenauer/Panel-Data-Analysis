@@ -418,13 +418,14 @@ A second way is the application of __flexible Diff-in-Diff__ estimators as propo
 Remember, formally we can write the $2 \times 2$ Diff-in-Diff estimator as
 
 $$
-ATT = \E(\Delta y_{T}) - \E(\Delta y_{C}) = (\E(y_{T}^{post}) - \E(y_{T}^{pre})) - (\E(y_{C}^{post}) - \E(y_{C}^{pre})).
+\delta = \E(\Delta y_{T}) - \E(\Delta y_{C}) = (\E(y_{T}^{post}) - \E(y_{T}^{pre})) - (\E(y_{C}^{post}) - \E(y_{C}^{pre})),
 $$
+where $\delta$ is the average tretment effect on the treated (ATT).
 
 @Callaway.2020 show that we can generalize this $2 \times 2$ Diff-in-Diff to a mutlti-group and multi-timing setting by computing group-time average treatment effects. We group all treatment units which receive treatment at the same period into a common group $g$, and for each treatment-group $g$ and time period $t$ we estimate group-specific and time-specific ATTs: 
 
 $$
-ATT_{g,t} = \E(\Delta y_{g}) - \E(\Delta y_{C}) = (\E(y_{g}^{t}) - \E(y_{g}^{g-1})) - (\E(y_{C}^{t}) - \E(y_{C}^{g-1})),
+\delta_{g,t} = \E(\Delta y_{g}) - \E(\Delta y_{C}) = (\E(y_{g}^{t}) - \E(y_{g}^{g-1})) - (\E(y_{C}^{t}) - \E(y_{C}^{g-1})),
 $$
 
 where the control group can either be the never-treated or the not-yet-treated.
@@ -434,7 +435,7 @@ Intuitively, this means, we estimate an individual treatment effect for each com
 Obviously, this gives us a large number of different treatment effects. So, in a second step, we re-aggregate these individual combinations back to goup or time averaged treatment effect. In an event study design, propose the following dynamic treatment effect:
 
 $$
-  \theta_D(e) := \sum_{g=2}^T \mathbf{1} \{ g + e \leq T \} ATT(g,g+e) P(G=g | G+e \leq T),
+  \theta_D(e) := \sum_{g=2}^T \mathbf{1} \{ g + e \leq T \} \delta(g,g+e) P(G=g | G+e \leq T),
 $$
 where $e$ specifies for how long a unit has been exposed to the treatment.
 
@@ -560,6 +561,58 @@ zp3
 ```
 
 Although it is definitely not the same, this doesn't look too different from our earlier FEIS results. 
+
+# Synthetic Control
+
+So far, we have considered quantitative examples with multiple treated and multiple non-treated units, and we have applied "bruteforce" approaches to identify causal effects.
+
+However, sometimes we face the situation of a single treated unit. This is especially common in comparative case studies. For instance, a single country or region has implemented a specific policy or experienced a specific shock. For instance, we might be interested in how a terrorist attack might influence the economic development of a region [@Abadie.2003].
+
+The synthetic control estimator [@Abadie.2003; @Abadie.2010; @Abadie.2021] has become a very popular way of dealing with situation with a single treated unit. 
+
+__The general idea: we use the control units to construct an average "synthetic control" unit in a way that the outcome trajectory of the synthetic control unit closely matches the outcome trajectory of the treated unit.__ Find weights to construct a "synthetic control" unit (by reweighing non-treated units) that optimally estimates a counterfactual trajectory for the treated unit. 
+
+With covariates, the method first calculates the importance of several covariates for the outcome and subsequently computes weights, which minimizes the difference between the treatment and control groups in the importance-weighted covariates.
+
+![Left: treated (California) unit and unweighted average of all other states. Right: treated (California) unit and synthetic control group [@Abadie.2010]](fig/abadie.jpg)
+
+__Note that we have to assume that the control units are not affected by the treatment (no spillovers) and that the treatment has no effect on the outcome before the treatment period (no anticipation).__
+
+If there are reasons to believe that there potential anticipation effects (often the case), one can back-date the treatment, i.e. we set the treatment timing to the first period where there might possibly be an effect on the outcome.
+
+Formally, the (time-specific) treatment effect is estimated as the difference between the outcome of the treated unit and the average re-weighted control units [@Abadie.2003; @Abadie.2010, @Abadie.2011]:
+$$
+\hat{\delta}_{1t} = Y_{1t} - \sum_{j=2}^{J+1}w_j^*Y_{jt},
+$$
+where $i=1$ is the treated unit and $j\neq i$ are all potential control units (donor pool).
+
+$w_j^*$ are the optimally chosen weights for each control unit, where we impose two restrictions: a) the weights are non-negative $w_j \geq 0$ for $j=2,\dots, J+1$, and the weights sum to one $\sum_{j=2}^{J+1}w_j = 1$.
+
+This leaves us with the task to find the optimally chosen weights. So assume we have $k = 1,\dots,K$ covariates $\bm X$, where $x_{1k}$ is the $k$-th covariate of the treated unit, and $\bm x_{0k}$ a $1 \times J$ vector of the same covariate for the control units / donor pool. Then we choose $W^*$ as the value that minimizes 
+$$
+\sum_{k=1}^K v_k(x_{1k} - x_{0k}W)^2,
+$$
+with $v_k$ reflecting the relative importance of the covarite $k$. As we want the outcome trjectories of the treated unit and synthetic control to closely match, $v_1,\dots,v_K$ is usually determined by the predictive power of the respective covariate.
+
+The original authors [@Abadie.2003; @Abadie.2010, @Abadie.2011] use a data driven approach to choose $V^*$ by minimizing the mean squared prediction error (MSPE) of the outcome over the pre-treatment periods $t=1,\dots,T_0$. Formally, we choose $V^*$ that minimizes:
+$$
+\sum_{t=1}^{T_0}\Big( Y_{1t} - \sum_{j=2}^{J+1}w_j^*(V)Y_{jt}\Big)
+$$
+
+Note: with increasing pre-intervention periods ($T_0$), we can assume that the synthetic control also accounts for unobserved factors affecting $Y$ [@Abadie.2010], assuming that only units with similar unobservables exhibit a similar outcome trajectory.
+
+However, with increasing pre-intervention periods, it is important to check if outcome trajectories match well not only at far temporal distances to the treatment but also in periods closely before the treatment.
+
+### Statistical inference with synthetic control
+
+Calculating uncertainty estimates for Synthetic Control methods is an ongoing methodological challenge. Recent work, for instance, suggest to quantify uncertainty based on permutation inference procedures @Chernozhukov.2021b or on conditional prediction intervals @Cattaneo.2021. In practice, however, both methods are difficult to implement with standard software (especially with covariate matching).
+
+__tbd: Placebo tests...__
+
+### Example
+
+__tbd__
+
 
 # References
 
