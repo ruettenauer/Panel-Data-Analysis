@@ -689,50 +689,65 @@ div.tocify {
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">213</span>)</span>
 <span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="do">### Set up six individuals with age and happiness</span></span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">6</span></span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>T <span class="ot">&lt;-</span> <span class="dv">4</span></span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="co"># id and wave</span></span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">ncol =</span> <span class="dv">2</span>, <span class="at">nrow =</span> N<span class="sc">*</span>T))</span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(df) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;wave&quot;</span>)</span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>id <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span>N, <span class="at">each =</span> T)</span>
-<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>wave <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span>T, <span class="at">times =</span> N)</span>
-<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>idname <span class="ot">&lt;-</span> <span class="fu">factor</span>(df<span class="sc">$</span>id, <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span>N), <span class="at">labels =</span> <span class="fu">paste</span>(<span class="st">&quot;Person&quot;</span>, <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span>N)))</span>
-<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a><span class="co"># age</span></span>
-<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>startingage <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">20</span><span class="sc">:</span><span class="dv">60</span>)</span>
-<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>startingage <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">quantile</span>(startingage, <span class="at">probs =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span><span class="sc">/</span>(N<span class="dv">-1</span>))), <span class="dv">0</span>)</span>
-<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>age <span class="ot">&lt;-</span> <span class="fu">unname</span>(<span class="fu">rep</span>(startingage, <span class="at">each =</span> T)) <span class="sc">+</span> df<span class="sc">$</span>wave<span class="sc">*</span><span class="dv">2</span></span>
-<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a><span class="co"># cohort </span></span>
-<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>cohort <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>cohort[(N<span class="sc">*</span>T<span class="sc">/</span><span class="dv">2</span> <span class="sc">+</span> <span class="dv">1</span>)<span class="sc">:</span>(N<span class="sc">*</span>T)] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>cohort <span class="ot">&lt;-</span> <span class="fu">factor</span>(df<span class="sc">$</span>cohort, <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), </span>
-<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>                    <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&quot;Younger cohort&quot;</span>, <span class="st">&quot;Older cohort&quot;</span>))</span>
-<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a><span class="co"># demeaned age</span></span>
-<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>dm_age <span class="ot">&lt;-</span> df<span class="sc">$</span>age <span class="sc">-</span> <span class="fu">ave</span>(df<span class="sc">$</span>age, df<span class="sc">$</span>id, <span class="at">FUN =</span> <span class="cf">function</span>(x) <span class="fu">mean</span>(x)) </span>
-<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a><span class="co"># Personal intercept</span></span>
-<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>intercept <span class="ot">&lt;-</span> <span class="dv">5</span> <span class="sc">+</span> <span class="fl">0.5</span> <span class="sc">*</span> df<span class="sc">$</span>id</span>
-<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Gen happiness</span></span>
-<span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a>u <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(N<span class="sc">*</span>T, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="fl">0.2</span>)</span>
-<span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">+</span> <span class="fl">0.05</span> <span class="sc">*</span> df<span class="sc">$</span>age <span class="sc">-</span> <span class="fl">0.2</span> <span class="sc">*</span> df<span class="sc">$</span>dm_age <span class="sc">+</span> <span class="dv">2</span> <span class="sc">*</span> <span class="fu">as.numeric</span>(df<span class="sc">$</span>cohort) <span class="sc">+</span> u</span>
-<span id="cb14-39"><a href="#cb14-39" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>happiness <span class="ot">&lt;-</span> y</span>
-<span id="cb14-40"><a href="#cb14-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-41"><a href="#cb14-41" aria-hidden="true" tabindex="-1"></a><span class="co"># Gen person means</span></span>
-<span id="cb14-42"><a href="#cb14-42" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>m_age <span class="ot">&lt;-</span> <span class="fu">ave</span>(df<span class="sc">$</span>age, df<span class="sc">$</span>id, <span class="at">FUN =</span> <span class="cf">function</span>(x) <span class="fu">mean</span>(x)) </span>
-<span id="cb14-43"><a href="#cb14-43" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>m_happiness <span class="ot">&lt;-</span> <span class="fu">ave</span>(df<span class="sc">$</span>happiness, df<span class="sc">$</span>id, <span class="at">FUN =</span> <span class="cf">function</span>(x) <span class="fu">mean</span>(x)) </span>
-<span id="cb14-44"><a href="#cb14-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-45"><a href="#cb14-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-46"><a href="#cb14-46" aria-hidden="true" tabindex="-1"></a><span class="co"># Total line for plot</span></span>
-<span id="cb14-47"><a href="#cb14-47" aria-hidden="true" tabindex="-1"></a>lm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(happiness <span class="sc">~</span> age, <span class="at">data =</span> df)</span>
-<span id="cb14-48"><a href="#cb14-48" aria-hidden="true" tabindex="-1"></a>lm2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(happiness <span class="sc">~</span> age <span class="sc">+</span> cohort, <span class="at">data =</span> df)</span>
-<span id="cb14-49"><a href="#cb14-49" aria-hidden="true" tabindex="-1"></a>lm3 <span class="ot">&lt;-</span> <span class="fu">lm</span>(happiness <span class="sc">~</span> age <span class="sc">+</span> idname, <span class="at">data =</span> df)</span>
-<span id="cb14-50"><a href="#cb14-50" aria-hidden="true" tabindex="-1"></a>lm4 <span class="ot">&lt;-</span> <span class="fu">lm</span>(m_happiness <span class="sc">~</span> m_age, <span class="at">data =</span> df)</span></code></pre></div>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="do">### Data simulation program</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>simdata <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">N =</span> <span class="dv">6</span>, <span class="at">T =</span> <span class="dv">4</span>,</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>                    <span class="at">age_range =</span> <span class="fu">c</span>(<span class="dv">20</span><span class="sc">:</span><span class="dv">60</span>), </span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>                    <span class="at">u_sd =</span> <span class="fl">0.2</span>, <span class="at">uw_sd =</span> <span class="dv">0</span>){</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># id and wave</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">ncol =</span> <span class="dv">2</span>, <span class="at">nrow =</span> N<span class="sc">*</span>T))</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(df) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;wave&quot;</span>)</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>  df<span class="sc">$</span>id <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span>N, <span class="at">each =</span> T)</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>  df<span class="sc">$</span>wave <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span>T, <span class="at">times =</span> N)</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>  df<span class="sc">$</span>idname <span class="ot">&lt;-</span> <span class="fu">factor</span>(df<span class="sc">$</span>id, <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span>N), <span class="at">labels =</span> <span class="fu">paste</span>(<span class="st">&quot;Person&quot;</span>, <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span>N)))</span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>  <span class="co"># age</span></span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>  startingage <span class="ot">&lt;-</span> age_range</span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>  startingage <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">quantile</span>(startingage, <span class="at">probs =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span><span class="sc">/</span>(N<span class="dv">-1</span>))), <span class="dv">0</span>)</span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>  df<span class="sc">$</span>age <span class="ot">&lt;-</span> <span class="fu">unname</span>(<span class="fu">rep</span>(startingage, <span class="at">each =</span> T)) <span class="sc">+</span> df<span class="sc">$</span>wave<span class="sc">*</span><span class="dv">2</span></span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>  <span class="co"># cohort </span></span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>  df<span class="sc">$</span>cohort <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>  df<span class="sc">$</span>cohort[(N<span class="sc">*</span>T<span class="sc">/</span><span class="dv">2</span> <span class="sc">+</span> <span class="dv">1</span>)<span class="sc">:</span>(N<span class="sc">*</span>T)] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>  df<span class="sc">$</span>cohort <span class="ot">&lt;-</span> <span class="fu">factor</span>(df<span class="sc">$</span>cohort, <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), </span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>                      <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&quot;Younger cohort&quot;</span>, <span class="st">&quot;Older cohort&quot;</span>))</span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>  <span class="co"># demeaned age</span></span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>  df<span class="sc">$</span>dm_age <span class="ot">&lt;-</span> df<span class="sc">$</span>age <span class="sc">-</span> <span class="fu">ave</span>(df<span class="sc">$</span>age, df<span class="sc">$</span>id, <span class="at">FUN =</span> <span class="cf">function</span>(x) <span class="fu">mean</span>(x)) </span>
+<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Personal intercept</span></span>
+<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a>  df<span class="sc">$</span>intercept <span class="ot">&lt;-</span> <span class="dv">5</span> <span class="sc">+</span> <span class="fl">0.5</span> <span class="sc">*</span> df<span class="sc">$</span>id</span>
+<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Overall error</span></span>
+<span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a>  u <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(N<span class="sc">*</span>T, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> u_sd)</span>
+<span id="cb14-39"><a href="#cb14-39" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb14-40"><a href="#cb14-40" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Additional within error</span></span>
+<span id="cb14-41"><a href="#cb14-41" aria-hidden="true" tabindex="-1"></a>  uw <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span>N, <span class="cf">function</span>(x) <span class="fu">rnorm</span>(T, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> uw_sd)))</span>
+<span id="cb14-42"><a href="#cb14-42" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb14-43"><a href="#cb14-43" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Gen happiness</span></span>
+<span id="cb14-44"><a href="#cb14-44" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">+</span> <span class="fl">0.05</span> <span class="sc">*</span> df<span class="sc">$</span>age <span class="sc">-</span> <span class="fl">0.2</span> <span class="sc">*</span> df<span class="sc">$</span>dm_age <span class="sc">+</span> <span class="dv">2</span> <span class="sc">*</span> <span class="fu">as.numeric</span>(df<span class="sc">$</span>cohort) <span class="sc">+</span> u <span class="sc">+</span> uw</span>
+<span id="cb14-45"><a href="#cb14-45" aria-hidden="true" tabindex="-1"></a>  df<span class="sc">$</span>happiness <span class="ot">&lt;-</span> y</span>
+<span id="cb14-46"><a href="#cb14-46" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb14-47"><a href="#cb14-47" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Gen person means</span></span>
+<span id="cb14-48"><a href="#cb14-48" aria-hidden="true" tabindex="-1"></a>  df<span class="sc">$</span>m_age <span class="ot">&lt;-</span> <span class="fu">ave</span>(df<span class="sc">$</span>age, df<span class="sc">$</span>id, <span class="at">FUN =</span> <span class="cf">function</span>(x) <span class="fu">mean</span>(x)) </span>
+<span id="cb14-49"><a href="#cb14-49" aria-hidden="true" tabindex="-1"></a>  df<span class="sc">$</span>m_happiness <span class="ot">&lt;-</span> <span class="fu">ave</span>(df<span class="sc">$</span>happiness, df<span class="sc">$</span>id, <span class="at">FUN =</span> <span class="cf">function</span>(x) <span class="fu">mean</span>(x)) </span>
+<span id="cb14-50"><a href="#cb14-50" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb14-51"><a href="#cb14-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(df)</span>
+<span id="cb14-52"><a href="#cb14-52" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb14-53"><a href="#cb14-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-54"><a href="#cb14-54" aria-hidden="true" tabindex="-1"></a><span class="do">### Set up six individuals with age and happiness</span></span>
+<span id="cb14-55"><a href="#cb14-55" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">6</span></span>
+<span id="cb14-56"><a href="#cb14-56" aria-hidden="true" tabindex="-1"></a>T <span class="ot">&lt;-</span> <span class="dv">4</span></span>
+<span id="cb14-57"><a href="#cb14-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-58"><a href="#cb14-58" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">simdata</span>(<span class="at">N =</span> N, <span class="at">T =</span> T)</span>
+<span id="cb14-59"><a href="#cb14-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-60"><a href="#cb14-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-61"><a href="#cb14-61" aria-hidden="true" tabindex="-1"></a><span class="co"># Total line for plot</span></span>
+<span id="cb14-62"><a href="#cb14-62" aria-hidden="true" tabindex="-1"></a>lm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(happiness <span class="sc">~</span> age, <span class="at">data =</span> df)</span>
+<span id="cb14-63"><a href="#cb14-63" aria-hidden="true" tabindex="-1"></a>lm2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(happiness <span class="sc">~</span> age <span class="sc">+</span> cohort, <span class="at">data =</span> df)</span>
+<span id="cb14-64"><a href="#cb14-64" aria-hidden="true" tabindex="-1"></a>lm3 <span class="ot">&lt;-</span> <span class="fu">lm</span>(happiness <span class="sc">~</span> age <span class="sc">+</span> idname, <span class="at">data =</span> df)</span>
+<span id="cb14-65"><a href="#cb14-65" aria-hidden="true" tabindex="-1"></a>lm4 <span class="ot">&lt;-</span> <span class="fu">lm</span>(m_happiness <span class="sc">~</span> m_age, <span class="at">data =</span> df)</span></code></pre></div>
 <div id="cross-sectional-setting" class="section level2">
 <h2>Cross-sectional setting</h2>
 <p>In a cross-sectional setting, we could just run a standard linear regression model using Omitted Least Squares (OLS) of the form <span class="math display">\[
@@ -1440,8 +1455,13 @@ y_{it} = \beta x_{it} + \alpha_i + \zeta_t + \epsilon_{it},
 <p>In a setting where <span class="math inline">\(T=2\)</span> or in a setting where every observation is treated at the same time, the DD equals the two-ways FE. In general, DD and two-ways DD are often seen as equivalents. However, the situation becomes more complicated when treatment timing varies <span class="citation">(<a href="#ref-GoodmanBacon.2021" role="doc-biblioref">Goodman-Bacon 2021</a>)</span>.</p>
 <p>We can receive the same estimator in a simple regression. Lets assume <span class="math inline">\(D \in {0, 1}\)</span> is a binary indicator of the treatment group and <span class="math inline">\(Post \in {0, 1}\)</span> a binary indicator of pre- or post-treatment period. Then we can get the DD estimator with an interaction between those two two variables:</p>
 <p><span class="math display">\[
-y_{it} = \alpha + \beta_1 D_{i} + \beta_2 Post_{t} + \delta_{DD} (D_{i} \times Post_{t}) + \upsilon_{it}.
-\]</span> the coefficients correspond to:</p>
+y_{it} = \alpha + \gamma D_{i} + \lambda Post_{t} + \delta_{DD} (D_{i} \times Post_{t}) + \upsilon_{it}.
+\]</span></p>
+<div class="figure">
+<img src="fig/dd-diagram-1.png" alt="" />
+<p class="caption">Diff-in-Diff design, adopted from <span class="citation"><a href="#ref-Cunningham.2021" role="doc-biblioref">Cunningham</a> (<a href="#ref-Cunningham.2021" role="doc-biblioref">2021</a>)</span></p>
+</div>
+<p>The coefficients correspond to:</p>
 <ul>
 <li><p><span class="math inline">\(\alpha\)</span>: average outcome of control group in pre-treatment period</p></li>
 <li><p><span class="math inline">\(\beta_1\)</span>: average difference between treatment and control group in pre-treatment period</p></li>
@@ -1545,7 +1565,7 @@ y_{it} = \alpha + \beta x_{it} + \alpha_i + \vartheta_{it}.
 ## R-Squared:      0.011211
 ## Adj. R-Squared: -0.033734
 ## Chisq: 0.249442 on 1 DF, p-value: 0.61747</code></pre>
-<p>This indicates that there is barely any relation between age and happiness. This is because the within and the between estimates cancel our each other.</p>
+<p>This indicates that there is barely any relation between age and happiness. This is because the within and the between estimates cancel out each other.</p>
 <div class="sourceCode" id="cb57"><pre class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">6</span></span>
 <span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>T <span class="ot">&lt;-</span> <span class="dv">4</span></span>
 <span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a><span class="do">### Models</span></span>
@@ -1611,12 +1631,156 @@ y_{it} = \alpha + \beta x_{it} + \alpha_i + \vartheta_{it}.
 <span id="cb57-63"><a href="#cb57-63" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>))</span>
 <span id="cb57-64"><a href="#cb57-64" aria-hidden="true" tabindex="-1"></a>zp6</span></code></pre></div>
 <p><img src="Panel_part1_files/figure-html/unnamed-chunk-36-1.png" width="672" /></p>
-<p>There are two main problems with the RE estimator:</p>
+<p>Both - within and between estimator - get a similar weight for the RE estimator in our example. The reason is that we have nearly identical errors / noise in the in the between model and the within model.</p>
+<p>However, this obviously can vary strongly across empirical settings. Lets see what happens when we increase T in our example:</p>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">6</span></span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>T <span class="ot">&lt;-</span> <span class="dv">8</span></span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">simdata</span>(<span class="at">N =</span> N, <span class="at">T =</span> T)</span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a><span class="do">### Models</span></span>
+<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Total line for plot</span></span>
+<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a>lm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(happiness <span class="sc">~</span> age, <span class="at">data =</span> df)</span>
+<span id="cb58-9"><a href="#cb58-9" aria-hidden="true" tabindex="-1"></a>lm2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(happiness <span class="sc">~</span> age <span class="sc">+</span> cohort, <span class="at">data =</span> df)</span>
+<span id="cb58-10"><a href="#cb58-10" aria-hidden="true" tabindex="-1"></a>lm3 <span class="ot">&lt;-</span> <span class="fu">lm</span>(happiness <span class="sc">~</span> age <span class="sc">+</span> idname, <span class="at">data =</span> df)</span>
+<span id="cb58-11"><a href="#cb58-11" aria-hidden="true" tabindex="-1"></a>lm4 <span class="ot">&lt;-</span> <span class="fu">lm</span>(m_happiness <span class="sc">~</span> m_age, <span class="at">data =</span> df)</span>
+<span id="cb58-12"><a href="#cb58-12" aria-hidden="true" tabindex="-1"></a>re <span class="ot">&lt;-</span> <span class="fu">plm</span>(happiness <span class="sc">~</span> age, df, <span class="at">model =</span> <span class="st">&quot;random&quot;</span>, <span class="at">effect =</span> <span class="st">&quot;individual&quot;</span>)</span>
+<span id="cb58-13"><a href="#cb58-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-14"><a href="#cb58-14" aria-hidden="true" tabindex="-1"></a><span class="do">### Compare POLS, BE, FE, and RE</span></span>
+<span id="cb58-15"><a href="#cb58-15" aria-hidden="true" tabindex="-1"></a>estimates <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">ncol =</span> <span class="dv">3</span>, <span class="at">nrow =</span> <span class="dv">4</span>))</span>
+<span id="cb58-16"><a href="#cb58-16" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(estimates) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Model&quot;</span>, <span class="st">&quot;Intercept&quot;</span>, <span class="st">&quot;slope&quot;</span>)</span>
+<span id="cb58-17"><a href="#cb58-17" aria-hidden="true" tabindex="-1"></a>estimates[<span class="dv">1</span>,] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;POLS&quot;</span>,</span>
+<span id="cb58-18"><a href="#cb58-18" aria-hidden="true" tabindex="-1"></a>                   lm1<span class="sc">$</span>coefficients[<span class="dv">1</span>],</span>
+<span id="cb58-19"><a href="#cb58-19" aria-hidden="true" tabindex="-1"></a>                   lm1<span class="sc">$</span>coefficients[<span class="dv">2</span>])</span>
+<span id="cb58-20"><a href="#cb58-20" aria-hidden="true" tabindex="-1"></a>estimates[<span class="dv">2</span>,] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;BE&quot;</span>,</span>
+<span id="cb58-21"><a href="#cb58-21" aria-hidden="true" tabindex="-1"></a>                   lm4<span class="sc">$</span>coefficients[<span class="dv">1</span>], </span>
+<span id="cb58-22"><a href="#cb58-22" aria-hidden="true" tabindex="-1"></a>                   lm4<span class="sc">$</span>coefficients[<span class="dv">2</span>])</span>
+<span id="cb58-23"><a href="#cb58-23" aria-hidden="true" tabindex="-1"></a>estimates[<span class="dv">3</span>,] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;FE&quot;</span>,</span>
+<span id="cb58-24"><a href="#cb58-24" aria-hidden="true" tabindex="-1"></a>                   lm3<span class="sc">$</span>coefficients[<span class="dv">1</span>] <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> lm3<span class="sc">$</span>coefficients[<span class="dv">3</span>]  <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> lm3<span class="sc">$</span>coefficients[<span class="dv">4</span>] </span>
+<span id="cb58-25"><a href="#cb58-25" aria-hidden="true" tabindex="-1"></a>                   <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> lm3<span class="sc">$</span>coefficients[<span class="dv">5</span>]  <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> lm3<span class="sc">$</span>coefficients[<span class="dv">6</span>]  <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> lm3<span class="sc">$</span>coefficients[<span class="dv">7</span>], </span>
+<span id="cb58-26"><a href="#cb58-26" aria-hidden="true" tabindex="-1"></a>                   lm3<span class="sc">$</span>coefficients[<span class="dv">2</span>])</span>
+<span id="cb58-27"><a href="#cb58-27" aria-hidden="true" tabindex="-1"></a>estimates[<span class="dv">4</span>,] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;RE&quot;</span>,</span>
+<span id="cb58-28"><a href="#cb58-28" aria-hidden="true" tabindex="-1"></a>                   re<span class="sc">$</span>coefficients[<span class="dv">1</span>], </span>
+<span id="cb58-29"><a href="#cb58-29" aria-hidden="true" tabindex="-1"></a>                   re<span class="sc">$</span>coefficients[<span class="dv">2</span>])</span>
+<span id="cb58-30"><a href="#cb58-30" aria-hidden="true" tabindex="-1"></a>estimates[, <span class="sc">-</span><span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fu">apply</span>(estimates[, <span class="sc">-</span><span class="dv">1</span>], <span class="dv">2</span>, <span class="at">FUN =</span> <span class="cf">function</span>(x) <span class="fu">as.numeric</span>(x))</span>
+<span id="cb58-31"><a href="#cb58-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-32"><a href="#cb58-32" aria-hidden="true" tabindex="-1"></a>newdf <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">ncol =</span> <span class="dv">2</span>, <span class="at">nrow =</span> <span class="dv">2</span>))</span>
+<span id="cb58-33"><a href="#cb58-33" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(newdf) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>)</span>
+<span id="cb58-34"><a href="#cb58-34" aria-hidden="true" tabindex="-1"></a>newdf<span class="sc">$</span>x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">min</span>(df<span class="sc">$</span>age), <span class="fu">max</span>(df<span class="sc">$</span>age))</span>
+<span id="cb58-35"><a href="#cb58-35" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(estimates)){</span>
+<span id="cb58-36"><a href="#cb58-36" aria-hidden="true" tabindex="-1"></a>  newdf<span class="sc">$</span>y <span class="ot">&lt;-</span> estimates[i, <span class="st">&quot;Intercept&quot;</span>] <span class="sc">+</span> estimates[i, <span class="st">&quot;slope&quot;</span>]<span class="sc">*</span>newdf<span class="sc">$</span>x</span>
+<span id="cb58-37"><a href="#cb58-37" aria-hidden="true" tabindex="-1"></a>  newdf<span class="sc">$</span>Model <span class="ot">&lt;-</span> estimates[i, <span class="st">&quot;Model&quot;</span>]</span>
+<span id="cb58-38"><a href="#cb58-38" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(i <span class="sc">==</span> <span class="dv">1</span>){</span>
+<span id="cb58-39"><a href="#cb58-39" aria-hidden="true" tabindex="-1"></a>    pred <span class="ot">&lt;-</span> newdf</span>
+<span id="cb58-40"><a href="#cb58-40" aria-hidden="true" tabindex="-1"></a>  }<span class="cf">else</span>{pred <span class="ot">&lt;-</span> <span class="fu">rbind</span>(pred, newdf)}</span>
+<span id="cb58-41"><a href="#cb58-41" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb58-42"><a href="#cb58-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-43"><a href="#cb58-43" aria-hidden="true" tabindex="-1"></a>estimates<span class="sc">$</span>Model <span class="ot">&lt;-</span> <span class="fu">factor</span>(estimates<span class="sc">$</span>Model, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;POLS&quot;</span>, <span class="st">&quot;BE&quot;</span>, <span class="st">&quot;FE&quot;</span>, <span class="st">&quot;RE&quot;</span>))</span>
+<span id="cb58-44"><a href="#cb58-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-45"><a href="#cb58-45" aria-hidden="true" tabindex="-1"></a>gg_color_hue <span class="ot">&lt;-</span> <span class="cf">function</span>(n) {</span>
+<span id="cb58-46"><a href="#cb58-46" aria-hidden="true" tabindex="-1"></a>  hues <span class="ot">=</span> <span class="fu">seq</span>(<span class="dv">15</span>, <span class="dv">375</span>, <span class="at">length =</span> n <span class="sc">+</span> <span class="dv">1</span>)</span>
+<span id="cb58-47"><a href="#cb58-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hcl</span>(<span class="at">h =</span> hues, <span class="at">l =</span> <span class="dv">65</span>, <span class="at">c =</span> <span class="dv">100</span>)[<span class="dv">1</span><span class="sc">:</span>n]</span>
+<span id="cb58-48"><a href="#cb58-48" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb58-49"><a href="#cb58-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-50"><a href="#cb58-50" aria-hidden="true" tabindex="-1"></a>zp7 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df, <span class="fu">aes</span>(age, happiness)) <span class="sc">+</span></span>
+<span id="cb58-51"><a href="#cb58-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> happiness, <span class="at">shape =</span> idname),</span>
+<span id="cb58-52"><a href="#cb58-52" aria-hidden="true" tabindex="-1"></a>             <span class="at">colour =</span> <span class="fu">rep</span>(<span class="fu">gg_color_hue</span>(<span class="dv">6</span>), <span class="at">each =</span> T),</span>
+<span id="cb58-53"><a href="#cb58-53" aria-hidden="true" tabindex="-1"></a>              <span class="at">size =</span> <span class="dv">2</span>, <span class="at">stroke =</span> <span class="dv">1</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb58-54"><a href="#cb58-54" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">&#39;lm&#39;</span>, <span class="at">formula =</span> y <span class="sc">~</span> x, <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb58-55"><a href="#cb58-55" aria-hidden="true" tabindex="-1"></a>              <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>, <span class="fu">aes</span>(<span class="at">group =</span> idname), <span class="at">colour =</span> <span class="fu">alpha</span>(<span class="st">&quot;gray&quot;</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb58-56"><a href="#cb58-56" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">data =</span> estimates, <span class="at">lwd =</span> <span class="fl">1.2</span>,</span>
+<span id="cb58-57"><a href="#cb58-57" aria-hidden="true" tabindex="-1"></a>              <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">intercept =</span> Intercept, <span class="at">slope =</span> slope, </span>
+<span id="cb58-58"><a href="#cb58-58" aria-hidden="true" tabindex="-1"></a>                            <span class="at">colour =</span> Model, <span class="at">linetype =</span> Model)) <span class="sc">+</span></span>
+<span id="cb58-59"><a href="#cb58-59" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_linetype_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;solid&quot;</span>, <span class="st">&quot;twodash&quot;</span>, <span class="st">&quot;longdash&quot;</span>, <span class="st">&quot;dotdash&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb58-60"><a href="#cb58-60" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="fl">3.3</span>, <span class="fl">9.2</span>) <span class="sc">+</span> <span class="fu">expand_limits</span>(<span class="at">y =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>)) <span class="sc">+</span> </span>
+<span id="cb58-61"><a href="#cb58-61" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb58-62"><a href="#cb58-62" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.key =</span> <span class="fu">element_blank</span>(), <span class="at">legend.title =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb58-63"><a href="#cb58-63" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.position =</span> <span class="fu">c</span>(<span class="fl">0.95</span>,<span class="fl">0.05</span>), <span class="at">legend.justification =</span> <span class="fu">c</span>(<span class="st">&quot;right&quot;</span>, <span class="st">&quot;bottom&quot;</span>),</span>
+<span id="cb58-64"><a href="#cb58-64" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.background =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb58-65"><a href="#cb58-65" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.box.background =</span> <span class="fu">element_rect</span>(<span class="at">colour =</span> <span class="st">&quot;black&quot;</span>),</span>
+<span id="cb58-66"><a href="#cb58-66" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>))</span>
+<span id="cb58-67"><a href="#cb58-67" aria-hidden="true" tabindex="-1"></a>zp7</span></code></pre></div>
+<p><img src="Panel_part1_files/figure-html/unnamed-chunk-37-1.png" width="672" /></p>
+<p>The POLS goes very slightly towards the within estimator. This is because we have increased the within variance in age, but there is still much more variance in age between individuals.</p>
+<p>The RE goes strongly towards FE. This is because - by increasing T - the between model now makes a larger error: there are more data points far away from the green BE line. The error or the within model, in contrast, remain unchanged. So RE gives more weight to the within estimator.</p>
+<p>However, if we increase the noise in the within estimator (bringing the data points further away from each id-specific regression line), RE would move back towards the between estimator:</p>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">6</span></span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>T <span class="ot">&lt;-</span> <span class="dv">8</span></span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">simdata</span>(<span class="at">N =</span> N, <span class="at">T =</span> T, <span class="at">uw_sd =</span> <span class="fl">0.5</span>, <span class="at">age_range =</span> <span class="fu">c</span>(<span class="dv">20</span><span class="sc">:</span><span class="dv">60</span>))</span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a><span class="do">### Models</span></span>
+<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Total line for plot</span></span>
+<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a>lm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(happiness <span class="sc">~</span> age, <span class="at">data =</span> df)</span>
+<span id="cb59-9"><a href="#cb59-9" aria-hidden="true" tabindex="-1"></a>lm2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(happiness <span class="sc">~</span> age <span class="sc">+</span> cohort, <span class="at">data =</span> df)</span>
+<span id="cb59-10"><a href="#cb59-10" aria-hidden="true" tabindex="-1"></a>lm3 <span class="ot">&lt;-</span> <span class="fu">lm</span>(happiness <span class="sc">~</span> age <span class="sc">+</span> idname, <span class="at">data =</span> df)</span>
+<span id="cb59-11"><a href="#cb59-11" aria-hidden="true" tabindex="-1"></a>lm4 <span class="ot">&lt;-</span> <span class="fu">lm</span>(m_happiness <span class="sc">~</span> m_age, <span class="at">data =</span> df)</span>
+<span id="cb59-12"><a href="#cb59-12" aria-hidden="true" tabindex="-1"></a>re <span class="ot">&lt;-</span> <span class="fu">plm</span>(happiness <span class="sc">~</span> age, df, <span class="at">model =</span> <span class="st">&quot;random&quot;</span>, <span class="at">effect =</span> <span class="st">&quot;individual&quot;</span>)</span>
+<span id="cb59-13"><a href="#cb59-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-14"><a href="#cb59-14" aria-hidden="true" tabindex="-1"></a><span class="do">### Compare POLS, BE, FE, and RE</span></span>
+<span id="cb59-15"><a href="#cb59-15" aria-hidden="true" tabindex="-1"></a>estimates <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">ncol =</span> <span class="dv">3</span>, <span class="at">nrow =</span> <span class="dv">4</span>))</span>
+<span id="cb59-16"><a href="#cb59-16" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(estimates) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Model&quot;</span>, <span class="st">&quot;Intercept&quot;</span>, <span class="st">&quot;slope&quot;</span>)</span>
+<span id="cb59-17"><a href="#cb59-17" aria-hidden="true" tabindex="-1"></a>estimates[<span class="dv">1</span>,] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;POLS&quot;</span>,</span>
+<span id="cb59-18"><a href="#cb59-18" aria-hidden="true" tabindex="-1"></a>                   lm1<span class="sc">$</span>coefficients[<span class="dv">1</span>],</span>
+<span id="cb59-19"><a href="#cb59-19" aria-hidden="true" tabindex="-1"></a>                   lm1<span class="sc">$</span>coefficients[<span class="dv">2</span>])</span>
+<span id="cb59-20"><a href="#cb59-20" aria-hidden="true" tabindex="-1"></a>estimates[<span class="dv">2</span>,] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;BE&quot;</span>,</span>
+<span id="cb59-21"><a href="#cb59-21" aria-hidden="true" tabindex="-1"></a>                   lm4<span class="sc">$</span>coefficients[<span class="dv">1</span>], </span>
+<span id="cb59-22"><a href="#cb59-22" aria-hidden="true" tabindex="-1"></a>                   lm4<span class="sc">$</span>coefficients[<span class="dv">2</span>])</span>
+<span id="cb59-23"><a href="#cb59-23" aria-hidden="true" tabindex="-1"></a>estimates[<span class="dv">3</span>,] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;FE&quot;</span>,</span>
+<span id="cb59-24"><a href="#cb59-24" aria-hidden="true" tabindex="-1"></a>                   lm3<span class="sc">$</span>coefficients[<span class="dv">1</span>] <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> lm3<span class="sc">$</span>coefficients[<span class="dv">3</span>]  <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> lm3<span class="sc">$</span>coefficients[<span class="dv">4</span>] </span>
+<span id="cb59-25"><a href="#cb59-25" aria-hidden="true" tabindex="-1"></a>                   <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> lm3<span class="sc">$</span>coefficients[<span class="dv">5</span>]  <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> lm3<span class="sc">$</span>coefficients[<span class="dv">6</span>]  <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> lm3<span class="sc">$</span>coefficients[<span class="dv">7</span>], </span>
+<span id="cb59-26"><a href="#cb59-26" aria-hidden="true" tabindex="-1"></a>                   lm3<span class="sc">$</span>coefficients[<span class="dv">2</span>])</span>
+<span id="cb59-27"><a href="#cb59-27" aria-hidden="true" tabindex="-1"></a>estimates[<span class="dv">4</span>,] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;RE&quot;</span>,</span>
+<span id="cb59-28"><a href="#cb59-28" aria-hidden="true" tabindex="-1"></a>                   re<span class="sc">$</span>coefficients[<span class="dv">1</span>], </span>
+<span id="cb59-29"><a href="#cb59-29" aria-hidden="true" tabindex="-1"></a>                   re<span class="sc">$</span>coefficients[<span class="dv">2</span>])</span>
+<span id="cb59-30"><a href="#cb59-30" aria-hidden="true" tabindex="-1"></a>estimates[, <span class="sc">-</span><span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fu">apply</span>(estimates[, <span class="sc">-</span><span class="dv">1</span>], <span class="dv">2</span>, <span class="at">FUN =</span> <span class="cf">function</span>(x) <span class="fu">as.numeric</span>(x))</span>
+<span id="cb59-31"><a href="#cb59-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-32"><a href="#cb59-32" aria-hidden="true" tabindex="-1"></a>newdf <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">ncol =</span> <span class="dv">2</span>, <span class="at">nrow =</span> <span class="dv">2</span>))</span>
+<span id="cb59-33"><a href="#cb59-33" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(newdf) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>)</span>
+<span id="cb59-34"><a href="#cb59-34" aria-hidden="true" tabindex="-1"></a>newdf<span class="sc">$</span>x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">min</span>(df<span class="sc">$</span>age), <span class="fu">max</span>(df<span class="sc">$</span>age))</span>
+<span id="cb59-35"><a href="#cb59-35" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(estimates)){</span>
+<span id="cb59-36"><a href="#cb59-36" aria-hidden="true" tabindex="-1"></a>  newdf<span class="sc">$</span>y <span class="ot">&lt;-</span> estimates[i, <span class="st">&quot;Intercept&quot;</span>] <span class="sc">+</span> estimates[i, <span class="st">&quot;slope&quot;</span>]<span class="sc">*</span>newdf<span class="sc">$</span>x</span>
+<span id="cb59-37"><a href="#cb59-37" aria-hidden="true" tabindex="-1"></a>  newdf<span class="sc">$</span>Model <span class="ot">&lt;-</span> estimates[i, <span class="st">&quot;Model&quot;</span>]</span>
+<span id="cb59-38"><a href="#cb59-38" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(i <span class="sc">==</span> <span class="dv">1</span>){</span>
+<span id="cb59-39"><a href="#cb59-39" aria-hidden="true" tabindex="-1"></a>    pred <span class="ot">&lt;-</span> newdf</span>
+<span id="cb59-40"><a href="#cb59-40" aria-hidden="true" tabindex="-1"></a>  }<span class="cf">else</span>{pred <span class="ot">&lt;-</span> <span class="fu">rbind</span>(pred, newdf)}</span>
+<span id="cb59-41"><a href="#cb59-41" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb59-42"><a href="#cb59-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-43"><a href="#cb59-43" aria-hidden="true" tabindex="-1"></a>estimates<span class="sc">$</span>Model <span class="ot">&lt;-</span> <span class="fu">factor</span>(estimates<span class="sc">$</span>Model, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;POLS&quot;</span>, <span class="st">&quot;BE&quot;</span>, <span class="st">&quot;FE&quot;</span>, <span class="st">&quot;RE&quot;</span>))</span>
+<span id="cb59-44"><a href="#cb59-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-45"><a href="#cb59-45" aria-hidden="true" tabindex="-1"></a>gg_color_hue <span class="ot">&lt;-</span> <span class="cf">function</span>(n) {</span>
+<span id="cb59-46"><a href="#cb59-46" aria-hidden="true" tabindex="-1"></a>  hues <span class="ot">=</span> <span class="fu">seq</span>(<span class="dv">15</span>, <span class="dv">375</span>, <span class="at">length =</span> n <span class="sc">+</span> <span class="dv">1</span>)</span>
+<span id="cb59-47"><a href="#cb59-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hcl</span>(<span class="at">h =</span> hues, <span class="at">l =</span> <span class="dv">65</span>, <span class="at">c =</span> <span class="dv">100</span>)[<span class="dv">1</span><span class="sc">:</span>n]</span>
+<span id="cb59-48"><a href="#cb59-48" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb59-49"><a href="#cb59-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-50"><a href="#cb59-50" aria-hidden="true" tabindex="-1"></a>zp7 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df, <span class="fu">aes</span>(age, happiness)) <span class="sc">+</span></span>
+<span id="cb59-51"><a href="#cb59-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> happiness, <span class="at">shape =</span> idname),</span>
+<span id="cb59-52"><a href="#cb59-52" aria-hidden="true" tabindex="-1"></a>             <span class="at">colour =</span> <span class="fu">rep</span>(<span class="fu">gg_color_hue</span>(<span class="dv">6</span>), <span class="at">each =</span> T),</span>
+<span id="cb59-53"><a href="#cb59-53" aria-hidden="true" tabindex="-1"></a>              <span class="at">size =</span> <span class="dv">2</span>, <span class="at">stroke =</span> <span class="dv">1</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb59-54"><a href="#cb59-54" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">&#39;lm&#39;</span>, <span class="at">formula =</span> y <span class="sc">~</span> x, <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb59-55"><a href="#cb59-55" aria-hidden="true" tabindex="-1"></a>              <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>, <span class="fu">aes</span>(<span class="at">group =</span> idname), <span class="at">colour =</span> <span class="fu">alpha</span>(<span class="st">&quot;gray&quot;</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb59-56"><a href="#cb59-56" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">data =</span> estimates, <span class="at">lwd =</span> <span class="fl">1.2</span>,</span>
+<span id="cb59-57"><a href="#cb59-57" aria-hidden="true" tabindex="-1"></a>              <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">intercept =</span> Intercept, <span class="at">slope =</span> slope, </span>
+<span id="cb59-58"><a href="#cb59-58" aria-hidden="true" tabindex="-1"></a>                            <span class="at">colour =</span> Model, <span class="at">linetype =</span> Model)) <span class="sc">+</span></span>
+<span id="cb59-59"><a href="#cb59-59" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_linetype_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;solid&quot;</span>, <span class="st">&quot;twodash&quot;</span>, <span class="st">&quot;longdash&quot;</span>, <span class="st">&quot;dotdash&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb59-60"><a href="#cb59-60" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="fl">3.3</span>, <span class="fl">9.2</span>) <span class="sc">+</span> <span class="fu">expand_limits</span>(<span class="at">y =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>)) <span class="sc">+</span> </span>
+<span id="cb59-61"><a href="#cb59-61" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb59-62"><a href="#cb59-62" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.key =</span> <span class="fu">element_blank</span>(), <span class="at">legend.title =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb59-63"><a href="#cb59-63" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.position =</span> <span class="fu">c</span>(<span class="fl">0.95</span>,<span class="fl">0.05</span>), <span class="at">legend.justification =</span> <span class="fu">c</span>(<span class="st">&quot;right&quot;</span>, <span class="st">&quot;bottom&quot;</span>),</span>
+<span id="cb59-64"><a href="#cb59-64" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.background =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb59-65"><a href="#cb59-65" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.box.background =</span> <span class="fu">element_rect</span>(<span class="at">colour =</span> <span class="st">&quot;black&quot;</span>),</span>
+<span id="cb59-66"><a href="#cb59-66" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>))</span>
+<span id="cb59-67"><a href="#cb59-67" aria-hidden="true" tabindex="-1"></a>zp7</span></code></pre></div>
+<p><img src="Panel_part1_files/figure-html/unnamed-chunk-38-1.png" width="672" /></p>
+<p>Do you have an idea what happens if we reduce the range of the starting age of the individuals (bringing them closer together)?</p>
+<div id="there-are-two-main-problems-with-the-re-estimator" class="section level3">
+<h3>There are two main problems with the RE estimator:</h3>
 <ol style="list-style-type: decimal">
 <li><p>Interpretation: how to interpret an estimator based on a mix of <strong>within</strong> and <strong>between</strong> variance?</p></li>
 <li><p>Strong assumptions for consistency of no time-constant unobserved heterogeneity: very likely to be biased in practice</p></li>
 </ol>
 <p>I personally would generally suggest against the use of RE. Rather, ask yourself whether you are interested in a between or a within question and use the theoretically relevant method.</p>
+</div>
 <div id="hausman-test" class="section level3">
 <h3>Hausman test</h3>
 <p>If one has a strong reason to use the RE, it is at least advisable to perform a specification test. The Hausman test <span class="citation">(<a href="#ref-Hausman.1978.0" role="doc-biblioref">Hausman 1978</a>)</span> is the most common specification test to test the consistency of the RE estimator.</p>
@@ -1626,7 +1790,7 @@ H = (\hat{\boldsymbol{\mathbf{\beta}}}_1 - \hat{\boldsymbol{\mathbf{\beta}}}_0)^
 <p>This basically perform a test of the Null H<span class="math inline">\(_0\)</span>: <span class="math inline">\(\hat{\beta}_{FE} = \hat{\beta}_{RE}\)</span>, and shows us if the two estimates differ significantly.</p>
 <p><strong>Use FE if Hausman test significant, and H<span class="math inline">\(_0\)</span> rejected.</strong></p>
 <p>Let’s check in our example:</p>
-<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">phtest</span>(fe1, re1)</span></code></pre></div>
+<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">phtest</span>(fe1, re1)</span></code></pre></div>
 <pre><code>## 
 ##  Hausman Test
 ## 
@@ -1648,33 +1812,33 @@ y_{it} = \alpha + \beta x_{it} + \gamma \bar{x}_{i} + \xi_{it}
 <p>We split up the individual effect <span class="math inline">\(\alpha_i = \gamma \bar{x}_{i} + \eta_i\)</span>, and thus only control partially for time-constant heterogeneity by adding the person-specific means <span class="math inline">\(\bar{x}_{i}\)</span>.</p>
 <p><strong><span class="math inline">\(\hat{\beta}\)</span> gives us the within estimate for <span class="math inline">\(x\)</span></strong></p>
 <p>See our happiness example</p>
-<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Person specific means</span></span>
-<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>m_age <span class="ot">&lt;-</span> <span class="fu">ave</span>(df<span class="sc">$</span>age,</span>
-<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>                df<span class="sc">$</span>id,</span>
-<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">FUN =</span> mean)</span>
-<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-6"><a href="#cb60-6" aria-hidden="true" tabindex="-1"></a>cre <span class="ot">&lt;-</span> <span class="fu">plm</span>(happiness <span class="sc">~</span> age <span class="sc">+</span> m_age, <span class="at">data =</span> df,</span>
-<span id="cb60-7"><a href="#cb60-7" aria-hidden="true" tabindex="-1"></a>           <span class="at">index =</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;wave&quot;</span>),</span>
-<span id="cb60-8"><a href="#cb60-8" aria-hidden="true" tabindex="-1"></a>           <span class="at">effect =</span> <span class="st">&quot;individual&quot;</span>, <span class="at">model =</span> <span class="st">&quot;random&quot;</span>)</span>
-<span id="cb60-9"><a href="#cb60-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-10"><a href="#cb60-10" aria-hidden="true" tabindex="-1"></a><span class="fu">screenreg</span>(<span class="fu">list</span>(fe1, btw2, re, cre), <span class="at">digits =</span> <span class="dv">3</span>,</span>
-<span id="cb60-11"><a href="#cb60-11" aria-hidden="true" tabindex="-1"></a>          <span class="at">custom.model.names =</span> <span class="fu">c</span>(<span class="st">&quot;FE&quot;</span>, <span class="st">&quot;BTW&quot;</span>, <span class="st">&quot;RE&quot;</span>, <span class="st">&quot;CRE&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Person specific means</span></span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>m_age <span class="ot">&lt;-</span> <span class="fu">ave</span>(df<span class="sc">$</span>age,</span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>                df<span class="sc">$</span>id,</span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">FUN =</span> mean)</span>
+<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-6"><a href="#cb62-6" aria-hidden="true" tabindex="-1"></a>cre <span class="ot">&lt;-</span> <span class="fu">plm</span>(happiness <span class="sc">~</span> age <span class="sc">+</span> m_age, <span class="at">data =</span> df,</span>
+<span id="cb62-7"><a href="#cb62-7" aria-hidden="true" tabindex="-1"></a>           <span class="at">index =</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;wave&quot;</span>),</span>
+<span id="cb62-8"><a href="#cb62-8" aria-hidden="true" tabindex="-1"></a>           <span class="at">effect =</span> <span class="st">&quot;individual&quot;</span>, <span class="at">model =</span> <span class="st">&quot;random&quot;</span>)</span>
+<span id="cb62-9"><a href="#cb62-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-10"><a href="#cb62-10" aria-hidden="true" tabindex="-1"></a><span class="fu">screenreg</span>(<span class="fu">list</span>(fe1, btw2, re, cre), <span class="at">digits =</span> <span class="dv">3</span>,</span>
+<span id="cb62-11"><a href="#cb62-11" aria-hidden="true" tabindex="-1"></a>          <span class="at">custom.model.names =</span> <span class="fu">c</span>(<span class="st">&quot;FE&quot;</span>, <span class="st">&quot;BTW&quot;</span>, <span class="st">&quot;RE&quot;</span>, <span class="st">&quot;CRE&quot;</span>))</span></code></pre></div>
 <pre><code>## 
 ## ==========================================================
 ##              FE          BTW        RE          CRE       
 ## ----------------------------------------------------------
-## age          -0.148 ***   0.122 **  -0.016      -0.148 ***
-##              (0.017)     (0.018)    (0.031)     (0.017)   
-## (Intercept)               0.733      6.934 ***   0.733    
-##                          (0.835)    (1.534)     (0.835)   
-## m_age                                            0.270 ***
-##                                                 (0.025)   
+## age          -0.148 ***   0.122 **  -0.017      -0.122 ***
+##              (0.017)     (0.018)    (0.023)     (0.021)   
+## (Intercept)               0.733      7.293 ***   1.227    
+##                          (0.835)    (1.209)     (1.169)   
+## m_age                                            0.229 ***
+##                                                 (0.031)   
 ## ----------------------------------------------------------
-## R^2           0.810       0.922      0.011       0.851    
-## Adj. R^2      0.743       0.903     -0.034       0.837    
-## Num. obs.    24           6         24          24        
-## s_idios                              0.191       0.191    
-## s_id                                 0.586       0.586    
+## R^2           0.810       0.922      0.012       0.549    
+## Adj. R^2      0.743       0.903     -0.010       0.529    
+## Num. obs.    24           6         48          48        
+## s_idios                              0.673       0.673    
+## s_id                                 0.731       0.731    
 ## ==========================================================
 ## *** p &lt; 0.001; ** p &lt; 0.01; * p &lt; 0.05</code></pre>
 <p>The estimate for <span class="math inline">\(\beta_{CRE}\)</span> equals the within effect. Note that the coefficient for the mean does not equal the between effect. It equals <span class="math inline">\(\hat{\beta}_{BTW} - \hat{\beta}_{FE}\)</span>. This differs from <span class="citation"><a href="#ref-Allison.2009.128" role="doc-biblioref">Allison</a> (<a href="#ref-Allison.2009.128" role="doc-biblioref">2009</a>)</span> hybrid model.</p>
@@ -1705,8 +1869,8 @@ y_{it} = \alpha + \beta x_{it} + \gamma \bar{x}_{i} + \xi_{it}
 \hat{\sigma}^2(\tilde{\boldsymbol{\mathbf{X}}}^\intercal \tilde{\boldsymbol{\mathbf{X}}})^{-1},
 \]</span></p>
 <p>where <span class="math inline">\(\hat{\tilde{\boldsymbol{\mathbf{\epsilon}}}}_i\)</span> is the vector of FE residuals for each person <span class="math inline">\(i\)</span>, and <span class="math inline">\(\tilde{\boldsymbol{\mathbf{X}}}\)</span> are the transformed data.</p>
-<p>to calculate thos standard errors, we can use the <code>sandwich</code> and <code>coeftest</code> packages. For more information on the various types and options in the command see <span class="citation"><a href="#ref-Millo.2017" role="doc-biblioref">Millo</a> (<a href="#ref-Millo.2017" role="doc-biblioref">2017</a>)</span>.</p>
-<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fe1)</span></code></pre></div>
+<p>to calculate those standard errors, we can use the <code>sandwich</code> and <code>coeftest</code> packages. For more information on the various types and options in the command see <span class="citation"><a href="#ref-Millo.2017" role="doc-biblioref">Millo</a> (<a href="#ref-Millo.2017" role="doc-biblioref">2017</a>)</span>.</p>
+<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fe1)</span></code></pre></div>
 <pre><code>## Oneway (individual) effect Within Model
 ## 
 ## Call:
@@ -1730,11 +1894,11 @@ y_{it} = \alpha + \beta x_{it} + \gamma \bar{x}_{i} + \xi_{it}
 ## R-Squared:      0.80992
 ## Adj. R-Squared: 0.74283
 ## F-statistic: 72.4345 on 1 and 17 DF, p-value: 1.5556e-07</code></pre>
-<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get variance covariance matrix directly</span></span>
-<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>vcovx <span class="ot">&lt;-</span> <span class="fu">vcovHC</span>(fe1, <span class="at">cluster =</span> <span class="st">&quot;group&quot;</span>, <span class="at">method =</span> <span class="st">&quot;arellano&quot;</span>, <span class="at">type =</span> <span class="st">&quot;HC3&quot;</span>)</span>
-<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb64-4"><a href="#cb64-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Get model output with the robust SEs</span></span>
-<span id="cb64-5"><a href="#cb64-5" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(fe1, <span class="at">vcov =</span> <span class="cf">function</span>(x) <span class="fu">vcovHC</span>(x, <span class="at">method =</span> <span class="st">&quot;arellano&quot;</span>, <span class="at">type =</span> <span class="st">&quot;HC3&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get variance covariance matrix directly</span></span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a>vcovx <span class="ot">&lt;-</span> <span class="fu">vcovHC</span>(fe1, <span class="at">cluster =</span> <span class="st">&quot;group&quot;</span>, <span class="at">method =</span> <span class="st">&quot;arellano&quot;</span>, <span class="at">type =</span> <span class="st">&quot;HC3&quot;</span>)</span>
+<span id="cb66-3"><a href="#cb66-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb66-4"><a href="#cb66-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Get model output with the robust SEs</span></span>
+<span id="cb66-5"><a href="#cb66-5" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(fe1, <span class="at">vcov =</span> <span class="cf">function</span>(x) <span class="fu">vcovHC</span>(x, <span class="at">method =</span> <span class="st">&quot;arellano&quot;</span>, <span class="at">type =</span> <span class="st">&quot;HC3&quot;</span>))</span></code></pre></div>
 <pre><code>## 
 ## t test of coefficients:
 ## 
@@ -1743,29 +1907,29 @@ y_{it} = \alpha + \beta x_{it} + \gamma \bar{x}_{i} + \xi_{it}
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>In this case the robust SEs are actually smaller!! This is because this stylized example does not include heteroskedasticity or autocorrelation. However, we will see the difference with some real data.</p>
-<p>One hint for large data: <code>coeftest</code> and <code>sandwich</code> can get slow on large data. It can then be more efficient to use the package <code>lfe</code> right away. The <code>felm</code> requires a four part formula of the form <code>y ~ x1 + x2 | f1 + f2 | (Q|W ~ x3+x4) | clu1 + clu2</code>, where “x” are ordinary covariates, “f” are the fixed effects, the third part allows to instrument covariates, and “clu” are clusters for robust standard errors:</p>
-<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>fe1_2 <span class="ot">&lt;-</span> <span class="fu">felm</span>(happiness <span class="sc">~</span> age <span class="sc">|</span> id <span class="sc">|</span> <span class="dv">0</span> <span class="sc">|</span> id,</span>
-<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a>               <span class="at">data =</span> df, <span class="at">cmethod =</span> <span class="st">&#39;cgm2&#39;</span>)</span>
-<span id="cb66-3"><a href="#cb66-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fe1_2)</span></code></pre></div>
+<p>One hint for large data: <code>coeftest</code> and <code>sandwich</code> can be slow on large data. It might be more efficient to use the package <code>lfe</code> right away. The <code>felm()</code> function (to estimate FE models) requires a four part formula of the form <code>y ~ x1 + x2 | f1 + f2 | (Q|W ~ x3+x4) | clu1 + clu2</code>, where “x” are ordinary covariates, “f” are the fixed effects, the third part allows to instrument covariates, and “clu” are clusters for robust standard errors:</p>
+<div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>fe1_2 <span class="ot">&lt;-</span> <span class="fu">felm</span>(happiness <span class="sc">~</span> age <span class="sc">|</span> id <span class="sc">|</span> <span class="dv">0</span> <span class="sc">|</span> id,</span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>               <span class="at">data =</span> df, <span class="at">cmethod =</span> <span class="st">&#39;cgm2&#39;</span>)</span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fe1_2)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ##    felm(formula = happiness ~ age | id | 0 | id, data = df, cmethod = &quot;cgm2&quot;) 
 ## 
 ## Residuals:
 ##      Min       1Q   Median       3Q      Max 
-## -0.28791 -0.11875  0.03583  0.14172  0.27594 
+## -1.18476 -0.38492 -0.04032  0.44440  1.60238 
 ## 
 ## Coefficients:
 ##     Estimate Cluster s.e. t value Pr(&gt;|t|)    
-## age -0.14824      0.01711  -8.665 0.000338 ***
+## age -0.12217      0.01755  -6.961 0.000941 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
-## Residual standard error: 0.1908 on 17 degrees of freedom
-## Multiple R-squared(full model): 0.9918   Adjusted R-squared: 0.9889 
-## Multiple R-squared(proj model): 0.8099   Adjusted R-squared: 0.7428 
-## F-statistic(full model, *iid*):344.1 on 6 and 17 DF, p-value: &lt; 2.2e-16 
-## F-statistic(proj model): 75.08 on 1 and 5 DF, p-value: 0.0003384</code></pre>
+## Residual standard error: 0.6729 on 41 degrees of freedom
+## Multiple R-squared(full model): 0.8802   Adjusted R-squared: 0.8627 
+## Multiple R-squared(proj model): 0.4477   Adjusted R-squared: 0.3668 
+## F-statistic(full model, *iid*):50.22 on 6 and 41 DF, p-value: &lt; 2.2e-16 
+## F-statistic(proj model): 48.45 on 1 and 5 DF, p-value: 0.0009409</code></pre>
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1 class="unnumbered">References</h1>
@@ -1775,6 +1939,9 @@ Allison, Paul David. 2009. <em><span>Fixed Effects Regression Models</span></em>
 </div>
 <div id="ref-Chamberlain.1982" class="csl-entry">
 Chamberlain, Gary. 1982. <span>“<span class="nocase">Multivariate Regression Models for Panel Data</span>.”</span> <em><span>Journal of Econometrics</span></em> 18 (1): 5–46. <a href="https://doi.org/10.1016/0304-4076(82)90094-X">https://doi.org/10.1016/0304-4076(82)90094-X</a>.
+</div>
+<div id="ref-Cunningham.2021" class="csl-entry">
+Cunningham, Scott. 2021. <em><span>Causal Inference: The Mixtape</span></em>. New Haven; London: <span>Yale University Press</span>.
 </div>
 <div id="ref-GoodmanBacon.2021" class="csl-entry">
 Goodman-Bacon, Andrew. 2021. <span>“<span class="nocase">Difference-in-differences with variation in treatment timing</span>.”</span> <em><span>Journal of Econometrics</span></em> 225 (2): 254–77. <a href="https://doi.org/10.1016/j.jeconom.2021.03.014">https://doi.org/10.1016/j.jeconom.2021.03.014</a>.

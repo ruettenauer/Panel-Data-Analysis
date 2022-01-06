@@ -450,7 +450,7 @@ TBD
 
 How does that look in our marriage example? To estimate the dynamic DD we use the `did` package, as describes in more detail [here](https://cran.r-project.org/web/packages/did/vignettes/did-basics.html) or in the authors [blog](https://pedrohcgs.github.io/posts/twfe).
 
-__Note: This package works witch staggered treatment adoption! We thus should perform all the steps we have performed above to restrict and prepare the data!__
+__Note: This package works with staggered treatment adoption! We thus should perform all the steps we have performed above to restrict and prepare the data!__
 
 As a first step, we need to define a variable that contains the treatment timing: the first year an ever-treated individual is treated.
 

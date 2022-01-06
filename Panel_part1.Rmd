@@ -169,43 +169,58 @@ Let's clarify the idea and advantage of panel data with an example. Assume we wa
 
 set.seed(213)
 
+### Data simulation program
+simdata <- function(N = 6, T = 4,
+                    age_range = c(20:60), 
+                    u_sd = 0.2, uw_sd = 0){
+  
+  # id and wave
+  df <- data.frame(matrix(NA, ncol = 2, nrow = N*T))
+  names(df) <- c("id", "wave")
+  
+  df$id <- rep(1:N, each = T)
+  df$wave <- rep(1:T, times = N)
+  df$idname <- factor(df$id, levels = c(1:N), labels = paste("Person", c(1:N)))
+  
+  # age
+  startingage <- age_range
+  startingage <- round(quantile(startingage, probs = seq(0, 1, 1/(N-1))), 0)
+  df$age <- unname(rep(startingage, each = T)) + df$wave*2
+  
+  # cohort 
+  df$cohort <- 0
+  df$cohort[(N*T/2 + 1):(N*T)] <- 1
+  df$cohort <- factor(df$cohort, levels = c(0, 1), 
+                      labels = c("Younger cohort", "Older cohort"))
+  
+  # demeaned age
+  df$dm_age <- df$age - ave(df$age, df$id, FUN = function(x) mean(x)) 
+  
+  # Personal intercept
+  df$intercept <- 5 + 0.5 * df$id
+  
+  # Overall error
+  u <- rnorm(N*T, mean = 0, sd = u_sd)
+  
+  # Additional within error
+  uw <- unlist(lapply(1:N, function(x) rnorm(T, mean = 0, sd = uw_sd)))
+  
+  # Gen happiness
+  y <- 1 + 0.05 * df$age - 0.2 * df$dm_age + 2 * as.numeric(df$cohort) + u + uw
+  df$happiness <- y
+  
+  # Gen person means
+  df$m_age <- ave(df$age, df$id, FUN = function(x) mean(x)) 
+  df$m_happiness <- ave(df$happiness, df$id, FUN = function(x) mean(x)) 
+  
+  return(df)
+}
+
 ### Set up six individuals with age and happiness
 N <- 6
 T <- 4
 
-# id and wave
-df <- data.frame(matrix(NA, ncol = 2, nrow = N*T))
-names(df) <- c("id", "wave")
-
-df$id <- rep(1:N, each = T)
-df$wave <- rep(1:T, times = N)
-df$idname <- factor(df$id, levels = c(1:N), labels = paste("Person", c(1:N)))
-
-# age
-startingage <- c(20:60)
-startingage <- round(quantile(startingage, probs = seq(0, 1, 1/(N-1))), 0)
-df$age <- unname(rep(startingage, each = T)) + df$wave*2
-
-# cohort 
-df$cohort <- 0
-df$cohort[(N*T/2 + 1):(N*T)] <- 1
-df$cohort <- factor(df$cohort, levels = c(0, 1), 
-                    labels = c("Younger cohort", "Older cohort"))
-
-# demeaned age
-df$dm_age <- df$age - ave(df$age, df$id, FUN = function(x) mean(x)) 
-
-# Personal intercept
-df$intercept <- 5 + 0.5 * df$id
-
-# Gen happiness
-u <- rnorm(N*T, mean = 0, sd = 0.2)
-y <- 1 + 0.05 * df$age - 0.2 * df$dm_age + 2 * as.numeric(df$cohort) + u
-df$happiness <- y
-
-# Gen person means
-df$m_age <- ave(df$age, df$id, FUN = function(x) mean(x)) 
-df$m_happiness <- ave(df$happiness, df$id, FUN = function(x) mean(x)) 
+df <- simdata(N = N, T = T)
 
 
 # Total line for plot
@@ -810,9 +825,12 @@ In a setting where $T=2$ or in a setting where every observation is treated at t
 We can receive the same estimator in a simple regression. Lets assume $D \in {0, 1}$ is a binary indicator of the treatment group and $Post \in {0, 1}$ a binary indicator of pre- or post-treatment period. Then we can get the DD estimator with an interaction between those two two variables:
 
 $$
-y_{it} = \alpha + \beta_1 D_{i} + \beta_2 Post_{t} + \delta_{DD} (D_{i} \times Post_{t}) + \upsilon_{it}.
+y_{it} = \alpha + \gamma D_{i} + \lambda Post_{t} + \delta_{DD} (D_{i} \times Post_{t}) + \upsilon_{it}.
 $$
-the coefficients correspond to:
+
+![Diff-in-Diff design, adopted from @Cunningham.2021](fig/dd-diagram-1.png)
+
+The coefficients correspond to:
 
 * $\alpha$: average outcome of control group in pre-treatment period 
 
@@ -889,7 +907,7 @@ re1 <- plm(happiness ~ age, data = df,
 summary(re1)
 ```
 
-This indicates that there is barely any relation between age and happiness. This is because the within and the between estimates cancel our each other. 
+This indicates that there is barely any relation between age and happiness. This is because the within and the between estimates cancel out each other. 
 
 ```{r class.source = 'fold-hide', message = FALSE, warning = FALSE}
 N <- 6
@@ -958,7 +976,159 @@ zp6 <- ggplot(df, aes(age, happiness)) +
 zp6
 ```
 
-There are two main problems with the RE estimator:
+Both - within and between estimator - get a similar weight for the RE estimator in our example. The reason is that we have nearly identical errors / noise in the in the between model and the within model.
+
+However, this obviously can vary strongly across empirical settings. Lets see what happens when we increase T in our example:
+
+```{r class.source = 'fold-hide', message = FALSE, warning = FALSE}
+N <- 6
+T <- 8
+
+df <- simdata(N = N, T = T)
+
+### Models
+# Total line for plot
+lm1 <- lm(happiness ~ age, data = df)
+lm2 <- lm(happiness ~ age + cohort, data = df)
+lm3 <- lm(happiness ~ age + idname, data = df)
+lm4 <- lm(m_happiness ~ m_age, data = df)
+re <- plm(happiness ~ age, df, model = "random", effect = "individual")
+
+### Compare POLS, BE, FE, and RE
+estimates <- data.frame(matrix(NA, ncol = 3, nrow = 4))
+names(estimates) <- c("Model", "Intercept", "slope")
+estimates[1,] <- c("POLS",
+                   lm1$coefficients[1],
+                   lm1$coefficients[2])
+estimates[2,] <- c("BE",
+                   lm4$coefficients[1], 
+                   lm4$coefficients[2])
+estimates[3,] <- c("FE",
+                   lm3$coefficients[1] + 1/N * lm3$coefficients[3]  + 1/N * lm3$coefficients[4] 
+                   + 1/N * lm3$coefficients[5]  + 1/N * lm3$coefficients[6]  + 1/N * lm3$coefficients[7], 
+                   lm3$coefficients[2])
+estimates[4,] <- c("RE",
+                   re$coefficients[1], 
+                   re$coefficients[2])
+estimates[, -1] <- apply(estimates[, -1], 2, FUN = function(x) as.numeric(x))
+
+newdf <- data.frame(matrix(NA, ncol = 2, nrow = 2))
+names(newdf) <- c("x", "y")
+newdf$x <- c(min(df$age), max(df$age))
+for(i in 1:nrow(estimates)){
+  newdf$y <- estimates[i, "Intercept"] + estimates[i, "slope"]*newdf$x
+  newdf$Model <- estimates[i, "Model"]
+  if(i == 1){
+    pred <- newdf
+  }else{pred <- rbind(pred, newdf)}
+}
+
+estimates$Model <- factor(estimates$Model, levels = c("POLS", "BE", "FE", "RE"))
+
+gg_color_hue <- function(n) {
+  hues = seq(15, 375, length = n + 1)
+  hcl(h = hues, l = 65, c = 100)[1:n]
+}
+
+zp7 <- ggplot(df, aes(age, happiness)) +
+  geom_point(aes(x = age, y = happiness, shape = idname),
+             colour = rep(gg_color_hue(6), each = T),
+              size = 2, stroke = 1, show.legend = FALSE) +
+  geom_smooth(method = 'lm', formula = y ~ x, se = FALSE, show.legend = FALSE,
+              linetype = "dashed", aes(group = idname), colour = alpha("gray", 1)) +
+  geom_abline(data = estimates, lwd = 1.2,
+              mapping = aes(intercept = Intercept, slope = slope, 
+                            colour = Model, linetype = Model)) +
+  scale_linetype_manual(values = c("solid", "twodash", "longdash", "dotdash")) +
+  ylim(3.3, 9.2) + expand_limits(y = c(0, 0)) + 
+  theme_bw() +
+  theme(legend.key = element_blank(), legend.title = element_blank(),
+        legend.position = c(0.95,0.05), legend.justification = c("right", "bottom"),
+        legend.background = element_blank(),
+        legend.box.background = element_rect(colour = "black"),
+        plot.title = element_text(hjust = 0.5))
+zp7
+```
+
+The POLS goes very slightly towards the within estimator. This is because we have increased the within variance in age, but there is still much more variance in age between individuals.
+
+The RE goes strongly towards FE. This is because - by increasing T - the between model now makes a larger error: there are more data points far away from the green BE line. The error or the within model, in contrast, remain unchanged. So RE gives more weight to the within estimator.
+
+However, if we increase the noise in the within estimator (bringing the data points further away from each id-specific regression line), RE would move back towards the between estimator:
+
+```{r class.source = 'fold-hide', message = FALSE, warning = FALSE}
+N <- 6
+T <- 8
+
+df <- simdata(N = N, T = T, uw_sd = 0.5, age_range = c(20:60))
+
+### Models
+# Total line for plot
+lm1 <- lm(happiness ~ age, data = df)
+lm2 <- lm(happiness ~ age + cohort, data = df)
+lm3 <- lm(happiness ~ age + idname, data = df)
+lm4 <- lm(m_happiness ~ m_age, data = df)
+re <- plm(happiness ~ age, df, model = "random", effect = "individual")
+
+### Compare POLS, BE, FE, and RE
+estimates <- data.frame(matrix(NA, ncol = 3, nrow = 4))
+names(estimates) <- c("Model", "Intercept", "slope")
+estimates[1,] <- c("POLS",
+                   lm1$coefficients[1],
+                   lm1$coefficients[2])
+estimates[2,] <- c("BE",
+                   lm4$coefficients[1], 
+                   lm4$coefficients[2])
+estimates[3,] <- c("FE",
+                   lm3$coefficients[1] + 1/N * lm3$coefficients[3]  + 1/N * lm3$coefficients[4] 
+                   + 1/N * lm3$coefficients[5]  + 1/N * lm3$coefficients[6]  + 1/N * lm3$coefficients[7], 
+                   lm3$coefficients[2])
+estimates[4,] <- c("RE",
+                   re$coefficients[1], 
+                   re$coefficients[2])
+estimates[, -1] <- apply(estimates[, -1], 2, FUN = function(x) as.numeric(x))
+
+newdf <- data.frame(matrix(NA, ncol = 2, nrow = 2))
+names(newdf) <- c("x", "y")
+newdf$x <- c(min(df$age), max(df$age))
+for(i in 1:nrow(estimates)){
+  newdf$y <- estimates[i, "Intercept"] + estimates[i, "slope"]*newdf$x
+  newdf$Model <- estimates[i, "Model"]
+  if(i == 1){
+    pred <- newdf
+  }else{pred <- rbind(pred, newdf)}
+}
+
+estimates$Model <- factor(estimates$Model, levels = c("POLS", "BE", "FE", "RE"))
+
+gg_color_hue <- function(n) {
+  hues = seq(15, 375, length = n + 1)
+  hcl(h = hues, l = 65, c = 100)[1:n]
+}
+
+zp7 <- ggplot(df, aes(age, happiness)) +
+  geom_point(aes(x = age, y = happiness, shape = idname),
+             colour = rep(gg_color_hue(6), each = T),
+              size = 2, stroke = 1, show.legend = FALSE) +
+  geom_smooth(method = 'lm', formula = y ~ x, se = FALSE, show.legend = FALSE,
+              linetype = "dashed", aes(group = idname), colour = alpha("gray", 1)) +
+  geom_abline(data = estimates, lwd = 1.2,
+              mapping = aes(intercept = Intercept, slope = slope, 
+                            colour = Model, linetype = Model)) +
+  scale_linetype_manual(values = c("solid", "twodash", "longdash", "dotdash")) +
+  ylim(3.3, 9.2) + expand_limits(y = c(0, 0)) + 
+  theme_bw() +
+  theme(legend.key = element_blank(), legend.title = element_blank(),
+        legend.position = c(0.95,0.05), legend.justification = c("right", "bottom"),
+        legend.background = element_blank(),
+        legend.box.background = element_rect(colour = "black"),
+        plot.title = element_text(hjust = 0.5))
+zp7
+```
+
+Do you have an idea what happens if we reduce the range of the starting age of the individuals (bringing them closer together)? 
+
+### There are two main problems with the RE estimator:
 
 1) Interpretation: how to interpret an estimator based on a mix of __within__ and __between__ variance?
 
@@ -1063,7 +1233,7 @@ $$
 
 where $\hat{\tilde{\bm\epsilon}}_i$ is the vector of FE residuals for each person $i$, and $\tilde{\bm X}$ are the transformed data.
 
-to calculate thos standard errors, we can use the `sandwich` and `coeftest` packages. For more information on the various types and options in the command see @Millo.2017.
+to calculate those standard errors, we can use the `sandwich` and `coeftest` packages. For more information on the various types and options in the command see @Millo.2017.
 
 ```{r}
 summary(fe1)
@@ -1079,7 +1249,7 @@ coeftest(fe1, vcov = function(x) vcovHC(x, method = "arellano", type = "HC3"))
 
 In this case the robust SEs are actually smaller!! This is because this stylized example does not include heteroskedasticity or autocorrelation. However, we will see the difference with some real data.
 
-One hint for large data: `coeftest` and `sandwich` can get slow on large data. It can then be more efficient to use the package `lfe` right away. The `felm` requires a four part formula of the form `y ~ x1 + x2 | f1 + f2 | (Q|W ~ x3+x4) | clu1 + clu2`, where "x" are ordinary covariates, "f" are the fixed effects, the third part allows to instrument covariates, and "clu" are clusters for robust standard errors:
+One hint for large data: `coeftest` and `sandwich` can be slow on large data. It might be more efficient to use the package `lfe` right away. The `felm()` function (to estimate FE models) requires a four part formula of the form `y ~ x1 + x2 | f1 + f2 | (Q|W ~ x3+x4) | clu1 + clu2`, where "x" are ordinary covariates, "f" are the fixed effects, the third part allows to instrument covariates, and "clu" are clusters for robust standard errors:
 
 ```{r}
 fe1_2 <- felm(happiness ~ age | id | 0 | id,
