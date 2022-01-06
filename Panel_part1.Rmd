@@ -965,6 +965,10 @@ zp6 <- ggplot(df, aes(age, happiness)) +
   geom_abline(data = estimates, lwd = 1.2,
               mapping = aes(intercept = Intercept, slope = slope, 
                             colour = Model, linetype = Model)) +
+  geom_point(data = unique(df[, c("m_age", "m_happiness", "idname")]),
+             aes(x = m_age, y = m_happiness, shape = idname),
+             colour = gg_color_hue(6), alpha = 0.5,
+              size = 3, stroke = 2, show.legend = FALSE) +
   scale_linetype_manual(values = c("solid", "twodash", "longdash", "dotdash")) +
   ylim(3.3, 9.2) + expand_limits(y = c(0, 0)) + 
   theme_bw() +
@@ -984,7 +988,8 @@ However, this obviously can vary strongly across empirical settings. Lets see wh
 N <- 6
 T <- 8
 
-df <- simdata(N = N, T = T)
+set.seed(123)
+df <- simdata(N = N, T = T, uw_sd = 0, age_range = c(20:60))
 
 ### Models
 # Total line for plot
@@ -1039,6 +1044,10 @@ zp7 <- ggplot(df, aes(age, happiness)) +
   geom_abline(data = estimates, lwd = 1.2,
               mapping = aes(intercept = Intercept, slope = slope, 
                             colour = Model, linetype = Model)) +
+  geom_point(data = unique(df[, c("m_age", "m_happiness", "idname")]),
+             aes(x = m_age, y = m_happiness, shape = idname),
+             colour = gg_color_hue(6), alpha = 0.5,
+              size = 3, stroke = 2, show.legend = FALSE) +
   scale_linetype_manual(values = c("solid", "twodash", "longdash", "dotdash")) +
   ylim(3.3, 9.2) + expand_limits(y = c(0, 0)) + 
   theme_bw() +
@@ -1060,6 +1069,7 @@ However, if we increase the noise in the within estimator (bringing the data poi
 N <- 6
 T <- 8
 
+set.seed(123)
 df <- simdata(N = N, T = T, uw_sd = 0.5, age_range = c(20:60))
 
 ### Models
@@ -1115,6 +1125,10 @@ zp7 <- ggplot(df, aes(age, happiness)) +
   geom_abline(data = estimates, lwd = 1.2,
               mapping = aes(intercept = Intercept, slope = slope, 
                             colour = Model, linetype = Model)) +
+  geom_point(data = unique(df[, c("m_age", "m_happiness", "idname")]),
+             aes(x = m_age, y = m_happiness, shape = idname),
+             colour = gg_color_hue(6), alpha = 0.5,
+              size = 3, stroke = 2, show.legend = FALSE) +
   scale_linetype_manual(values = c("solid", "twodash", "longdash", "dotdash")) +
   ylim(3.3, 9.2) + expand_limits(y = c(0, 0)) + 
   theme_bw() +
