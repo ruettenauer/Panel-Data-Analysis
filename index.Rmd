@@ -85,6 +85,8 @@ Books:
 
 * For R experts: @Croissant.2019
 
-* General introductions to causal estimation techniques: @Angrist.2015.0, @Cunningham.2021, @Firebaugh.2008
+* General introductions to causal estimation techniques: @Angrist.2015.0, @Cunningham.2021, @Firebaugh.2008, @HuntingtonKlein.2021
+
+The books by @Cunningham.2021 ([Link](https://mixtape.scunning.com/)) and @HuntingtonKlein.2021 ([Link](https://theeffectbook.net/)) are freely available online!
 
 # References
