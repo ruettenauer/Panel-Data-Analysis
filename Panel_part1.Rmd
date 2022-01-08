@@ -582,7 +582,7 @@ zp2 <- ggplot(df2, aes(wave, wage)) +
 zp2
 ```
 
-### One-ways fixed effects
+### One-way fixed effects
 
 To relax the strong assumption, we can decompose the error into two parts (between and within) with panel data: $\upsilon_{it} = \alpha_i + \epsilon_{it} = 0$, where $\alpha_i$ is the time-constant (person-specific or between) part of the error, and $\epsilon_{it} = 0$ is the time-varying (idiosyncratic or within) part of the error. 
 

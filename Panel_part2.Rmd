@@ -30,7 +30,7 @@ link-citations: yes
 ### Required packages
 
 ```{r, message = FALSE, warning = FALSE, results = 'hide'}
-pkgs <- c("plm", "feisr", "did", "panelView", "texreg", "tidyr", "dplyr", "ggplot2", "ggforce") 
+pkgs <- c("plm", "feisr", "did", "Synth", "SCtools", "panelView", "texreg", "tidyr", "dplyr", "ggplot2", "ggforce") 
 lapply(pkgs, require, character.only = TRUE)
 ```
 
@@ -54,7 +54,7 @@ sessionInfo()
 * TBD: Generalized Synthetic Control
 
 
-# Fixed Effects Individual Slopes (FEIS)
+# Fixed Effects Individual Slopes
 
 
 Remeber that we have to make the parallel trends assumption in twoways FE models. A violation of the parallel trends assumption leads to biased estimates. Usually, when controlling for time fixed effects, we make the assumption that every observation experiences the same "effect of time".
@@ -94,6 +94,8 @@ $$
 \bm y_{i} =& \bm X_{i}\bm\beta + \hat{\bm X}_{i}\bm\rho + \bm \epsilon_{i}.
 \end{align}
 $$
+
+Although we are here mainly interested in controlling for individual time, FEIS can be used to control for individual specific effects of any covariate. For instance, @Ruttenauer.2020 discuss an example of controlling for family-specific pre-treatment conditions in a sibling study on the effect of participating in pre-school programs on later life outcomes.
 
 ### Example
 
@@ -640,13 +642,13 @@ $$
 $$
 where $i=1$ is the treated unit and $j\neq i$ are all potential control units (donor pool).
 
-$w_j^*$ are the optimally chosen weights for each control unit, where we impose two restrictions: a) the weights are non-negative $w_j \geq 0$ for $j=2,\dots, J+1$, and the weights sum to one $\sum_{j=2}^{J+1}w_j = 1$.
+$w_j^*$ are the optimally chosen (non-negative) weights for each control unit, where we impose two restrictions: a) the weights are non-negative $w_j \geq 0$ for $j=2,\dots, J+1$, and the weights sum to one $\sum_{j=2}^{J+1}w_j = 1$.
 
 This leaves us with the task to find the optimally chosen weights. So assume we have $k = 1,\dots,K$ covariates $\bm X$, where $x_{1k}$ is the $k$-th covariate of the treated unit, and $\bm x_{0k}$ a $1 \times J$ vector of the same covariate for the control units / donor pool. Then we choose $W^*$ as the value that minimizes 
 $$
 \sum_{k=1}^K v_k(x_{1k} - x_{0k}W)^2,
 $$
-with $v_k$ reflecting the relative importance of the covarite $k$. As we want the outcome trjectories of the treated unit and synthetic control to closely match, $v_1,\dots,v_K$ is usually determined by the predictive power of the respective covariate.
+with $v_k$ reflecting the relative importance of the covariate $k$. As we want the outcome trajectories of the treated unit and synthetic control to closely match, $v_1,\dots,v_K$ is usually determined by the predictive power of the respective covariate.
 
 The original authors [@Abadie.2003; @Abadie.2010, @Abadie.2011] use a data driven approach to choose $V^*$ by minimizing the mean squared prediction error (MSPE) of the outcome over the pre-treatment periods $t=1,\dots,T_0$. Formally, we choose $V^*$ that minimizes:
 $$
@@ -655,21 +657,176 @@ $$
 
 Note: with increasing pre-intervention periods ($T_0$), we can assume that the synthetic control also accounts for unobserved factors affecting $Y$ [@Abadie.2010], assuming that only units with similar unobservables exhibit a similar outcome trajectory.
 
-However, with increasing pre-intervention periods, it is important to check if outcome trajectories match well not only at far temporal distances to the treatment but also in periods closely before the treatment.
+However, with increasing pre-intervention periods, it is important to check if the outcome trajectories match well not only at far temporal distances to the treatment but also in periods closely before the treatment.
+
+A __critical assumption__ is that the outcome trajectory (and other covariates) of the treated unit falls into the "convex hull" of the donor pool's outcome trajectories. Intuitively: we construct the synthetic control by giving each control unit a weight of $\geq 0$ (we only interpolate, but do not extrapolate). Thus, there must be sufficient control units with "higher" and "lower" values in the outcome for pre-intervention periods. If the treated unit is an outlier before the intervention, Synthetic Control does not make much sense.
 
 ### Statistical inference with synthetic control
 
-Calculating uncertainty estimates for Synthetic Control methods is an ongoing methodological challenge. Recent work, for instance, suggest to quantify uncertainty based on permutation inference procedures @Chernozhukov.2021b or on conditional prediction intervals @Cattaneo.2021. In practice, however, both methods are difficult to implement with standard software (especially with covariate matching).
+Calculating uncertainty estimates for Synthetic Control methods is an ongoing methodological challenge. Recent work, for instance, suggest to quantify uncertainty based on permutation inference procedures [@Chernozhukov.2021b] or on conditional prediction intervals [@Cattaneo.2021]. In practice, however, both methods are difficult to implement with standard software (especially with covariate matching).
 
-__tbd: Placebo tests...__
+@Abadie.2003 and @Abadie.2010 propose a more qualitative approach to asses the significance of the findings: __placebo tests__. The idea is that we randomly assign the treatment to a control unit and perform the Synthetic Control method with this placebo treatment unit, and we repeat this exercise with every control unit.
+
+Basically, we test what treatment effect we find if we assign treatment status to a unit that actually did not receive the treatment, thereby giving us a distribution of "treatment effects" for non-treated contries. We can then compare these placebo results to our actual treatment effect.
+
+![Placebo test for Synthetic Control [@Abadie.2010]](fig/abadie_placebo.jpg)
+
+To increase the comparability of the actual treatment unit and placebo treatment units, propose to exclude those units which have a poor pre-treatment fit (left panel above) by dropping those with a mean square prediction error above a specific threshold (right panel above).
+
+If the actual treatment effect lies at the extremes of the distribution of the placebo "treatment" units, we can say that the treatment likely had a significant effect on the outcome. If, in contrast, the actual treatment effect lies in the middle of the placebo effects for those not receiving the treatment, this indicates that the treatment did not have a significant influence.
 
 ### Example
 
-__tbd__
+Can we use our marriage wage premium example and the respective data to perform a Synthetic Control analysis? Why (not)?
+
+In R, we can use the package `Synth` to produce Synthetic Control estimates. For a demonstration using Stata by Jens Hainmueller see the following [video](https://web.stanford.edu/~jhain/Video/SynthDemo.mp4).
+
+Here, we use the example of @Abadie.2003, analyzing the influence of the terrorist conflict in Basque on economic outcomes.
+
+```{r}
+data("basque")
+basque <- basque[-which(basque$regionno == 1), ]
+head(basque[basque$year > 1963, ])
+```
+
+The data contains the GDP per capita for Spanish regions in long format, and several covariates. Our treatment is the onset of political unrest in Basque in the year 1970. However, the terrorist activities were low at the beginning, but increased sharply in 1974.
+
+First, we need to create a dataprep object which ensures that everything is in the right format for the `synth()` function. Apart from the standard information, we here have to decide which control units should be included, which covariates should be included in the matching procedure, and for which periods these covariates should be included. 
+
+Here we want to include the following covariates:
+
+* The average GDP per capita in 1960 - 1964 and in 1965-1969 (we use the `special.predictors` option).
+
+* The share with high school ("school.high") and more than high school ("school.post.high") for the entire observation period (which need to specified using the option `time.predictors.prior`).
+
+* Population density ("popdens") in 1969 (we use the `special.predictors` option).
+
+* Percentage working in the agricultural ("sec.agriculture"), the industrial ("sec.industry"), and the service sector ("sec.services.venta") from 1961, 1963, 1965, 1967, 1969 (we use the `special.predictors` option).
+
+```{r}
+data_prep.out <- dataprep(foo = basque, 
+                          predictors = c("school.high", "school.post.high"),
+                          predictors.op = "mean", 
+                          time.predictors.prior = 1960:1969,
+                          special.predictors = list(
+                            list("gdpcap", 1960:1964, "mean"),
+                            list("gdpcap", 1965:1969, "mean"),
+                            list("sec.agriculture", seq(1961, 1969, 2), "mean"),
+                            list("sec.industry", seq(1961, 1969, 2), "mean"),
+                            list("sec.services.venta", seq(1961, 1969, 2), "mean")
+                          ),
+                          dependent = "gdpcap", 
+                          unit.variable = "regionno",
+                          time.variable = "year", 
+                          treatment.identifier = 17,
+                          controls.identifier = c(2:16, 18), 
+                          time.optimize.ssr = 1960:1969, 
+                          time.plot = 1960:1997,
+                          unit.names.variable = "regionname")
+
+cbind(data_prep.out$X0, data_prep.out$X1)
+```
+
+So, this prepares a list of different objects that are used in the optimazition algorithm later on. Above, we see all the used covariates used for mathing.
+
+we can also use it to print the raw trajecotries of the treated region and the control pool
+
+```{r class.source = 'fold-hide', message = FALSE, warning = FALSE}
+Y1 <- data.frame(data_prep.out$Y1plot)
+names(Y1) <- "y"
+Y1$treat <- "Treatment"
+Y1$year <- as.numeric(rownames(Y1))
+
+Y0 <- data.frame(rowMeans(data_prep.out$Y0plot))
+names(Y0) <- "y"
+Y0$treat <- "Control"
+Y0$year <- as.numeric(rownames(Y0))
+
+data <- rbind(Y1, Y0)
+
+p1 <- ggplot(data = data, aes(x = year, y = y)) +
+  geom_line(aes(group = treat, color = treat, linetype = treat),
+            size = 1.2) +
+  scale_x_continuous(guide = guide_axis(check.overlap = TRUE))+
+  theme_bw() +
+  theme(legend.key = element_blank(), legend.title = element_blank(),
+        legend.position = c(0.05,0.95), legend.justification = c("left", "top"),
+        legend.background = element_blank(),
+        legend.box.background = element_rect(colour = "black"),
+        legend.spacing.y = unit(-0.1, "cm"))
+p1
+
+```
+
+This seems pretty hard to compare as there were already strong differences between Basque and other Spanish reasons before the onset of terrorist activities.
+
+So, let's see if we can do better by estimating a synthetic control unit for Basque using the `synth()` function.
+
+```{r}
+synth.out <- synth(data.prep.obj = data_prep.out)
+```
+
+This already gives us some important information. "solution.v" tells us the weights for the individual covariates, and "solution.w" gives us the weights for the units in the donor pool for constructing the synthetic control unit.
+
+Before looking at the actual results, it is helpful to check some core statistics. For instance, below we see how well the synthetic control unit mirrors our treated region across the included covariates.
+
+```{r}
+synth.tables  <- synth.tab(dataprep.res = data_prep.out, synth.res = synth.out)
+synth.tables$tab.pred
+```
+
+For the GDP per capita variables, the synthetic control closely resembles the treated region. That's good!! However, for other covariates like "school.high" or "school.post.high", the synthetic control region matches notatbly worse than the raw sample... Nevertheless, why do we not need to worry so much about that? (look at "solution.v" above)
+
+Obviously, we also want to know the weights that each region receives for the construction of the synthetic control.
+
+```{r}
+synth.tables$tab.w
+```
+
+So, only the Baleares, Cataluna and Madrid contribute to the synthetic control region, while all others are set to zero. Cataluna by far receives the highest weight.
+
+Finally, how does the synthetic control average look like and how does it compare to the treated unit of Basque?
+
+```{r}
+path.plot(synth.res = synth.out, dataprep.res = data_prep.out,
+          Ylab = c("GDP per capita"))
+```
+
+Before 1970, the synthetic control region aligns very well with the Basque region. From 1970, Basque shows a slightly lower GDP than its counterfactual with terrorist activities. From 1974/75 (after the sharp increase in terrorist activities) we see a pronounced decline in the GDP as compared to the synthetic control unit.
+
+We can also show these differences more clearly, when plotting the differences instead of the trajectory.
+
+```{r}
+gaps.plot(synth.res = synth.out, dataprep.res = data_prep.out,
+          Ylab = c("Difference in GDP per capita"))
+```
+
+__Inferencial statistics__
+
+However, is this difference statistically significant or might it be a result of pure chance?
+
+So give some intuition of the significance of the treatment effect, we perform an interaction of placebo test, artificially assigning the treatment status to control regions.
+
+The function `generate.placebos()` of the `SCtools` package does all of this automatically for us.
+
+```{r, results = 'hide', message = FALSE, warning = FALSE}
+placebo <- generate.placebos(dataprep.out = data_prep.out,
+                             synth.out = synth.out, 
+                             strategy = "multiprocess")
+```
+
+Also creating the respective plot.
+
+```{r}
+plot_placebos(placebo)
+```
+
+
+The real treatment region seems quite special. For some control regions, we observe similarly stong "treatment effects". However, these extreme regions have a poor pre-treatment fit, and thus should be disregarded.
 
 # Generalized Synthetic Control
 
-__tbd__
+__tbd (+ Matrix Completion?)__
 
 
 # References
