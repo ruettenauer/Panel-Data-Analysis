@@ -834,9 +834,9 @@ The coefficients correspond to:
 
 * $\alpha$: average outcome of control group in pre-treatment period 
 
-* $\beta_1$: average difference between treatment and control group in pre-treatment period 
+* $\gamma$: average difference between treatment and control group in pre-treatment period 
 
-* $\beta_2$: average difference between post- pre-treatment period in control group
+* $\lambda$: average difference between post- pre-treatment period in control group
 
 * $\delta_{DD}$: difference between treatment and control group in difference between post- pre-treatment period 
 

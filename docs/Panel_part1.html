@@ -1464,8 +1464,8 @@ y_{it} = \alpha + \gamma D_{i} + \lambda Post_{t} + \delta_{DD} (D_{i} \times Po
 <p>The coefficients correspond to:</p>
 <ul>
 <li><p><span class="math inline">\(\alpha\)</span>: average outcome of control group in pre-treatment period</p></li>
-<li><p><span class="math inline">\(\beta_1\)</span>: average difference between treatment and control group in pre-treatment period</p></li>
-<li><p><span class="math inline">\(\beta_2\)</span>: average difference between post- pre-treatment period in control group</p></li>
+<li><p><span class="math inline">\(\gamma\)</span>: average difference between treatment and control group in pre-treatment period</p></li>
+<li><p><span class="math inline">\(\lambda\)</span>: average difference between post- pre-treatment period in control group</p></li>
 <li><p><span class="math inline">\(\delta_{DD}\)</span>: difference between treatment and control group in difference between post- pre-treatment period</p></li>
 </ul>
 <div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(wage <span class="sc">~</span> marriage_ever<span class="sc">*</span>marry_post, <span class="at">data =</span> df2))</span></code></pre></div>
