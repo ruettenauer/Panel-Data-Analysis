@@ -47,9 +47,9 @@ sessionInfo()
 
 * Dynamic treatment effects
 
-* TBD: Dynamic Diff-in-Diff
+* Dynamic Diff-in-Diff
 
-* TBD: Synthetic Control
+* Synthetic Control
 
 * TBD: Generalized Synthetic Control
 
@@ -57,7 +57,7 @@ sessionInfo()
 # Fixed Effects Individual Slopes (FEIS)
 
 
-Remeber that we have to make the parallel trends assumption in twoways FE models. A violation of the parallel trends assumption leads to biased estimates. Usually, when controlling for time or time fixed effects, we make the assumption that every observation experiences the same "effect of time".
+Remeber that we have to make the parallel trends assumption in twoways FE models. A violation of the parallel trends assumption leads to biased estimates. Usually, when controlling for time fixed effects, we make the assumption that every observation experiences the same "effect of time".
 
 However, we can relax this assumption by giving each individual their own intercept __and__ their own slope.
 
@@ -78,7 +78,15 @@ y_{it} - \hat{y}_{it} =& (\bm x_{it} - \hat{\bm x}_{it})\bm\beta + \epsilon_{it}
 \tilde{\bm y}_{i} =& \tilde{\bm X}_{i}\bm\beta + \tilde{\bm \epsilon}_{i},
 \end{align} 
 $$
-where $\tilde{\bm y}_{i}$, $\tilde{\bm X}_{i}$, and $\tilde{\bm \epsilon}_{i}$ are the residuals of regressing $\bm y_{i}$, each column-vector of $\bm X_{i}$, and $\bm \epsilon_{i}$ on $\bm W_i$. Intuitively, we (1) estimate the individual-specific predicted values for the dependent variable and each covariate based on an individual intercept and the additional slope variables of $\bm W_i$, (2) 'detrend' the original data by these individual-specific predicted values, and (3) run an OLS model on the residual data. 
+where $\tilde{\bm y}_{i}$, $\tilde{\bm X}_{i}$, and $\tilde{\bm \epsilon}_{i}$ are the residuals of regressing $\bm y_{i}$, each column-vector of $\bm X_{i}$, and $\bm \epsilon_{i}$ on $\bm W_i$. 
+
+__Intuitively__, we 
+
+1. estimate the individual-specific predicted values for the dependent variable and each covariate based on an individual intercept and the additional slope variables of $\bm W_i$, 
+
+2. 'detrend' the original data by these individual-specific predicted values, and 
+
+3. run an OLS model on the residual ('detrended') data. 
 
 Similarly, we can estimate a correlated random effects (CRE) model [@Chamberlain.1982; @Mundlak.1978.0; @Wooldridge.2010.384] including the individual specific predictions $\hat{\bm X}_{i}$ to obtain the FEIS estimator:
 $$
@@ -86,7 +94,6 @@ $$
 \bm y_{i} =& \bm X_{i}\bm\beta + \hat{\bm X}_{i}\bm\rho + \bm \epsilon_{i}.
 \end{align}
 $$
-
 
 ### Example
 
@@ -125,15 +132,15 @@ wages.fe$vcov <- vcovx_fe
 wages.re$vcov <- vcovx_re
 ```
 
-Replacing has the advantage that we know use the cluster robust SEs in all following operations (like `summary()` or `screenreg`).
+Replacing the vcov in the model output has the advantage that we now use the cluster robust SEs in all following operations (like `summary()` or `screenreg`).
 
 ```{r}
 summary(wages.fe)
 ```
 
-And now, we allow the individual specific trends. To replicate the analysis of @Ludwig.2018.0, we use work experience (`exp`) and squared work experience as the slope variables.
+And finally, we allow for individual specific trends. To replicate the analysis of @Ludwig.2018.0, we use work experience (`exp`) and squared work experience as the slope variables.
 
-__One mayor advantage of using work experience as slope it that we can still control for (grouped) time fixed effects__
+__One mayor advantage of using work experience as slope is that we can still control for (grouped) time fixed effects__
 
 __Assuming linear trends (only using exp), is a strong assumption. However, for each additional slope (e.g. polynomial), FEIS becomes more data hungry: each individual needs at least $T \geq K + 1$ observations to contribute to the model. If not, they are dropped!__
 
@@ -161,7 +168,44 @@ Interpretation:
 
 * FEIS: Accounting for the individual wage trend before marriage, we do not observe an increase in wages if people marry. The effect is small and non-significant.
 
-Overall, this indicated that there is a problem with non-parallel trends: Those with steeper wage trajectories are more likely to marry (or marry earlier).
+Overall, this indicates that there is a problem with non-parallel trends: Those with steeper wage trajectories are more likely to marry (or marry earlier).
+
+As mentioned above, we can achieve the same by 1) manually calculating the individual specific trends and 2) including them as additional covariates in the model.
+
+```{r}
+### Individual predicted value of covariates
+vars <- c("marry", "enrol", "yeduc", 
+          "yeargr2", "yeargr3", "yeargr4", "yeargr5")
+for(v in vars){
+  fm <- as.formula(paste(v, "~ exp + expq"))
+  pred_x <- by(mwp[, c(v, "exp", "expq")],
+                mwp$id,
+                FUN = function(z) predict(lm(fm, data = z)))
+  pred_x <- unlist(pred_x)
+  
+  mwp[, paste0("pred_", v)] <- pred_x
+}
+
+head(mwp[, c("id", "pred_marry", "pred_enrol")], n = 20)
+```
+
+This gives us individual-specific predicted values of each covariate based on and intercept, exp and expsq. Note that - in contrast to person-specific means - these predicted values (can) vary within a person.
+
+Do you know why person-id 2 has all zeros on the pre_marry variable? 
+
+Using these individual predicted values, we can retreive the FEIS estimates in a Mundlak-style model.
+
+```{r}
+wages.lmfeis <- lm(lnw ~ marry + enrol + yeduc + as.factor(yeargr) +
+                     pred_marry + pred_enrol + pred_yeduc +
+                     pred_yeargr2 + pred_yeargr3 + pred_yeargr4 + pred_yeargr5,
+                   data = mwp)
+
+screenreg(list(wages.feis, wages.lmfeis), digits = 3,
+          custom.model.names = c("FEIS", "Manual FEIS"))
+```
+
+Note, however, that this manual approach will lead to incorrect standard errors!
 
 # Dynamic treatment effects
 
@@ -169,7 +213,7 @@ Often, we are not only interested in the overall treatment effect, but we also w
 
 There are various ways of calculating how a treatment effect develops over time:
 
-![Brüderl/Ludwig 2019, https://www.ls3.soziologie.uni-muenchen.de/studium-lehre/archiv/teaching-marterials/panel-analysis_april-2019.pdf](fig/Impact-function.PNG)
+![Various impact functions for event study designs from [Brüderl/Ludwig 2019 teaching materials](https://www.ls3.soziologie.uni-muenchen.de/studium-lehre/archiv/teaching-marterials/panel-analysis_april-2019.pdf)](fig/Impact-function.PNG)
 
 Usually, it is best to not impose a structural form, but rather to use dummy impact functions. However, even with this, there is an ongoing debate on what is the best choice of specification [@Ludwig.2021], or see for instance [blog post by Pedro H. C. Sant’Anna and Brantly Callaway](https://pedrohcgs.github.io/posts/twfe).
 
@@ -397,7 +441,7 @@ This gives us what we already expected: using FEIS, the marital wage premium dis
 
 There is an ongoing discussion on how the Difference in Differences estimator relates to the two-ways FE estimator when treatment timing varies: different individuals receive the treatment at different periods. 
 
-@GoodmanBacon.2021 shows that the two-ways FE is a weighted average of all possbile two-group/two-period DD estimators. The weights determining how much each of these single combinations contributes to the two-ways FE are determined by the group size (e.g. how long do we observe each combination before and after treatment) and the variance in the treatment.
+@GoodmanBacon.2021 shows that the two-ways FE is a weighted average of all possible two-group/two-period DD estimators. The weights determining how much each of these single combinations contributes to the two-ways FE are determined by the group size (e.g. how long do we observe each combination before and after treatment) and the variance in the treatment.
 
 ![Two-ways FE and DD with varying treatment timing [@GoodmanBacon.2021].](fig/goodman.jpg)
 
@@ -407,7 +451,7 @@ Especially for "trend-breaking" treatment effects like in the following figure, 
 
 ![Bias of two-ways FE with trend-breaking treatment [@GoodmanBacon.2021].](fig/goodman2.jpg)
 
-In this example, in the middle period, we compare the break in treand in the early tread with the late treated, and we see the divergence between those two groups. However, for the later treated (right third), the earlier treated are the control cases, and we do not observe that there is actually a break in trend.
+In this example, in the middle period, we compare the break in trend in the early tread with the late treated, and we see the divergence between those two groups. However, for the later treated (right third), the earlier treated are the control cases, and we do not observe that there is actually a break in trend.
 
 One way of counteracting this problem is to use event study / impact function designs (see above) to explicitly model time varying treatment effects.
 
@@ -432,7 +476,7 @@ where the control group can either be the never-treated or the not-yet-treated.
 
 Intuitively, this means, we estimate an individual treatment effect for each combination of treatment-timing-group and control group.
 
-Obviously, this gives us a large number of different treatment effects. So, in a second step, we re-aggregate these individual combinations back to goup or time averaged treatment effect. In an event study design, propose the following dynamic treatment effect:
+Obviously, this gives us a large number of different treatment effects. So, in a second step, we re-aggregate these individual combinations back to group or time averaged treatment effect. In an event study design, propose the following dynamic treatment effect:
 
 $$
   \theta_D(e) := \sum_{g=2}^T \mathbf{1} \{ g + e \leq T \} \delta(g,g+e) P(G=g | G+e \leq T),
@@ -441,9 +485,19 @@ where $e$ specifies for how long a unit has been exposed to the treatment.
 
 For a more detailled introdution see @Callaway.2020 or the respective [package introcution](https://cran.r-project.org/web/packages/did/vignettes/multi-period-did.html).
 
-Assumptions:
+__Assumptions__:
 
-TBD
+1. Staggered treatment adoption: once a unit has been treated, it remains treated thereafter (see also the note above).
+
+2. Parallel trends assumption 
+  + based on never-treated: treated units would have had parallel trends to never-treated if they would not have experienced treatment. In many empirical settings this is a strong assumption (why do some units never experience treatment?).
+  + based on not-yet-treated: treated units would have had parallel trends to not-yet-treated if they would not have experienced treatment. This assumption might be a bit more likely to hold.
+  
+3. No treatment anticipation 
+  + based on never-treated: We can relax the assumption by either back-dating the treatment or include the appropriate pre-treatment periods in our results to inspect anticipation qualitatively.
+  + based on not-yet-treated: If there is treatment anticipation, our control group will be confounded by the treatment effect. A violation of the assumption can lead to stronger bias if we use the not-yet-treated as control group.
+  
+__Trade-off__: If assumption 2) is likely to hold, we can use only the never-treated as controls to relax assumption 3). If assumption 3) is likely to hold, we can include the not-yet-treated as control to relax assumption 2).
 
 
 ### Example
@@ -493,7 +547,7 @@ One huge advantage: We do not need to make a decision about which periods (befor
 However, we get a lot of individual treatment effects.
 
 ```{r}
-# showing the first 30
+# Show the group-time specific estimates
 summary(wages.attgt)
 ```
 
@@ -610,6 +664,10 @@ Calculating uncertainty estimates for Synthetic Control methods is an ongoing me
 __tbd: Placebo tests...__
 
 ### Example
+
+__tbd__
+
+# Generalized Synthetic Control
 
 __tbd__
 

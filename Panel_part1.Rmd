@@ -1263,7 +1263,7 @@ coeftest(fe1, vcov = function(x) vcovHC(x, method = "arellano", type = "HC3"))
 
 In this case the robust SEs are actually smaller!! This is because this stylized example does not include heteroskedasticity or autocorrelation. However, we will see the difference with some real data.
 
-One hint for large data: `coeftest` and `sandwich` can be slow on large data. It might be more efficient to use the package `lfe` right away. The `felm()` function (to estimate FE models) requires a four part formula of the form `y ~ x1 + x2 | f1 + f2 | (Q|W ~ x3+x4) | clu1 + clu2`, where "x" are ordinary covariates, "f" are the fixed effects, the third part allows to instrument covariates, and "clu" are clusters for robust standard errors:
+__One hint for large data__: `coeftest` and `sandwich` can be slow on large data. It might be more efficient to use the package `lfe` right away. The `felm()` function (to estimate FE models) requires a four part formula of the form `y ~ x1 + x2 | f1 + f2 | (Q|W ~ x3+x4) | clu1 + clu2`, where "x" are ordinary covariates, "f" are the fixed effects, the third part allows to instrument covariates, and "clu" are clusters for robust standard errors:
 
 ```{r}
 fe1_2 <- felm(happiness ~ age | id | 0 | id,
