@@ -531,8 +531,8 @@ div.tocify {
 <ul>
 <li><p>Panel data structure</p></li>
 <li><p>Decomposing variance</p></li>
-<li><p>Fixed Effects Model</p></li>
-<li><p>Random Effects Model</p></li>
+<li><p>Fixed Effects estimator</p></li>
+<li><p>Random Effects estimator</p></li>
 <li><p>Hybrid / Mundlak models</p></li>
 <li><p>Statistical inference</p></li>
 </ul>
@@ -1921,7 +1921,7 @@ y_{it} = \alpha + \beta x_{it} + \gamma \bar{x}_{i} + \xi_{it}
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>In this case the robust SEs are actually smaller!! This is because this stylized example does not include heteroskedasticity or autocorrelation. However, we will see the difference with some real data.</p>
-<p>One hint for large data: <code>coeftest</code> and <code>sandwich</code> can be slow on large data. It might be more efficient to use the package <code>lfe</code> right away. The <code>felm()</code> function (to estimate FE models) requires a four part formula of the form <code>y ~ x1 + x2 | f1 + f2 | (Q|W ~ x3+x4) | clu1 + clu2</code>, where “x” are ordinary covariates, “f” are the fixed effects, the third part allows to instrument covariates, and “clu” are clusters for robust standard errors:</p>
+<p><strong>One hint for large data</strong>: <code>coeftest</code> and <code>sandwich</code> can be slow on large data. It might be more efficient to use the package <code>lfe</code> right away. The <code>felm()</code> function (to estimate FE models) requires a four part formula of the form <code>y ~ x1 + x2 | f1 + f2 | (Q|W ~ x3+x4) | clu1 + clu2</code>, where “x” are ordinary covariates, “f” are the fixed effects, the third part allows to instrument covariates, and “clu” are clusters for robust standard errors:</p>
 <div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>fe1_2 <span class="ot">&lt;-</span> <span class="fu">felm</span>(happiness <span class="sc">~</span> age <span class="sc">|</span> id <span class="sc">|</span> <span class="dv">0</span> <span class="sc">|</span> id,</span>
 <span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>               <span class="at">data =</span> df, <span class="at">cmethod =</span> <span class="st">&#39;cgm2&#39;</span>)</span>
 <span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fe1_2)</span></code></pre></div>

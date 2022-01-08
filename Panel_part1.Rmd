@@ -49,9 +49,9 @@ sessionInfo()
 
 * Decomposing variance
 
-* Fixed Effects Model
+* Fixed Effects estimator
 
-* Random Effects Model
+* Random Effects estimator
 
 * Hybrid / Mundlak models
 
