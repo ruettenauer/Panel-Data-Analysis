@@ -1499,7 +1499,39 @@ and</p></li>
 <li><p><strong>the amount of treatment variance within each
 subsample</strong>.</p></li>
 </ol>
-<p>Note that these weights are always positive.</p>
+<p>Define <span class="math inline">\(\bar{D_{kl}}\)</span> as the
+variance of <span class="math inline">\(D_{it}\)</span> in the subsample
+that compares groups <span class="math inline">\(k\)</span> and <span
+class="math inline">\(l\)</span>, and the relative size of each group in
+the pair <span class="math inline">\(n_{kl} = \frac{n_k}{n_k +
+n_l}\)</span>. Then, the weights are given by:</p>
+<p><span class="math display">\[
+W_{jC} = \frac{(n_j + n_C)^2 \hat{V}_D^{jU}}{\hat{V}_D}, ~\text{with}~
+\hat{V}_D^{jU} = n_{jU}(1-n_{jU}) \bar{D}_j(1-\bar{D}_j), ~for~ j = k,l.
+\]</span></p>
+<p><span class="math display">\[
+W_{kl} = \frac{\bigl( (n_k + n_l)(1-\bar{D}_l) \bigr)^2
+\hat{V}_D^{kl}}{\hat{V}_D}, ~\text{with}~ \hat{V}_D^{kl} =
+n_{kl}(1-n_{kl}) \frac{\bar{D}_k-\bar{D}_l}{1-\bar{D}_l}
+\frac{1-\bar{D}_k}{1-\bar{D}_l}.
+\]</span></p>
+<p><span class="math display">\[
+W_{lk} = \frac{\bigl( (n_l + n_k)\bar{D}_k \bigr)^2
+\hat{V}_D^{lk}}{\hat{V}_D}, ~\text{with}~ \hat{V}_D^{lk} =
+n_{lk}(1-n_{lk}) \frac{\bar{D}_l}{\bar{D}_k}
+\frac{\bar{D}_k-\bar{D}_l}{\bar{D}_k}.
+\]</span></p>
+<p>If group-sizes are equal, then the treatment variance <span
+class="math inline">\(\hat{V}_D\)</span> in each combination group
+depends on the timing of the treatment. The variance get larger the more
+similar the groups sizes <span class="math inline">\(n_{ju}\)</span>,
+and the more central the treatment timing (<span
+class="math inline">\(\bar{D}_k,
+\frac{\bar{D}_k-\bar{D}_l}{1-\bar{D}_l},
+\frac{\bar{D}_l}{\bar{D}_k}\)</span> close to 0.5).</p>
+<p>Note that <strong>these weights are always positive</strong>.</p>
+<p>QUESTION: Do you know which of the above groups A), B), C), D) get
+the highest weights in the example. Why?</p>
 <div id="biased-estimates" class="section level3">
 <h3>Biased Estimates</h3>
 <p>So why (or when) could this lead to problems with the twoways FE
@@ -1507,7 +1539,9 @@ estimator? <span class="citation">de Chaisemartin and D’Haultfœuille (<a
 href="#ref-deChaisemartin.2020" role="doc-biblioref">2020</a>)</span>
 and <span class="citation">Sun and Abraham (<a href="#ref-Sun.2021"
 role="doc-biblioref">2021</a>)</span> criticize the TWFE on the grounds
-of negative weights of some subgroups / sub-effects.</p>
+of negative weights of some subgroups / sub-effects, arguing that this
+may induce substantial bias in the case of heterogeneous treatment
+effects.</p>
 <p><span class="citation">Goodman-Bacon (<a
 href="#ref-GoodmanBacon.2021" role="doc-biblioref">2021</a>)</span> also
 explains the observation of these “negative” weights:</p>

@@ -498,11 +498,29 @@ a) __the number of periods each subsample uses__, and
 
 b) __the amount of treatment variance within each subsample__.
 
-Note that these weights are always positive.
+Define $\bar{D_{kl}}$ as the variance of $D_{it}$ in the subsample that compares groups $k$ and $l$, and the relative size of each group in the pair $n_{kl} = \frac{n_k}{n_k + n_l}$. Then, the weights are given by:
+
+$$
+W_{jC} = \frac{(n_j + n_C)^2 \hat{V}_D^{jU}}{\hat{V}_D}, ~\text{with}~ \hat{V}_D^{jU} = n_{jU}(1-n_{jU}) \bar{D}_j(1-\bar{D}_j), ~for~ j = k,l. 
+$$
+
+$$
+W_{kl} = \frac{\bigl( (n_k + n_l)(1-\bar{D}_l) \bigr)^2 \hat{V}_D^{kl}}{\hat{V}_D}, ~\text{with}~ \hat{V}_D^{kl} = n_{kl}(1-n_{kl}) \frac{\bar{D}_k-\bar{D}_l}{1-\bar{D}_l} \frac{1-\bar{D}_k}{1-\bar{D}_l}. 
+$$
+
+$$
+W_{lk} = \frac{\bigl( (n_l + n_k)\bar{D}_k \bigr)^2 \hat{V}_D^{lk}}{\hat{V}_D}, ~\text{with}~ \hat{V}_D^{lk} = n_{lk}(1-n_{lk}) \frac{\bar{D}_l}{\bar{D}_k} \frac{\bar{D}_k-\bar{D}_l}{\bar{D}_k}. 
+$$
+
+If group-sizes are equal, then the treatment variance $\hat{V}_D$ in each combination group depends on the timing of the treatment. The variance get larger the more similar the groups sizes $n_{ju}$, and the more central the treatment timing ($\bar{D}_k, \frac{\bar{D}_k-\bar{D}_l}{1-\bar{D}_l}, \frac{\bar{D}_l}{\bar{D}_k}$ close to 0.5).
+
+Note that __these weights are always positive__.
+
+QUESTION: Do you know which of the above groups A), B), C), D) get the highest weights in the example. Why?
 
 ### Biased Estimates
 
-So why (or when) could this lead to problems with the twoways FE estimator? @deChaisemartin.2020 and @Sun.2021 criticize the TWFE on the grounds of negative weights of some subgroups / sub-effects.
+So why (or when) could this lead to problems with the twoways FE estimator? @deChaisemartin.2020 and @Sun.2021 criticize the TWFE on the grounds of negative weights of some subgroups / sub-effects, arguing that this may induce substantial bias in the case of heterogeneous treatment effects.
 
 @GoodmanBacon.2021 also explains the observation of these "negative" weights:
 
