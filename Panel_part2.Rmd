@@ -30,7 +30,8 @@ link-citations: yes
 ### Required packages
 
 ```{r, message = FALSE, warning = FALSE, results = 'hide'}
-pkgs <- c("plm", "feisr", "did", "Synth", "SCtools", "panelView", "texreg", "tidyr", "dplyr", "ggplot2", "ggforce") 
+pkgs <- c("plm", "feisr", "did", "Synth", "SCtools", 
+          "panelView", "texreg", "tidyr", "dplyr", "ggplot2", "ggforce") 
 lapply(pkgs, require, character.only = TRUE)
 ```
 
@@ -284,7 +285,7 @@ Again, someone has already done the job. There are no individuals who start marr
 We can also look at this graphically with `panelView` (mainly helpful for small N data):
 
 ```{r, fig.height = 10, fig.width = 5}
-panelView(lnw ~ marry, 
+panelview(lnw ~ marry, 
           data = mwp, index = c("id","year"),
           type = "treat", theme.bw = TRUE)
 ```
@@ -441,13 +442,73 @@ This gives us what we already expected: using FEIS, the marital wage premium dis
 
 # Dynamic Diff-in-Diff
 
-There is an ongoing discussion on how the Difference in Differences estimator relates to the two-ways FE estimator when treatment timing varies: different individuals receive the treatment at different periods. 
 
-@GoodmanBacon.2021 shows that the two-ways FE is a weighted average of all possible two-group/two-period DD estimators. The weights determining how much each of these single combinations contributes to the two-ways FE are determined by the group size (e.g. how long do we observe each combination before and after treatment) and the variance in the treatment.
+Remember, we have defined the __2__ $\times$ __2 Diff-in-Diff__ as:
+
+$$
+y_{it} = \alpha + \gamma D_{i} + \lambda Post_{t} + \delta_{DD} (D_{i} \times Post_{t}) + \upsilon_{it},
+$$
+
+which we can easily estimate as:
+
+$$
+\hat{\delta}_{DD} = \E(\Delta y_{T}) - \E(\Delta y_{C}) = (\E(y_{T}^{post}) - \E(y_{T}^{pre})) - (\E(y_{C}^{post}) - \E(y_{C}^{pre})).
+$$
+
+Moreover, we have written the __twoways FE__ estimator as:
+
+$$
+y_{it} = \beta_{TWFE} D_{it} + \alpha_i + \zeta_t + \epsilon_{it},
+$$
+In a setting with only two time periods, a binary treatment, and all observations untreated in $t=1$, the Diff-in-Diff estimator equals the twoways FE estimator $\hat{\delta}_{DD} = \hat{\beta}_{TWFE}$. 
+
+
+However, it is more complicated when we go beyond the 2 $\times$ 2 setting. There is an ongoing discussion on how the Difference in Differences estimator relates to the two-ways FE estimator when treatment timing varies: different individuals receive the treatment at different periods. 
+
+Assume we can divide our setting into treatment groups (treated vs. control) and into timing groups (every observation treated in the same period form a timing group).
+
+@GoodmanBacon.2021 shows that the two-ways FE is a weighted average of all possible two-group/two-period DD estimators. The weights determine how much each of these single combinations contributes to the two-ways FE are determined by the group size (e.g. how long do we observe each combination before and after treatment) and the variance in the treatment.
 
 ![Two-ways FE and DD with varying treatment timing [@GoodmanBacon.2021].](fig/goodman.jpg)
 
-For instance, those who are treated in later time periods are not only compared to those who are never treated but also to those who have already been treated in earlier periods.
+In the example above we have three groups: 1) control / never treated ($C$), 2) early treated (at period $k$), and 3) late treated (at period $l$). Those who are treated in later time periods are not only compared to those who are never treated but also to those who have already been treated in earlier periods.
+
+@GoodmanBacon.2021 shows that this setting with three treatment groups consists of 4 possible 2 $\times$ 2 Diff-in-Diff settings.
+
+Panels A) and B) compare $j = k,l$ against control group $C$, and can be written as:
+$$
+\hat{\delta}_{DD}^{jC} = (\E(y_{j}^{post(j)}) - \E(y_{j}^{pre(j)})) - (\E(y_{C}^{post}) - \E(y_{C}^{pre})), ~\text{with} ~ j = k,l. 
+$$
+
+Panel C) compares early treated $k$ against untreated periods of late treated $l$. Note that we replace the $POST$ period with period between treatment of the early treated and the late treated $MID(k,l)$
+$$
+\hat{\delta}_{DD}^{kl} = (\E(y_{k}^{MID(k,l)}) - \E(y_{k}^{pre(k)})) - (\E(y_{l}^{MID(k,l)}) - \E(y_{l}^{pre(k)})). 
+$$
+
+Panel D) compares late treated $l$ against already treated periods of early treated $k$. Note that we replace the $PRE$ period with period between treatment of the early treated and the late treated $MID(k,l)$
+$$
+\hat{\delta}_{DD}^{lk} = (\E(y_{l}^{post(l)}) - \E(y_{l}^{MID(k,l)})) - (\E(y_{k}^{post(l)}) - \E(y_{k}^{MID(k,l)})). 
+$$
+
+THE twoways FE estimator can now be recovered as a weighted combinations of these four $2\times2$ Diff-in-Diff estimators.
+
+The __weights__ of each of them depend on 
+
+a) __the number of periods each subsample uses__, and 
+
+b) __the amount of treatment variance within each subsample__.
+
+Note that these weights are always positive.
+
+### Biased Estimates
+
+So why (or when) could this lead to problems with the twoways FE estimator? @deChaisemartin.2020 and @Sun.2021 criticize the TWFE on the grounds of negative weights of some subgroups / sub-effects.
+
+@GoodmanBacon.2021 also explains the observation of these "negative" weights:
+
+> "Negative weights only arise when average treatment effects vary over time. The DD decomposition shows why: when already-treated units act as controls, changes in their outcomes are subtracted and these changes may include time-varying treatment effects. This does not imply a failure of the design in the sense of non-parallel trends in counterfactual outcomes, but it does suggest caution when using TWFE estimators to summarize treatment effects."
+
+Basically, if the treatment effect varies over time (e.g. treatment effect grows over time) TWFE might be biased because early treated groups (with an increasing treatment effect) are used at control groups for late treated groups, thereby masking the treatment effect of these late treated groups (which might however receive a high weight for the overall treatment effect).
 
 Especially for "trend-breaking" treatment effects like in the following figure, this will lead to biased estimates of the average treatment effect [@GoodmanBacon.2021; @Meer.2016].
 
@@ -461,7 +522,7 @@ One way of counteracting this problem is to use event study / impact function de
 
 A second way is the application of __flexible Diff-in-Diff__ estimators as proposed by @Callaway.2020.
 
-Remember, formally we can write the $2 \times 2$ Diff-in-Diff estimator as
+Let's start again with the $2 \times 2$ Diff-in-Diff estimator as
 
 $$
 \delta = \E(\Delta y_{T}) - \E(\Delta y_{C}) = (\E(y_{T}^{post}) - \E(y_{T}^{pre})) - (\E(y_{C}^{post}) - \E(y_{C}^{pre})),
@@ -664,6 +725,8 @@ A __critical assumption__ is that the outcome trajectory (and other covariates) 
 ### Statistical inference with synthetic control
 
 Calculating uncertainty estimates for Synthetic Control methods is an ongoing methodological challenge. Recent work, for instance, suggest to quantify uncertainty based on permutation inference procedures [@Chernozhukov.2021b] or on conditional prediction intervals [@Cattaneo.2021]. In practice, however, both methods are difficult to implement with standard software (especially with covariate matching).
+
+__Placebo tests__
 
 @Abadie.2003 and @Abadie.2010 propose a more qualitative approach to asses the significance of the findings: __placebo tests__. The idea is that we randomly assign the treatment to a control unit and perform the Synthetic Control method with this placebo treatment unit, and we repeat this exercise with every control unit.
 

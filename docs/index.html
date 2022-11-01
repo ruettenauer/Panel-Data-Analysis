@@ -15,7 +15,7 @@
 
 <title>Panel Data Analysis</title>
 
-<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.17/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
@@ -44,6 +44,7 @@
   div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
   ul.task-list{list-style: none;}
     </style>
+
 
 
 
@@ -95,6 +96,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -152,11 +156,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -185,8 +193,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -194,16 +202,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -326,7 +327,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -370,96 +371,201 @@ div.tocify {
 
 
 <hr />
-<p><a href="https://github.com/ruettenauer/Panel-Data-Analysis">Course Material</a></p>
+<p><a href="https://github.com/ruettenauer/Panel-Data-Analysis">Course
+Material</a></p>
 <hr />
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
 <p>With usual cross-sectional data, we only observe each unit once.</p>
-<p>With panel data, we observe the same unit (person, region, or country) repeatedly over time.</p>
-<p>This allows applying statistical methods which identify relations based on the within-unit changes rather than the differences between units. We can then account for some statistical problems of non-experimental studies and increases the confidence in a causal interpretation of the results.</p>
-<p>This course provides a hands on introduction to the preparation of panel data and the application of panel data methods. The course focuses on the most common methods like Difference in Differences, Random Effects, and Fixed Effects. We will also briefly discuss some extensions like novel Diff-in-Diff estimators and Fixed Effects Individual Slopes. The empirical part will be based on R and RMarkdown.</p>
-<p>This course profited a lot from teaching materials by Josef Brüderl and Volker Ludwig: <a href="https://www.ls3.soziologie.uni-muenchen.de/studium-lehre/archiv/teaching-marterials/panel-analysis_april-2019.pdf">Slides</a></p>
+<p>With panel data, we observe the same unit (person, region, or
+country) repeatedly over time.</p>
+<p>This allows applying statistical methods which identify relations
+based on the within-unit changes rather than the differences between
+units. We can then account for some statistical problems of
+non-experimental studies and increases the confidence in a causal
+interpretation of the results.</p>
+<p>This course provides a hands on introduction to the preparation of
+panel data and the application of panel data methods. The course focuses
+on the most common methods like Difference in Differences, Random
+Effects, and Fixed Effects. We will also briefly discuss some extensions
+like novel Diff-in-Diff estimators and Fixed Effects Individual Slopes.
+The empirical part will be based on R and RMarkdown.</p>
+<p>This course profited a lot from teaching materials by Josef Brüderl
+and Volker Ludwig: <a
+href="https://www.ls3.soziologie.uni-muenchen.de/studium-lehre/archiv/teaching-marterials/panel-analysis_april-2019.pdf">Slides</a></p>
 <div id="why-do-we-need-panel-data-analysis" class="section level3">
 <h3>Why do we need panel data analysis?</h3>
-<p>In empirical social sciences, we are often interested in the <strong>causal research questions</strong>: we want to investigate questions of cause and effect. Using purely cross-sectional data, we can compare two (or more) different units (e.g. people, states, companies) and test is there exist differences according to our treatment or variable of interest.</p>
-<p>However, these units may not only differ in the dimension of interest, but may also be different in many other other aspects, and it is likely that we do not obverse all the relevant aspects. In the end, we might erroneously conclude that there is a causal effect, even though we only observe correlation (which is confounded by other differences).</p>
+<p>In empirical social sciences, we are often interested in the
+<strong>causal research questions</strong>: we want to investigate
+questions of cause and effect. Using purely cross-sectional data, we can
+compare two (or more) different units (e.g. people, states, companies)
+and test is there exist differences according to our treatment or
+variable of interest.</p>
+<p>However, these units may not only differ in the dimension of
+interest, but may also be different in many other other aspects, and it
+is likely that we do not obverse all the relevant aspects. In the end,
+we might erroneously conclude that there is a causal effect, even though
+we only observe correlation (which is confounded by other
+differences).</p>
 <p><img src="fig/matrix.jpg" /></p>
-<p>Randomized controlled trials (RCT) provide a way to circumvent the problems of unobserved differences between treatment and control cases.</p>
-<p>By randomly selecting some individuals and exposing them to the treatment of interest, we make sure that no (unobserved) characteristics of these individual can be correlated with the treatment. In other words, units in the treatment group should - on average - be identical to units in the control group on all characteristics except the treatment.</p>
-<p>However, randomly exposing some individuals to treatment and withholding treatment from others can be tricky in the social sciences. Think about the effects of education, the effects of marriage, or the effect of pregnancy (good luck with your ethics committee).</p>
-<p>A potential compromise between those two approaches: “compare alike with alike.” This is what we usually aim for by using panel data. We do not compare two different units to each other. Rather, we compare a unit in an earlier stage to the same unit in a later stage. Not as save as an RCT, but much more ethical for many research questions.</p>
+<p>Randomized controlled trials (RCT) provide a way to circumvent the
+problems of unobserved differences between treatment and control
+cases.</p>
+<p>By randomly selecting some individuals and exposing them to the
+treatment of interest, we make sure that no (unobserved) characteristics
+of these individual can be correlated with the treatment. In other
+words, units in the treatment group should - on average - be identical
+to units in the control group on all characteristics except the
+treatment.</p>
+<p>However, randomly exposing some individuals to treatment and
+withholding treatment from others can be tricky in the social sciences.
+Think about the effects of education, the effects of marriage, or the
+effect of pregnancy (good luck with your ethics committee).</p>
+<p>A potential compromise between those two approaches: “compare alike
+with alike”. This is what we usually aim for by using panel data. We do
+not compare two different units to each other. Rather, we compare a unit
+in an earlier stage to the same unit in a later stage. Not as save as an
+RCT, but much more ethical for many research questions.</p>
 </div>
 </div>
 <div id="some-examples" class="section level1">
 <h1>Some examples</h1>
-<div id="pant-openings-and-housing-prices-currie.2015" class="section level3">
-<h3>Pant openings and housing prices <span class="citation">(<a href="#ref-Currie.2015" role="doc-biblioref">Currie et al. 2015</a>)</span></h3>
+<div id="pant-openings-and-housing-prices-currie.2015"
+class="section level3">
+<h3>Pant openings and housing prices <span class="citation">(<a
+href="#ref-Currie.2015" role="doc-biblioref">Currie et al.
+2015</a>)</span></h3>
 <p><img src="fig/currie.PNG" /></p>
 </div>
-<div id="life-course-events-and-happiness-clark.2013" class="section level3">
-<h3>Life course events and happiness <span class="citation">(<a href="#ref-Clark.2013" role="doc-biblioref">Clark and Georgellis 2013</a>)</span></h3>
+<div id="life-course-events-and-happiness-clark.2013"
+class="section level3">
+<h3>Life course events and happiness <span class="citation">(<a
+href="#ref-Clark.2013" role="doc-biblioref">Clark and Georgellis
+2013</a>)</span></h3>
 <p><img src="fig/lifecourse-events.PNG" /></p>
 </div>
-<div id="male-marital-wage-premium-ludwig.2018.0" class="section level3">
-<h3>“Male marital wage premium” <span class="citation">(<a href="#ref-Ludwig.2018.0" role="doc-biblioref">Ludwig and Brüderl 2018</a>)</span></h3>
+<div id="male-marital-wage-premium-ludwig.2018.0"
+class="section level3">
+<h3>“Male marital wage premium” <span class="citation">(<a
+href="#ref-Ludwig.2018.0" role="doc-biblioref">Ludwig and Brüderl
+2018</a>)</span></h3>
 <p><img src="fig/mwp.PNG" /></p>
 </div>
-<div id="extreme-weather-events-elevate-climate-change-belief-but-not-pro-environmental-behaviour-ruttenauer.2021c" class="section level3">
-<h3>Extreme Weather Events Elevate Climate Change Belief but not Pro-Environmental Behaviour <span class="citation">(<a href="#ref-Ruttenauer.2021c" role="doc-biblioref">Rüttenauer 2021</a>)</span></h3>
+<div
+id="extreme-weather-events-elevate-climate-change-belief-but-not-pro-environmental-behaviour-ruttenauer.2021c"
+class="section level3">
+<h3>Extreme Weather Events Elevate Climate Change Belief but not
+Pro-Environmental Behaviour <span class="citation">(<a
+href="#ref-Ruttenauer.2021c" role="doc-biblioref">Rüttenauer
+2021</a>)</span></h3>
 <p><img src="fig/Ruettenauer.png" /></p>
 </div>
 </div>
 <div id="further-materials" class="section level1">
 <h1>Further materials</h1>
-<p>Extensive slides by Josef Brüderl and Volker Ludwig: <a href="https://www.ls3.soziologie.uni-muenchen.de/studium-lehre/archiv/teaching-marterials/panel-analysis_april-2019.pdf">Slides</a></p>
-<p>See also <span class="citation"><a href="#ref-Bruderl.2015.387" role="doc-biblioref">Brüderl and Ludwig</a> (<a href="#ref-Bruderl.2015.387" role="doc-biblioref">2015</a>)</span>.</p>
+<p>Extensive slides by Josef Brüderl and Volker Ludwig: <a
+href="https://www.ls3.soziologie.uni-muenchen.de/studium-lehre/archiv/teaching-marterials/panel-analysis_april-2019.pdf">Slides</a></p>
+<p>See also <span class="citation">Brüderl and Ludwig (<a
+href="#ref-Bruderl.2015.387" role="doc-biblioref">2015</a>)</span>.</p>
 <p>Books:</p>
 <ul>
-<li><p>Intuitive: <span class="citation"><a href="#ref-Allison.2009.128" role="doc-biblioref">Allison</a> (<a href="#ref-Allison.2009.128" role="doc-biblioref">2009</a>)</span></p></li>
-<li><p>Comprehensive and formal: <span class="citation"><a href="#ref-Wooldridge.2010.384" role="doc-biblioref">Wooldridge</a> (<a href="#ref-Wooldridge.2010.384" role="doc-biblioref">2010</a>)</span></p></li>
-<li><p>For R experts: <span class="citation"><a href="#ref-Croissant.2019" role="doc-biblioref">Croissant and Millo</a> (<a href="#ref-Croissant.2019" role="doc-biblioref">2019</a>)</span></p></li>
-<li><p>General introductions to causal estimation techniques: <span class="citation"><a href="#ref-Angrist.2015.0" role="doc-biblioref">Angrist and Pischke</a> (<a href="#ref-Angrist.2015.0" role="doc-biblioref">2015</a>)</span>, <span class="citation"><a href="#ref-Cunningham.2021" role="doc-biblioref">Cunningham</a> (<a href="#ref-Cunningham.2021" role="doc-biblioref">2021</a>)</span>, <span class="citation"><a href="#ref-Firebaugh.2008" role="doc-biblioref">Firebaugh</a> (<a href="#ref-Firebaugh.2008" role="doc-biblioref">2008</a>)</span>, <span class="citation"><a href="#ref-HuntingtonKlein.2021" role="doc-biblioref">Huntington-Klein</a> (<a href="#ref-HuntingtonKlein.2021" role="doc-biblioref">2021</a>)</span></p></li>
+<li><p>Intuitive: <span class="citation">Allison (<a
+href="#ref-Allison.2009.128"
+role="doc-biblioref">2009</a>)</span></p></li>
+<li><p>Comprehensive and formal: <span class="citation">Wooldridge (<a
+href="#ref-Wooldridge.2010.384"
+role="doc-biblioref">2010</a>)</span></p></li>
+<li><p>For R experts: <span class="citation">Croissant and Millo (<a
+href="#ref-Croissant.2019"
+role="doc-biblioref">2019</a>)</span></p></li>
+<li><p>General introductions to causal estimation techniques: <span
+class="citation">Angrist and Pischke (<a href="#ref-Angrist.2015.0"
+role="doc-biblioref">2015</a>)</span>, <span class="citation">Cunningham
+(<a href="#ref-Cunningham.2021" role="doc-biblioref">2021</a>)</span>,
+<span class="citation">Firebaugh (<a href="#ref-Firebaugh.2008"
+role="doc-biblioref">2008</a>)</span>, <span
+class="citation">Huntington-Klein (<a href="#ref-HuntingtonKlein.2021"
+role="doc-biblioref">2021</a>)</span></p></li>
 </ul>
-<p>The books by <span class="citation"><a href="#ref-Cunningham.2021" role="doc-biblioref">Cunningham</a> (<a href="#ref-Cunningham.2021" role="doc-biblioref">2021</a>)</span> (<a href="https://mixtape.scunning.com/">Link</a>) and <span class="citation"><a href="#ref-HuntingtonKlein.2021" role="doc-biblioref">Huntington-Klein</a> (<a href="#ref-HuntingtonKlein.2021" role="doc-biblioref">2021</a>)</span> (<a href="https://theeffectbook.net/">Link</a>) are freely available online!</p>
+<p>The books by <span class="citation">Cunningham (<a
+href="#ref-Cunningham.2021" role="doc-biblioref">2021</a>)</span> (<a
+href="https://mixtape.scunning.com/">Link</a>) and <span
+class="citation">Huntington-Klein (<a href="#ref-HuntingtonKlein.2021"
+role="doc-biblioref">2021</a>)</span> (<a
+href="https://theeffectbook.net/">Link</a>) are freely available
+online!</p>
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1 class="unnumbered">References</h1>
 <div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-Allison.2009.128" class="csl-entry">
-Allison, Paul David. 2009. <em><span>Fixed Effects Regression Models</span></em>. Vol. 160. <span class="nocase">Quantitative Applications in the Social Sciences</span>. Los Angeles: Sage.
+Allison, Paul David. 2009. <em><span>Fixed Effects Regression
+Models</span></em>. Vol. 160. <span class="nocase">Quantitative
+Applications in the Social Sciences</span>. Los Angeles: Sage.
 </div>
 <div id="ref-Angrist.2015.0" class="csl-entry">
-Angrist, Joshua David, and Jörn-Steffen Pischke. 2015. <em><span class="nocase">Mastering ’Metrics: The Path from Cause to Effect</span></em>. Princeton: <span>Princeton Univ. Press</span>.
+Angrist, Joshua David, and Jörn-Steffen Pischke. 2015. <em><span
+class="nocase">Mastering ’Metrics: The Path from Cause to
+Effect</span></em>. Princeton: <span>Princeton Univ. Press</span>.
 </div>
 <div id="ref-Bruderl.2015.387" class="csl-entry">
-Brüderl, Josef, and Volker Ludwig. 2015. <span>“<span>Fixed-Effects Panel Regression</span>.”</span> In <em><span class="nocase">The Sage Handbook of Regression Analysis and Causal Inference</span></em>, edited by Henning Best and Christof Wolf, 327–57. Los Angeles: Sage.
+Brüderl, Josef, and Volker Ludwig. 2015. <span>“<span>Fixed-Effects
+Panel Regression</span>.”</span> In <em><span class="nocase">The Sage
+Handbook of Regression Analysis and Causal Inference</span></em>, edited
+by Henning Best and Christof Wolf, 327–57. Los Angeles: Sage.
 </div>
 <div id="ref-Clark.2013" class="csl-entry">
-Clark, Andrew E., and Yannis Georgellis. 2013. <span>“<span class="nocase">Back to Baseline in Britain: Adaptation in the British Household Panel Survey</span>.”</span> <em><span>Economica</span></em> 80 (319): 496–512. <a href="https://doi.org/10.1111/ecca.12007">https://doi.org/10.1111/ecca.12007</a>.
+Clark, Andrew E., and Yannis Georgellis. 2013. <span>“<span
+class="nocase">Back to Baseline in Britain: Adaptation in the British
+Household Panel Survey</span>.”</span> <em><span>Economica</span></em>
+80 (319): 496–512. <a
+href="https://doi.org/10.1111/ecca.12007">https://doi.org/10.1111/ecca.12007</a>.
 </div>
 <div id="ref-Croissant.2019" class="csl-entry">
-Croissant, Yves, and Giovanni Millo. 2019. <em><span class="nocase">Panel Data Econometrics with R</span></em>. Hoboken, NJ: <span>John Wiley and Sons</span>.
+Croissant, Yves, and Giovanni Millo. 2019. <em><span
+class="nocase">Panel Data Econometrics with R</span></em>. Hoboken, NJ:
+<span>John Wiley and Sons</span>.
 </div>
 <div id="ref-Cunningham.2021" class="csl-entry">
-Cunningham, Scott. 2021. <em><span>Causal Inference: The Mixtape</span></em>. New Haven; London: <span>Yale University Press</span>.
+Cunningham, Scott. 2021. <em><span>Causal Inference: The
+Mixtape</span></em>. New Haven; London: <span>Yale University
+Press</span>.
 </div>
 <div id="ref-Currie.2015" class="csl-entry">
-Currie, Janet, Lucas Davis, Michael Greenstone, and Reed Walker. 2015. <span>“<span class="nocase">Environmental Health Risks and Housing Values: Evidence from 1,600 Toxic Plant Openings and Closings</span>.”</span> <em><span>American Economic Review</span></em> 105 (2): 678–709. <a href="https://doi.org/10.1257/aer.20121656">https://doi.org/10.1257/aer.20121656</a>.
+Currie, Janet, Lucas Davis, Michael Greenstone, and Reed Walker. 2015.
+<span>“<span class="nocase">Environmental Health Risks and Housing
+Values: Evidence from 1,600 Toxic Plant Openings and
+Closings</span>.”</span> <em><span>American Economic Review</span></em>
+105 (2): 678–709. <a
+href="https://doi.org/10.1257/aer.20121656">https://doi.org/10.1257/aer.20121656</a>.
 </div>
 <div id="ref-Firebaugh.2008" class="csl-entry">
-Firebaugh, Glenn. 2008. <em><span class="nocase">Seven Rules for Social Research</span></em>. Princeton, N.J.; Woodstock: <span>Princeton University Press</span>.
+Firebaugh, Glenn. 2008. <em><span class="nocase">Seven Rules for Social
+Research</span></em>. Princeton, N.J.; Woodstock: <span>Princeton
+University Press</span>.
 </div>
 <div id="ref-HuntingtonKlein.2021" class="csl-entry">
-Huntington-Klein, Nick. 2021. <em><span class="nocase">The Effect: An Introduction to Research Design and Causality</span></em>. 1st ed. Boca Raton: <span>Chapman <span>&amp;</span> Hall/CRC</span>.
+Huntington-Klein, Nick. 2021. <em><span class="nocase">The Effect: An
+Introduction to Research Design and Causality</span></em>. 1st ed. Boca
+Raton: <span>Chapman <span>&amp;</span> Hall/CRC</span>.
 </div>
 <div id="ref-Ludwig.2018.0" class="csl-entry">
-Ludwig, Volker, and Josef Brüderl. 2018. <span>“<span class="nocase">Is There a Male Marital Wage Premium? New Evidence from the United States</span>.”</span> <em><span>American Sociological Review</span></em> 83 (4): 744–70. <a href="https://doi.org/10.1177/0003122418784909">https://doi.org/10.1177/0003122418784909</a>.
+Ludwig, Volker, and Josef Brüderl. 2018. <span>“<span class="nocase">Is
+There a Male Marital Wage Premium? New Evidence from the United
+States</span>.”</span> <em><span>American Sociological
+Review</span></em> 83 (4): 744–70. <a
+href="https://doi.org/10.1177/0003122418784909">https://doi.org/10.1177/0003122418784909</a>.
 </div>
 <div id="ref-Ruttenauer.2021c" class="csl-entry">
-Rüttenauer, Tobias. 2021. <span>“<span class="nocase">Extreme Weather Events Elevate Climate Change Belief but not Pro-Environmental Behaviour</span>.”</span> <em><span>SocArXiv</span></em>. <a href="https://doi.org/10.31235/osf.io/574uf">https://doi.org/10.31235/osf.io/574uf</a>.
+Rüttenauer, Tobias. 2021. <span>“<span class="nocase">Extreme Weather
+Events Elevate Climate Change Belief but not Pro-Environmental
+Behaviour</span>.”</span> <em><span>SocArXiv</span></em>. <a
+href="https://doi.org/10.31235/osf.io/574uf">https://doi.org/10.31235/osf.io/574uf</a>.
 </div>
 <div id="ref-Wooldridge.2010.384" class="csl-entry">
-Wooldridge, Jeffrey M. 2010. <em><span class="nocase">Econometric Analysis of Cross Section and Panel Data</span></em>. Cambridge, Mass.: <span>MIT Press</span>.
+Wooldridge, Jeffrey M. 2010. <em><span class="nocase">Econometric
+Analysis of Cross Section and Panel Data</span></em>. Cambridge, Mass.:
+<span>MIT Press</span>.
 </div>
 </div>
 </div>

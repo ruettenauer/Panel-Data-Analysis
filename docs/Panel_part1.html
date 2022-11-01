@@ -15,7 +15,7 @@
 
 <title>1) Panel data methods</title>
 
-<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.17/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
@@ -45,6 +45,7 @@
   div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
   ul.task-list{list-style: none;}
     </style>
+
 
 
 <style type="text/css">
@@ -132,13 +133,20 @@ code span.wa { color: #008000; font-weight: bold; } /* Warning */
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    for (var j = 0; j < rules.length; j++) {
+    var j = 0;
+    while (j < rules.length) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -196,6 +204,9 @@ button.code-folding-btn:focus {
 summary {
   display: list-item;
 }
+details > summary > p:only-child {
+  display: inline;
+}
 pre code {
   padding: 0;
 }
@@ -252,11 +263,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -285,8 +300,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -294,16 +309,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -429,7 +437,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -464,7 +472,7 @@ div.tocify {
 <div id="header">
 
 <div class="btn-group pull-right float-right">
-<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
 <ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
 <li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
 <li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
@@ -489,42 +497,49 @@ div.tocify {
 <div id="session-info" class="section level3">
 <h3>Session info</h3>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
-<pre><code>## R version 4.1.0 (2021-05-18)
+<pre><code>## R version 4.2.1 (2022-06-23 ucrt)
 ## Platform: x86_64-w64-mingw32/x64 (64-bit)
-## Running under: Windows 10 x64 (build 19042)
+## Running under: Windows 10 x64 (build 19043)
 ## 
 ## Matrix products: default
 ## 
 ## locale:
-## [1] LC_COLLATE=English_United Kingdom.1252 
-## [2] LC_CTYPE=English_United Kingdom.1252   
-## [3] LC_MONETARY=English_United Kingdom.1252
+## [1] LC_COLLATE=English_United Kingdom.utf8 
+## [2] LC_CTYPE=English_United Kingdom.utf8   
+## [3] LC_MONETARY=English_United Kingdom.utf8
 ## [4] LC_NUMERIC=C                           
-## [5] LC_TIME=English_United Kingdom.1252    
+## [5] LC_TIME=English_United Kingdom.utf8    
 ## 
 ## attached base packages:
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-##  [1] ggforce_0.3.3  ggplot2_3.3.5  sandwich_3.0-1 lmtest_0.9-38  zoo_1.8-9     
-##  [6] dplyr_1.0.6    tidyr_1.1.3    texreg_1.37.5  lfe_2.8-7      Matrix_1.3-3  
-## [11] plm_2.4-1     
+##  [1] ggforce_0.4.1  ggplot2_3.3.6  sandwich_3.0-2 lmtest_0.9-40  zoo_1.8-11    
+##  [6] dplyr_1.0.10   tidyr_1.2.1    texreg_1.38.6  lfe_2.8-8      Matrix_1.5-1  
+## [11] plm_2.6-2     
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] tidyselect_1.1.1  xfun_0.23         bslib_0.2.5.1     purrr_0.3.4      
-##  [5] lattice_0.20-44   colorspace_2.0-1  vctrs_0.3.8       generics_0.1.0   
-##  [9] htmltools_0.5.1.1 yaml_2.2.1        utf8_1.2.1        rlang_0.4.11     
-## [13] jquerylib_0.1.4   pillar_1.6.2      withr_2.4.2       glue_1.4.2       
-## [17] DBI_1.1.1         tweenr_1.0.2      lifecycle_1.0.0   stringr_1.4.0    
-## [21] munsell_0.5.0     gtable_0.3.0      bdsmatrix_1.3-4   evaluate_0.14    
-## [25] knitr_1.33        miscTools_0.6-26  fansi_0.5.0       Rcpp_1.0.7       
-## [29] xtable_1.8-4      scales_1.1.1      jsonlite_1.7.2    farver_2.1.0     
-## [33] maxLik_1.4-8      digest_0.6.27     stringi_1.6.2     polyclip_1.10-0  
-## [37] rbibutils_2.2     grid_4.1.0        Rdpack_2.1.2      tools_4.1.0      
-## [41] magrittr_2.0.1    sass_0.4.0        tibble_3.1.2      Formula_1.2-4    
-## [45] crayon_1.4.1      pkgconfig_2.0.3   MASS_7.3-54       ellipsis_0.3.2   
-## [49] assertthat_0.2.1  rmarkdown_2.11    httr_1.4.2        R6_2.5.1         
-## [53] nlme_3.1-152      compiler_4.1.0</code></pre>
+##  [1] Rcpp_1.0.9          bdsmatrix_1.3-6     lattice_0.20-45    
+##  [4] assertthat_0.2.1    digest_0.6.29       utf8_1.2.2         
+##  [7] R6_2.5.1            evaluate_0.17       httr_1.4.4         
+## [10] pillar_1.8.1        Rdpack_2.4          miscTools_0.6-26   
+## [13] rlang_1.0.6         rstudioapi_0.14     jquerylib_0.1.4    
+## [16] collapse_1.8.9      rmarkdown_2.17      stringr_1.4.1      
+## [19] polyclip_1.10-4     munsell_0.5.0       compiler_4.2.1     
+## [22] numDeriv_2016.8-1.1 xfun_0.33           pkgconfig_2.0.3    
+## [25] maxLik_1.5-2        htmltools_0.5.3     tidyselect_1.2.0   
+## [28] tibble_3.1.8        fixest_0.10.4       fansi_1.0.3        
+## [31] withr_2.5.0         MASS_7.3-57         rbibutils_2.2.9    
+## [34] grid_4.2.1          nlme_3.1-157        jsonlite_1.8.2     
+## [37] xtable_1.8-4        gtable_0.3.1        lifecycle_1.0.3    
+## [40] DBI_1.1.3           magrittr_2.0.3      scales_1.2.1       
+## [43] cli_3.4.1           stringi_1.7.8       cachem_1.0.6       
+## [46] farver_2.1.1        dreamerr_1.2.3      bslib_0.4.0        
+## [49] vctrs_0.4.2         generics_0.1.3      Formula_1.2-4      
+## [52] tools_4.2.1         glue_1.6.2          tweenr_2.0.2       
+## [55] purrr_0.3.5         parallel_4.2.1      fastmap_1.1.0      
+## [58] yaml_2.3.5          colorspace_2.0-3    knitr_1.40         
+## [61] sass_0.4.2</code></pre>
 </div>
 <div id="outline" class="section level1">
 <h1>Outline</h1>
@@ -539,12 +554,19 @@ div.tocify {
 </div>
 <div id="panel-data-structure" class="section level1">
 <h1>Panel data structure</h1>
-<p>Usually cross-sectional data is organized as a matrix, where rows represent the obervation / individual and the columns hold the variables. In panel data settings, we need to add the dimension of time. There are two ways to do so:</p>
+<p>Usually cross-sectional data is organized as a matrix, where rows
+represent the obervation / individual and the columns hold the
+variables. In panel data settings, we need to add the dimension of time.
+There are two ways to do so:</p>
 <ul>
-<li><p>Long format: <span class="math inline">\(N \times T\)</span> observations (rows), with variables “id” and “time.”</p></li>
-<li><p>Wide format: <span class="math inline">\(N\)</span> observations, and <span class="math inline">\(T \times K\)</span> variables, which one variable for each time-period.</p></li>
+<li><p>Long format: <span class="math inline">\(N \times T\)</span>
+observations (rows), with variables “id” and “time”.</p></li>
+<li><p>Wide format: <span class="math inline">\(N\)</span> observations,
+and <span class="math inline">\(T \times K\)</span> variables, which one
+variable for each time-period.</p></li>
 </ul>
-<p>Let’s have a look at the Wages data of the <code>plm</code> package.</p>
+<p>Let’s have a look at the Wages data of the <code>plm</code>
+package.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;Males&quot;</span>)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(Males[,<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>], <span class="at">n =</span> <span class="dv">16</span>)</span></code></pre></div>
 <pre><code>##    nr year school exper union
@@ -564,12 +586,14 @@ div.tocify {
 ## 14 17 1985     13     9    no
 ## 15 17 1986     13    10    no
 ## 16 17 1987     13    11    no</code></pre>
-<p>This is long format, with nr as id and year as time indicator. Long format is what we usually need when analysing data.</p>
-<p>Sometimes data comes in wide format. Luckily, we can easily switch between those formats using <code>tidyr</code>.</p>
+<p>This is long format, with nr as id and year as time indicator. Long
+format is what we usually need when analysing data.</p>
+<p>Sometimes data comes in wide format. Luckily, we can easily switch
+between those formats using <code>tidyr</code>.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>Males_wide <span class="ot">&lt;-</span> <span class="fu">pivot_wider</span>(Males, <span class="at">id_cols =</span> nr, <span class="at">names_from =</span> year, </span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>                          <span class="at">values_from =</span> <span class="dv">3</span><span class="sc">:</span><span class="fu">ncol</span>(Males), <span class="at">names_sep =</span> <span class="st">&quot;_&quot;</span>)</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(Males_wide[,<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>], <span class="at">n =</span> <span class="dv">16</span>)</span></code></pre></div>
-<pre><code>## # A tibble: 16 x 5
+<pre><code>## # A tibble: 16 × 5
 ##       nr school_1980 school_1981 school_1982 school_1983
 ##    &lt;int&gt;       &lt;int&gt;       &lt;int&gt;       &lt;int&gt;       &lt;int&gt;
 ##  1    13          14          14          14          14
@@ -593,7 +617,7 @@ div.tocify {
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>                           <span class="at">names_to =</span> <span class="fu">c</span>(<span class="st">&quot;.value&quot;</span>, <span class="st">&quot;year&quot;</span>), </span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>                           <span class="at">names_pattern =</span> <span class="st">&quot;(.*)_(.*)&quot;</span>)</span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(Males_long[,<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>], <span class="at">n =</span> <span class="dv">16</span>)</span></code></pre></div>
-<pre><code>## # A tibble: 16 x 5
+<pre><code>## # A tibble: 16 × 5
 ##       nr year  school exper union
 ##    &lt;int&gt; &lt;chr&gt;  &lt;int&gt; &lt;int&gt; &lt;fct&gt;
 ##  1    13 1980      14     1 no   
@@ -614,13 +638,19 @@ div.tocify {
 ## 16    17 1987      13    11 no</code></pre>
 <p>Moreover, there two types of panel data:</p>
 <ul>
-<li><p>Balanced: Contains information for each unit at each time period</p></li>
-<li><p>Unbalanced: Some units have missing information at some time periods</p></li>
+<li><p>Balanced: Contains information for each unit at each time
+period</p></li>
+<li><p>Unbalanced: Some units have missing information at some time
+periods</p></li>
 </ul>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">is.pbalanced</span>(Males, <span class="at">index =</span> <span class="fu">c</span>(<span class="st">&quot;nr&quot;</span>, <span class="st">&quot;year&quot;</span>))</span></code></pre></div>
 <pre><code>## [1] TRUE</code></pre>
-<p>In our example, we have balanced data (although there might still be NAs in the data).</p>
-<p>A nice feature of panel data is that we can do some within-person transformation. For instance we can calculate the lags and leads, or first differences of data. NOTE: always make sure the data is sorted properly before you do!</p>
+<p>In our example, we have balanced data (although there might still be
+NAs in the data).</p>
+<p>A nice feature of panel data is that we can do some within-person
+transformation. For instance we can calculate the lags and leads, or
+first differences of data. NOTE: always make sure the data is sorted
+properly before you do!</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Order data</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>Males <span class="ot">&lt;-</span> Males[<span class="fu">order</span>(Males<span class="sc">$</span>nr, Males<span class="sc">$</span>year),]</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -657,33 +687,62 @@ div.tocify {
 ## 14 17 1985  1.6085883  1.6220223  1.5723854 -0.01343405
 ## 15 17 1986  1.5723854  1.6085883  1.8203339 -0.03620286
 ## 16 17 1987  1.8203339  1.5723854         NA  0.24794844</code></pre>
-<p>There are a lot of different panel data sources available. Some examples are:</p>
+<p>There are a lot of different panel data sources available. Some
+examples are:</p>
 <ul>
 <li><p><a href="https://psidonline.isr.umich.edu/">PSID</a></p></li>
-<li><p><a href="https://www.understandingsociety.ac.uk/">Understanding Society</a></p></li>
-<li><p><a href="https://www.diw.de/en/diw_01.c.615551.en/research_infrastructure__socio-economic_panel__soep.html">SOEP</a></p></li>
-<li><p><a href="http://www.share-project.org/home0.html">SHARE</a></p></li>
-<li><p><a href="https://www.nlsinfo.org/content/cohorts/nlsy79">National Longitudinal Survey of Youth</a></p></li>
+<li><p><a href="https://www.understandingsociety.ac.uk/">Understanding
+Society</a></p></li>
+<li><p><a
+href="https://www.diw.de/en/diw_01.c.615551.en/research_infrastructure__socio-economic_panel__soep.html">SOEP</a></p></li>
+<li><p><a
+href="http://www.share-project.org/home0.html">SHARE</a></p></li>
+<li><p><a href="https://www.nlsinfo.org/content/cohorts/nlsy79">National
+Longitudinal Survey of Youth</a></p></li>
 </ul>
-<p>And there are various process generated data having a longitudinal / pnale dimension as well. For instance:</p>
+<p>And there are various process generated data having a longitudinal /
+pnale dimension as well. For instance:</p>
 <ul>
-<li><p><a href="https://github.com/owid/covid-19-data">Our world in data COVID</a></p></li>
-<li><p><a href="https://www.nomisweb.co.uk/sources/census">UK Census</a></p></li>
-<li><p><a href="https://data.london.gov.uk/air-quality/">London Air Pollution</a></p></li>
-<li><p><a href="https://land.copernicus.eu/pan-european/high-resolution-layers/forests/tree-cover-density/status-maps">European Tree Cover Density</a></p></li>
+<li><p><a href="https://github.com/owid/covid-19-data">Our world in data
+COVID</a></p></li>
+<li><p><a href="https://www.nomisweb.co.uk/sources/census">UK
+Census</a></p></li>
+<li><p><a href="https://data.london.gov.uk/air-quality/">London Air
+Pollution</a></p></li>
+<li><p><a
+href="https://land.copernicus.eu/pan-european/high-resolution-layers/forests/tree-cover-density/status-maps">European
+Tree Cover Density</a></p></li>
 </ul>
-<p>One thing that is often difficult: Many panel data come as a bunch of single (cross-sectional) files and have to be combined into a single dataset. However, many of those providers (or nice colleagues) now offer simplified long-format data or pre-written scripts to merge data across waves (e.g. <a href="https://www.understandingsociety.ac.uk/documentation/mainstage/syntax">here</a> for Understanding Society, or <a href="https://www.ls3.soziologie.uni-muenchen.de/studium-lehre/lehrmaterialien/index.html">here</a> for SOEP).</p>
-<p>A second problem is panel attrition. Usually, the number of individuals participating repeatedly goes down over time.</p>
+<p>One thing that is often difficult: Many panel data come as a bunch of
+single (cross-sectional) files and have to be combined into a single
+dataset. However, many of those providers (or nice colleagues) now offer
+simplified long-format data or pre-written scripts to merge data across
+waves (e.g. <a
+href="https://www.understandingsociety.ac.uk/documentation/mainstage/syntax">here</a>
+for Understanding Society, or <a
+href="https://www.ls3.soziologie.uni-muenchen.de/studium-lehre/lehrmaterialien/index.html">here</a>
+for SOEP).</p>
+<p>A second problem is panel attrition. Usually, the number of
+individuals participating repeatedly goes down over time.</p>
 <div class="figure">
 <img src="fig/soep.PNG" alt="" />
-<p class="caption">Rainer Siegers, Veronika Belcheva, Tobias Silbermann 2020: <a href="https://www.diw.de/documents/publikationen/73/diw_01.c.745900.de/diw_ssp0826.pdf" class="uri">https://www.diw.de/documents/publikationen/73/diw_01.c.745900.de/diw_ssp0826.pdf</a></p>
+<p class="caption">Rainer Siegers, Veronika Belcheva, Tobias Silbermann
+2020: <a
+href="https://www.diw.de/documents/publikationen/73/diw_01.c.745900.de/diw_ssp0826.pdf"
+class="uri">https://www.diw.de/documents/publikationen/73/diw_01.c.745900.de/diw_ssp0826.pdf</a></p>
 </div>
-<p>The main question here: Is attrition (as good as) random or are drop-outs systematic? How does this affect the sample composition and representativeness?</p>
+<p>The main question here: Is attrition (as good as) random or are
+drop-outs systematic? How does this affect the sample composition and
+representativeness?</p>
 </div>
 <div id="decomposing-variance" class="section level1">
 <h1>Decomposing variance</h1>
-<p>Let’s clarify the idea and advantage of panel data with an example. Assume we want to know the relationship between age (as our independent variable) and happiness (as our dependent variable), and we have data on 24 observations.</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="do">################################</span></span>
+<p>Let’s clarify the idea and advantage of panel data with an example.
+Assume we want to know the relationship between age (as our independent
+variable) and happiness (as our dependent variable), and we have data on
+24 observations.</p>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="do">################################</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="do">### Example 1: Age happiness </span><span class="al">###</span></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="do">################################</span></span>
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -750,9 +809,18 @@ div.tocify {
 <span id="cb14-65"><a href="#cb14-65" aria-hidden="true" tabindex="-1"></a>lm4 <span class="ot">&lt;-</span> <span class="fu">lm</span>(m_happiness <span class="sc">~</span> m_age, <span class="at">data =</span> df)</span></code></pre></div>
 <div id="cross-sectional-setting" class="section level2">
 <h2>Cross-sectional setting</h2>
-<p>In a cross-sectional setting, we could just run a standard linear regression model using Omitted Least Squares (OLS) of the form <span class="math display">\[
+<p>In a cross-sectional setting, we could just run a standard linear
+regression model using Omitted Least Squares (OLS) of the form <span
+class="math display">\[
 y_{i} = \alpha + \beta_1 x_{i} + \upsilon_{i},
-\]</span> where <span class="math inline">\(y_{i}\)</span> is the dependent variable (happiness) and <span class="math inline">\(x_i\)</span> the independent variable of each observation <span class="math inline">\(i \in \{1, \dots, 24\}\)</span>. <span class="math inline">\(\beta_1\)</span> is the coefficient of interest, <span class="math inline">\(\alpha\)</span> the overall intercept and <span class="math inline">\(\upsilon_{i}\)</span> the error term.</p>
+\]</span> where <span class="math inline">\(y_{i}\)</span> is the
+dependent variable (happiness) and <span
+class="math inline">\(x_i\)</span> the independent variable of each
+observation <span class="math inline">\(i \in \{1, \dots, 24\}\)</span>.
+<span class="math inline">\(\beta_1\)</span> is the coefficient of
+interest, <span class="math inline">\(\alpha\)</span> the overall
+intercept and <span class="math inline">\(\upsilon_{i}\)</span> the
+error term.</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>lm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(happiness <span class="sc">~</span> age, <span class="at">data =</span> df)</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lm1)</span></code></pre></div>
 <pre><code>## 
@@ -773,8 +841,10 @@ y_{i} = \alpha + \beta_1 x_{i} + \upsilon_{i},
 ## Residual standard error: 0.8206 on 22 degrees of freedom
 ## Multiple R-squared:  0.8045, Adjusted R-squared:  0.7956 
 ## F-statistic: 90.53 on 1 and 22 DF,  p-value: 2.96e-09</code></pre>
-<p>This indicates a positive relation between age and happiness. Graphically, this would look like:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>zp1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df, <span class="fu">aes</span>(age, happiness)) <span class="sc">+</span></span>
+<p>This indicates a positive relation between age and happiness.
+Graphically, this would look like:</p>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>zp1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df, <span class="fu">aes</span>(age, happiness)) <span class="sc">+</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>( <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> happiness), <span class="at">size =</span> <span class="dv">2</span>, <span class="at">stroke =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">&#39;lm&#39;</span>, <span class="at">formula =</span> y <span class="sc">~</span> x, <span class="at">se =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
 <span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="fl">3.3</span>, <span class="fl">9.2</span>) <span class="sc">+</span> <span class="fu">expand_limits</span>(<span class="at">y =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>)) <span class="sc">+</span> </span>
@@ -785,10 +855,14 @@ y_{i} = \alpha + \beta_1 x_{i} + \upsilon_{i},
 <span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.box.background =</span> <span class="fu">element_rect</span>(<span class="at">colour =</span> <span class="st">&quot;black&quot;</span>))</span>
 <span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>zp1  </span></code></pre></div>
 <p><img src="Panel_part1_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
-<p>Obviously, we might suspect some other characteristics to influence our results. For instance, birth cohort might be factor that affects age and happiness. We can easily add a control for the cohort so account for this possibility. We would then estiamte the model</p>
+<p>Obviously, we might suspect some other characteristics to influence
+our results. For instance, birth cohort might be factor that affects age
+and happiness. We can easily add a control for the cohort so account for
+this possibility. We would then estiamte the model</p>
 <p><span class="math display">\[
 y_{i} = \alpha + \beta_1 x_{i} + \beta_2 z_{it} + \upsilon_{i},
-\]</span> where <span class="math inline">\(z_i\)</span> is the control variable (cohort).</p>
+\]</span> where <span class="math inline">\(z_i\)</span> is the control
+variable (cohort).</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>lm2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(happiness <span class="sc">~</span> age <span class="sc">+</span> cohort, <span class="at">data =</span> df)</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lm2)</span></code></pre></div>
 <pre><code>## 
@@ -810,8 +884,10 @@ y_{i} = \alpha + \beta_1 x_{i} + \beta_2 z_{it} + \upsilon_{i},
 ## Residual standard error: 0.5114 on 21 degrees of freedom
 ## Multiple R-squared:  0.9275, Adjusted R-squared:  0.9206 
 ## F-statistic: 134.4 on 2 and 21 DF,  p-value: 1.075e-12</code></pre>
-<p>As a result, the effect of age becomes weaker. Graphically, this would look like:</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>zp2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df, <span class="fu">aes</span>(age, happiness)) <span class="sc">+</span></span>
+<p>As a result, the effect of age becomes weaker. Graphically, this
+would look like:</p>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>zp2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df, <span class="fu">aes</span>(age, happiness)) <span class="sc">+</span></span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> happiness, <span class="at">shape =</span> cohort, <span class="at">colour =</span> cohort), </span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">size =</span> <span class="dv">2</span>, <span class="at">stroke =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
 <span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">&#39;lm&#39;</span>, <span class="at">formula =</span> y <span class="sc">~</span> x, <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>,</span>
@@ -826,12 +902,18 @@ y_{i} = \alpha + \beta_1 x_{i} + \beta_2 z_{it} + \upsilon_{i},
 <span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.box.background =</span> <span class="fu">element_rect</span>(<span class="at">colour =</span> <span class="st">&quot;black&quot;</span>))</span>
 <span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>zp2  </span></code></pre></div>
 <p><img src="Panel_part1_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
-<p>So, what we basically receive here is the (weighted) average effect within each birth cohort. We use only similar observations (in terms of cohort) to estimate our effect of interest. If we add some controls, we also decompose the variance which goes into our estimator</p>
+<p>So, what we basically receive here is the (weighted) average effect
+within each birth cohort. We use only similar observations (in terms of
+cohort) to estimate our effect of interest. If we add some controls, we
+also decompose the variance which goes into our estimator</p>
 </div>
 <div id="panel-data-setting" class="section level2">
 <h2>Panel data setting</h2>
-<p>Now, with panel data, we can even go a step further. Assume we would not have observed 24 independent observations, but rather 6 independent individuals (N = 6) at 4 time-points each (T = 4).</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>zp3 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df, <span class="fu">aes</span>(age, happiness)) <span class="sc">+</span></span>
+<p>Now, with panel data, we can even go a step further. Assume we would
+not have observed 24 independent observations, but rather 6 independent
+individuals (N = 6) at 4 time-points each (T = 4).</p>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>zp3 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df, <span class="fu">aes</span>(age, happiness)) <span class="sc">+</span></span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>( <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> happiness, <span class="at">shape =</span> idname, <span class="at">colour =</span> idname), </span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">size =</span> <span class="dv">2</span>, <span class="at">stroke =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
 <span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="fl">3.3</span>, <span class="fl">9.2</span>) <span class="sc">+</span> <span class="fu">expand_limits</span>(<span class="at">y =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>)) <span class="sc">+</span> </span>
@@ -842,7 +924,8 @@ y_{i} = \alpha + \beta_1 x_{i} + \beta_2 z_{it} + \upsilon_{i},
 <span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.box.background =</span> <span class="fu">element_rect</span>(<span class="at">colour =</span> <span class="st">&quot;black&quot;</span>))</span>
 <span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>zp3 </span></code></pre></div>
 <p><img src="Panel_part1_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
-<p>We can then decompose the available variance into three different parts:</p>
+<p>We can then decompose the available variance into three different
+parts:</p>
 <ul>
 <li><p>Pooled variance</p></li>
 <li><p>Between variance</p></li>
@@ -850,7 +933,10 @@ y_{i} = \alpha + \beta_1 x_{i} + \beta_2 z_{it} + \upsilon_{i},
 </ul>
 <div id="pooled-estimator" class="section level3">
 <h3>Pooled estimator</h3>
-<p>The pooled estimator equals what we have seen in the cross-sectional example: we basically assume that we have 24 independent observations and we ignore the person and time dimension. The Pooled OLS estimator is simply:</p>
+<p>The pooled estimator equals what we have seen in the cross-sectional
+example: we basically assume that we have 24 independent observations
+and we ignore the person and time dimension. The Pooled OLS estimator is
+simply:</p>
 <p><span class="math display">\[
 y_{it} = \alpha + \beta_{POLS} x_{it} + \upsilon_{it},
 \]</span></p>
@@ -876,7 +962,8 @@ y_{it} = \alpha + \beta_{POLS} x_{it} + \upsilon_{it},
 ## Multiple R-squared:  0.8045, Adjusted R-squared:  0.7956 
 ## F-statistic: 90.53 on 1 and 22 DF,  p-value: 2.96e-09</code></pre>
 <p>which graphically looks like:</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>zp3 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df, <span class="fu">aes</span>(age, happiness)) <span class="sc">+</span></span>
+<div class="sourceCode" id="cb24"><pre
+class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>zp3 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df, <span class="fu">aes</span>(age, happiness)) <span class="sc">+</span></span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>( <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> happiness, <span class="at">shape =</span> idname, <span class="at">colour =</span> idname), </span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">size =</span> <span class="dv">2</span>, <span class="at">stroke =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
 <span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">&#39;lm&#39;</span>, <span class="at">formula =</span> y <span class="sc">~</span> x, <span class="at">se =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
@@ -891,7 +978,9 @@ y_{it} = \alpha + \beta_{POLS} x_{it} + \upsilon_{it},
 </div>
 <div id="between-estimator" class="section level3">
 <h3>Between estimator</h3>
-<p>The between estimator only compares different persons and discards the within-person variance. Therefore, we simply run a model that only uses the person-specific means</p>
+<p>The between estimator only compares different persons and discards
+the within-person variance. Therefore, we simply run a model that only
+uses the person-specific means</p>
 <p><span class="math display">\[
 \bar{y_{i}} = \alpha + \beta_{BTW} \bar{x_{i}} + \bar{\upsilon_{i}},
 \]</span></p>
@@ -949,9 +1038,13 @@ y_{it} = \alpha + \beta_{POLS} x_{it} + \upsilon_{it},
 ## R-Squared:      0.92211
 ## Adj. R-Squared: 0.90263
 ## F-statistic: 47.3519 on 1 and 4 DF, p-value: 0.0023371</code></pre>
-<p>NOTE the line “observations used in estimation” ! The manual approach with <code>lm</code> assumes we have 24 independent observations. This is not true, we only have 6 independent observations, where each is replicated 4 times in the data.</p>
+<p>NOTE the line “observations used in estimation” ! The manual approach
+with <code>lm</code> assumes we have 24 independent observations. This
+is not true, we only have 6 independent observations, where each is
+replicated 4 times in the data.</p>
 <p>Graphically this result looks like:</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>zp4 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df, <span class="fu">aes</span>(age, happiness)) <span class="sc">+</span></span>
+<div class="sourceCode" id="cb29"><pre
+class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>zp4 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df, <span class="fu">aes</span>(age, happiness)) <span class="sc">+</span></span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> happiness, <span class="at">shape =</span> idname), </span>
 <span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">size =</span> <span class="dv">2</span>, <span class="at">stroke =</span> <span class="dv">1</span>, <span class="at">colour =</span> <span class="fu">alpha</span>(<span class="st">&quot;black&quot;</span>, .<span class="dv">3</span>)) <span class="sc">+</span></span>
 <span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> m_age, <span class="at">y =</span> m_happiness, <span class="at">shape =</span> idname, <span class="at">colour =</span> idname), </span>
@@ -969,7 +1062,11 @@ y_{it} = \alpha + \beta_{POLS} x_{it} + \upsilon_{it},
 </div>
 <div id="within-estimator" class="section level3">
 <h3>Within estimator</h3>
-<p>The within estimator only compares different periods within the same person and discards the between-person variance. We could also say the estimator is solely based on changes over time. To achieve this, we simply give every person their own intercept / add a dummy for each person (similar to the cohort example above).</p>
+<p>The within estimator only compares different periods within the same
+person and discards the between-person variance. We could also say the
+estimator is solely based on changes over time. To achieve this, we
+simply give every person their own intercept / add a dummy for each
+person (similar to the cohort example above).</p>
 <p><span class="math display">\[
 y_{it} = \alpha_i + \beta_{WI} x_{it} + \epsilon_{it},
 \]</span></p>
@@ -1028,7 +1125,8 @@ y_{it} = \alpha_i + \beta_{WI} x_{it} + \epsilon_{it},
 ## Adj. R-Squared: 0.74283
 ## F-statistic: 72.4345 on 1 and 17 DF, p-value: 1.5556e-07</code></pre>
 <p>Graphically, this would look like:</p>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>zp5 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df, <span class="fu">aes</span>(age, happiness)) <span class="sc">+</span></span>
+<div class="sourceCode" id="cb34"><pre
+class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>zp5 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df, <span class="fu">aes</span>(age, happiness)) <span class="sc">+</span></span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>( <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> happiness, <span class="at">shape =</span> idname, <span class="at">colour =</span> idname), </span>
 <span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">size =</span> <span class="dv">2</span>, <span class="at">stroke =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
 <span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">&#39;lm&#39;</span>, <span class="at">formula =</span> y <span class="sc">~</span> x, <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>,</span>
@@ -1044,7 +1142,9 @@ y_{it} = \alpha_i + \beta_{WI} x_{it} + \epsilon_{it},
 <span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.box.background =</span> <span class="fu">element_rect</span>(<span class="at">colour =</span> <span class="st">&quot;black&quot;</span>))</span>
 <span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>zp5</span></code></pre></div>
 <p><img src="Panel_part1_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
-<p>Now, we have estimated the effect by only taking observations within each person into account: given the person id, how does age correlate with happiness.</p>
+<p>Now, we have estimated the effect by only taking observations within
+each person into account: given the person id, how does age correlate
+with happiness.</p>
 </div>
 <div id="comparison" class="section level3">
 <h3>Comparison</h3>
@@ -1076,25 +1176,41 @@ y_{it} = \alpha_i + \beta_{WI} x_{it} + \epsilon_{it},
 ## Num. obs.       24          24          24        
 ## ==================================================
 ## *** p &lt; 0.001; ** p &lt; 0.01; * p &lt; 0.05</code></pre>
-<p>POLS: The older an observation (person-year), the higher its happiness.</p>
+<p>POLS: The older an observation (person-year), the higher its
+happiness.</p>
 <p>Between: The older a person, the higher their happiness.</p>
-<p>Within: Increasing age within a person goes along with declining happiness within the same person.</p>
-<p>The estimates for <span class="math inline">\(\beta_{POLS}\)</span> and <span class="math inline">\(\beta_{BTW}\)</span> are very similar here. We will see below why.</p>
+<p>Within: Increasing age within a person goes along with declining
+happiness within the same person.</p>
+<p>The estimates for <span class="math inline">\(\beta_{POLS}\)</span>
+and <span class="math inline">\(\beta_{BTW}\)</span> are very similar
+here. We will see below why.</p>
 </div>
-<div id="this-is-by-the-way-how-the-relationship-looks-like-with-real-world-data-in-germany" class="section level3">
-<h3>This is by the way how the relationship looks like with real world data (in Germany)</h3>
+<div
+id="this-is-by-the-way-how-the-relationship-looks-like-with-real-world-data-in-germany"
+class="section level3">
+<h3>This is by the way how the relationship looks like with real world
+data (in Germany)</h3>
 <div class="figure">
 <img src="fig/kratz.PNG" alt="" />
-<p class="caption">Working paper by <span class="citation"><a href="#ref-Kratz.2021" role="doc-biblioref">Kratz and Brüderl</a> (<a href="#ref-Kratz.2021" role="doc-biblioref">2021</a>)</span></p>
+<p class="caption">Working paper by <span class="citation">Kratz and
+Brüderl (<a href="#ref-Kratz.2021"
+role="doc-biblioref">2021</a>)</span></p>
 </div>
 </div>
 </div>
 </div>
 <div id="fixed-effects-estimator" class="section level1">
 <h1>Fixed effects estimator</h1>
-<p>The estimator we used above to derive the within coefficient is the fixed effects (FE) estimator. This method is very widely used, especially with survey data.</p>
-<p>We use a second example here: assume we observe 4 individuals over 6 periods, and we want to estimate the effect of marriage on the wage for males. This is the so called “marriage wage premium” <span class="citation">(<a href="#ref-Ludwig.2018.0" role="doc-biblioref">Ludwig and Brüderl 2018</a>)</span>.</p>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="do">##################################</span></span>
+<p>The estimator we used above to derive the within coefficient is the
+fixed effects (FE) estimator. This method is very widely used,
+especially with survey data.</p>
+<p>We use a second example here: assume we observe 4 individuals over 6
+periods, and we want to estimate the effect of marriage on the wage for
+males. This is the so called “marriage wage premium” <span
+class="citation">(<a href="#ref-Ludwig.2018.0"
+role="doc-biblioref">Ludwig and Brüderl 2018</a>)</span>.</p>
+<div class="sourceCode" id="cb37"><pre
+class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="do">##################################</span></span>
 <span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="do">### Example 2: Marriage Income </span><span class="al">###</span></span>
 <span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="do">##################################</span></span>
 <span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -1163,15 +1279,26 @@ y_{it} = \alpha_i + \beta_{WI} x_{it} + \epsilon_{it},
 <p><img src="Panel_part1_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
 <div id="pooled-ols-again" class="section level3">
 <h3>Pooled OLS (again)</h3>
-<p>Let’s start with the conventional Pooled OLS (POLS) estimator on panel data</p>
+<p>Let’s start with the conventional Pooled OLS (POLS) estimator on
+panel data</p>
 <p><span class="math display">\[
 y_{it} = \alpha + \beta x_{it} + \upsilon_{it}
 \]</span></p>
-<p>The main problem: this model relies on very strong assumptions for consistency, with the most important one being:</p>
+<p>The main problem: this model relies on very strong assumptions for
+consistency, with the most important one being:</p>
 <ul>
-<li><span class="math inline">\(\mathrm{E}(\upsilon_{it} | x_{it}) = 0\)</span>, or <span class="math inline">\(Cov(x_{it}, \upsilon_{it}) = 0\)</span></li>
+<li><span class="math inline">\(\mathrm{E}(\upsilon_{it} | x_{it}) =
+0\)</span>, or <span class="math inline">\(Cov(x_{it}, \upsilon_{it}) =
+0\)</span></li>
 </ul>
-<p>The error (including omitted variables) must not be correlated with <span class="math inline">\(x_{it}\)</span>. In observational studies, we have or cannot observe a lot of things. However, everything that influences <span class="math inline">\(y_{it}\)</span> but is unobserved ends up in <span class="math inline">\(\upsilon_{it}\)</span>. If anything correlates with <span class="math inline">\(x_{it}\)</span>, it is endogenous, and <span class="math inline">\(\hat{\beta}_x\)</span> will be biased.</p>
+<p>The error (including omitted variables) must not be correlated with
+<span class="math inline">\(x_{it}\)</span>. In observational studies,
+we have or cannot observe a lot of things. However, everything that
+influences <span class="math inline">\(y_{it}\)</span> but is unobserved
+ends up in <span class="math inline">\(\upsilon_{it}\)</span>. If
+anything correlates with <span class="math inline">\(x_{it}\)</span>, it
+is endogenous, and <span class="math inline">\(\hat{\beta}_x\)</span>
+will be biased.</p>
 <p>Take our marriage example.</p>
 <div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(wage <span class="sc">~</span> marriage, <span class="at">data =</span> df2))</span></code></pre></div>
 <pre><code>## 
@@ -1192,8 +1319,11 @@ y_{it} = \alpha + \beta x_{it} + \upsilon_{it}
 ## Residual standard error: 947 on 22 degrees of freedom
 ## Multiple R-squared:  0.4935, Adjusted R-squared:  0.4704 
 ## F-statistic: 21.43 on 1 and 22 DF,  p-value: 0.0001297</code></pre>
-<p>We would estimate a marriage premium of more than 2,000. The true value is 500. The reason: those who marry at some point already had higher wages before they married.</p>
-<div class="sourceCode" id="cb40"><pre class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="do">### Plot </span></span>
+<p>We would estimate a marriage premium of more than 2,000. The true
+value is 500. The reason: those who marry at some point already had
+higher wages before they married.</p>
+<div class="sourceCode" id="cb40"><pre
+class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="do">### Plot </span></span>
 <span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>zp2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df2, <span class="fu">aes</span>(wave, wage)) <span class="sc">+</span></span>
 <span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> wave, <span class="at">y =</span> wage, <span class="at">group =</span> id), <span class="at">lty =</span> <span class="st">&quot;solid&quot;</span>, <span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">lwd =</span> <span class="dv">1</span>) <span class="sc">+</span> </span>
 <span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>( <span class="fu">aes</span>(<span class="at">x =</span> wave, <span class="at">y =</span> wage, <span class="at">shape =</span> marriage, <span class="at">colour =</span> marriage), </span>
@@ -1210,42 +1340,74 @@ y_{it} = \alpha + \beta x_{it} + \upsilon_{it}
 </div>
 <div id="one-way-fixed-effects" class="section level3">
 <h3>One-way fixed effects</h3>
-<p>To relax the strong assumption, we can decompose the error into two parts (between and within) with panel data: <span class="math inline">\(\upsilon_{it} = \alpha_i + \epsilon_{it} = 0\)</span>, where <span class="math inline">\(\alpha_i\)</span> is the time-constant (person-specific or between) part of the error, and <span class="math inline">\(\epsilon_{it} = 0\)</span> is the time-varying (idiosyncratic or within) part of the error.</p>
+<p>To relax the strong assumption, we can decompose the error into two
+parts (between and within) with panel data: <span
+class="math inline">\(\upsilon_{it} = \alpha_i + \epsilon_{it} =
+0\)</span>, where <span class="math inline">\(\alpha_i\)</span> is the
+time-constant (person-specific or between) part of the error, and <span
+class="math inline">\(\epsilon_{it} = 0\)</span> is the time-varying
+(idiosyncratic or within) part of the error.</p>
 <p>We can thus split up our main assumption for consistency:</p>
 <ul>
-<li><p><span class="math inline">\(\mathrm{E}(\alpha_{i} | x_{it}) = 0\)</span>: No time-constant unobserved heterogeneity</p></li>
-<li><p><span class="math inline">\(\mathrm{E}(\epsilon_{it} | x_{it}) = 0\)</span>: No time-varying unobserved heterogeneity</p></li>
+<li><p><span class="math inline">\(\mathrm{E}(\alpha_{i} | x_{it}) =
+0\)</span>: No time-constant unobserved heterogeneity</p></li>
+<li><p><span class="math inline">\(\mathrm{E}(\epsilon_{it} | x_{it}) =
+0\)</span>: No time-varying unobserved heterogeneity</p></li>
 </ul>
 <p>And write the error component model:</p>
 <p><span class="math display">\[
 y_{it} = \beta x_{it} + \alpha_i + \epsilon_{it}
-\]</span> As we have seen above, we can include person-dummies to estimate the model above. However, this becomes computationally intense if we have thousands of individuals</p>
-<p>Thus, we usually use a transformation approach, where we first subtract the between variance by using use the person-specific means:</p>
+\]</span> As we have seen above, we can include person-dummies to
+estimate the model above. However, this becomes computationally intense
+if we have thousands of individuals</p>
+<p>Thus, we usually use a transformation approach, where we first
+subtract the between variance by using use the person-specific
+means:</p>
 <p><span class="math display">\[
 \bar{y_{i}} = \beta \bar{x_{i}} + \alpha_i + \bar{\epsilon_{i}}
 \]</span></p>
 <p>We then subtract this between part from the pooled data:</p>
 <p><span class="math display">\[
-y_{it} - \bar{y_{i}} = \beta (x_{it}-\bar{x_{i}}) + (\alpha_i - \alpha_i) + (\epsilon_{it}-\bar{\epsilon_{i}})\\
+y_{it} - \bar{y_{i}} = \beta (x_{it}-\bar{x_{i}}) + (\alpha_i -
+\alpha_i) + (\epsilon_{it}-\bar{\epsilon_{i}})\\
 \tilde{y}_{it} = \beta \tilde{x}_{it} + \tilde{\epsilon}_{it}.
 \]</span></p>
-<p>This is called the within transformation. For each group (individual, district, firm), we subtract the group-specific mean from the original variable. This eliminates all between-group variance, including the person-specific part of the error term (<span class="math inline">\(\alpha_i\)</span>).</p>
-<p>The <span class="math inline">\(\hat{beta}_{FE}\)</span> is then just the OLS estimator on the transformed data:</p>
+<p>This is called the within transformation. For each group (individual,
+district, firm), we subtract the group-specific mean from the original
+variable. This eliminates all between-group variance, including the
+person-specific part of the error term (<span
+class="math inline">\(\alpha_i\)</span>).</p>
+<p>The <span class="math inline">\(\hat{beta}_{FE}\)</span> is then just
+the OLS estimator on the transformed data:</p>
 <p><span class="math display">\[
-\hat{\boldsymbol{\mathbf{\beta}}} = (\boldsymbol{\mathbf{X}}^\intercal\boldsymbol{\mathbf{X}})^{-1}\boldsymbol{\mathbf{X}}^\intercal \boldsymbol{\mathbf{y}}
+\hat{\boldsymbol{\mathbf{\beta}}} =
+(\boldsymbol{\mathbf{X}}^\intercal\boldsymbol{\mathbf{X}})^{-1}\boldsymbol{\mathbf{X}}^\intercal
+\boldsymbol{\mathbf{y}}
 \]</span></p>
-<p><strong>Note: this also means that every time-constant variable is wiped out - we cannot estimate their effects in FE models!</strong></p>
-<p><strong>Note: the FE estimator can only be applied to observations which are at least observed 2 times (<span class="math inline">\(T \geq 2\)</span>)!</strong></p>
+<p><strong>Note: this also means that every time-constant variable is
+wiped out - we cannot estimate their effects in FE models!</strong></p>
+<p><strong>Note: the FE estimator can only be applied to observations
+which are at least observed 2 times (<span class="math inline">\(T \geq
+2\)</span>)!</strong></p>
 <p>The main assumption for consistency now is</p>
 <ul>
-<li><span class="math inline">\(\mathrm{E}(\epsilon_{it} | x_{it}, \alpha_i) = 0\)</span></li>
+<li><span class="math inline">\(\mathrm{E}(\epsilon_{it} | x_{it},
+\alpha_i) = 0\)</span></li>
 </ul>
-<p>Idiosyncratic time-variation in <span class="math inline">\(\epsilon_i\)</span> must be uncorrelated with variation in <span class="math inline">\(x_i\)</span> across all time periods. However, <span class="math inline">\(\mathrm{E}(\alpha_{i} | x_{i})\)</span> can be any function of <span class="math inline">\(x_i\)</span>.</p>
+<p>Idiosyncratic time-variation in <span
+class="math inline">\(\epsilon_i\)</span> must be uncorrelated with
+variation in <span class="math inline">\(x_i\)</span> across all time
+periods. However, <span class="math inline">\(\mathrm{E}(\alpha_{i} |
+x_{i})\)</span> can be any function of <span
+class="math inline">\(x_i\)</span>.</p>
 <ul>
 <li><p>Time-constant unobserved heterogeneity is allowed</p></li>
-<li><p>Only time-varying unobserved heterogeneity biases the estimator</p></li>
+<li><p>Only time-varying unobserved heterogeneity biases the
+estimator</p></li>
 </ul>
-<p>We can use the plm package with options <code>effect = "individual"</code> and <code>model = "within"</code> to estimate one-ways FE models:</p>
+<p>We can use the plm package with options
+<code>effect = "individual"</code> and <code>model = "within"</code> to
+estimate one-ways FE models:</p>
 <div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>fe2 <span class="ot">&lt;-</span> <span class="fu">plm</span>(wage <span class="sc">~</span> marriage, <span class="at">data =</span> df2,</span>
 <span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">index =</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;wave&quot;</span>),</span>
 <span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">effect =</span> <span class="st">&quot;individual&quot;</span>, <span class="at">model =</span> <span class="st">&quot;within&quot;</span>)</span>
@@ -1274,7 +1436,8 @@ y_{it} - \bar{y_{i}} = \beta (x_{it}-\bar{x_{i}}) + (\alpha_i - \alpha_i) + (\ep
 ## Adj. R-Squared: 0.80843
 ## F-statistic: 101.061 on 1 and 19 DF, p-value: 4.8337e-09</code></pre>
 <p>Hm, 850 is closer to 500, but still quite far off! Let’s see why.</p>
-<div class="sourceCode" id="cb43"><pre class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="do">### Plot </span></span>
+<div class="sourceCode" id="cb43"><pre
+class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="do">### Plot </span></span>
 <span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>zp3 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df2, <span class="fu">aes</span>(wave, wage)) <span class="sc">+</span></span>
 <span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> wave, <span class="at">y =</span> wage, <span class="at">group =</span> id, <span class="at">alpha =</span> marriage_ever), <span class="at">lty =</span> <span class="st">&quot;solid&quot;</span>, <span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">lwd =</span> <span class="dv">1</span>) <span class="sc">+</span> </span>
 <span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>( <span class="fu">aes</span>(<span class="at">x =</span> wave, <span class="at">y =</span> wage, <span class="at">shape =</span> marriage, <span class="at">colour =</span> marriage, <span class="at">alpha =</span> marriage_ever), </span>
@@ -1292,23 +1455,37 @@ y_{it} - \bar{y_{i}} = \beta (x_{it}-\bar{x_{i}}) + (\alpha_i - \alpha_i) + (\ep
 <span id="cb43-16"><a href="#cb43-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.spacing.y =</span> <span class="fu">unit</span>(<span class="sc">-</span><span class="fl">0.1</span>, <span class="st">&quot;cm&quot;</span>))</span>
 <span id="cb43-17"><a href="#cb43-17" aria-hidden="true" tabindex="-1"></a>zp3</span></code></pre></div>
 <p><img src="Panel_part1_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
-<p>NOTE: A one-ways FE would effectively drop all those observations without within-variance on the independent variables. In our case, we would disregard those who never marry.</p>
-<p>However, they also experienced an increase in wages when the other two married.</p>
+<p>NOTE: A one-ways FE would effectively drop all those observations
+without within-variance on the independent variables. In our case, we
+would disregard those who never marry.</p>
+<p>However, they also experienced an increase in wages when the other
+two married.</p>
 </div>
 <div id="two-ways-fe" class="section level3">
 <h3>Two-ways FE</h3>
-<p>To circumvent the problem above, we want to add the never-married as a control group in our estimator.</p>
-<p><strong>In general, it is always a good idea to control for temporal shocks!</strong></p>
-<p>We can do so by including person fixed effects and time fixed effects:</p>
+<p>To circumvent the problem above, we want to add the never-married as
+a control group in our estimator.</p>
+<p><strong>In general, it is always a good idea to control for temporal
+shocks!</strong></p>
+<p>We can do so by including person fixed effects and time fixed
+effects:</p>
 <p><span class="math display">\[
 y_{it} = \beta x_{it} + \alpha_i + \zeta_t + \epsilon_{it},
 \]</span></p>
-<p>where <span class="math inline">\(\zeta_t\)</span> are time fixed effects (analogous to <span class="math inline">\(\alpha_i\)</span>). In terms of demeaning this would look like:</p>
+<p>where <span class="math inline">\(\zeta_t\)</span> are time fixed
+effects (analogous to <span class="math inline">\(\alpha_i\)</span>). In
+terms of demeaning this would look like:</p>
 <p><span class="math display">\[
-(y_{it} - \bar{y}_i  - \bar{y}_t + \bar{y}) = \beta (x_{it} - \bar{x}_i - \bar{x}_t + \bar{x}) + (\epsilon_{it} - \bar{\epsilon}_i  - \bar{\epsilon}_t + \bar{\epsilon}).
+(y_{it} - \bar{y}_i  - \bar{y}_t + \bar{y}) = \beta (x_{it} - \bar{x}_i
+- \bar{x}_t + \bar{x}) + (\epsilon_{it} - \bar{\epsilon}_i  -
+\bar{\epsilon}_t + \bar{\epsilon}).
 \]</span></p>
-<p>This removes common time shocks independent of treatment, and takes back in individuals without variation in <span class="math inline">\(x\)</span>. We basically add a `control-group’ to the estimation.</p>
-<p>We can just change the <code>effect</code> option in <code>plm</code> to “twoways” to achieve this:</p>
+<p>This removes common time shocks independent of treatment, and takes
+back in individuals without variation in <span
+class="math inline">\(x\)</span>. We basically add a `control-group’ to
+the estimation.</p>
+<p>We can just change the <code>effect</code> option in <code>plm</code>
+to “twoways” to achieve this:</p>
 <div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>fe3 <span class="ot">&lt;-</span> <span class="fu">plm</span>(wage <span class="sc">~</span> marriage, <span class="at">data =</span> df2,</span>
 <span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">index =</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;wave&quot;</span>),</span>
 <span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">effect =</span> <span class="st">&quot;twoways&quot;</span>, <span class="at">model =</span> <span class="st">&quot;within&quot;</span>)</span>
@@ -1336,8 +1513,10 @@ y_{it} = \beta x_{it} + \alpha_i + \zeta_t + \epsilon_{it},
 ## R-Squared:      1
 ## Adj. R-Squared: 1
 ## F-statistic: 7.06433e+31 on 1 and 14 DF, p-value: &lt; 2.22e-16</code></pre>
-<p>And here we go with our 500 marriage wage premium. What we do graphically is</p>
-<div class="sourceCode" id="cb46"><pre class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="do">### Plot </span></span>
+<p>And here we go with our 500 marriage wage premium. What we do
+graphically is</p>
+<div class="sourceCode" id="cb46"><pre
+class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="do">### Plot </span></span>
 <span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>zp4 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df2, <span class="fu">aes</span>(wave, wage)) <span class="sc">+</span></span>
 <span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> wave, <span class="at">y =</span> wage, <span class="at">group =</span> id), <span class="at">lty =</span> <span class="st">&quot;solid&quot;</span>, <span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">lwd =</span> <span class="dv">1</span>) <span class="sc">+</span> </span>
 <span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>( <span class="fu">aes</span>(<span class="at">x =</span> wave, <span class="at">y =</span> wage, <span class="at">shape =</span> marriage, <span class="at">colour =</span> marriage), </span>
@@ -1355,11 +1534,18 @@ y_{it} = \beta x_{it} + \alpha_i + \zeta_t + \epsilon_{it},
 </div>
 <div id="still-a-very-critical-assumption" class="section level3">
 <h3>Still a very critical assumption</h3>
-<p>In the example above, the twoways FE model works very well. However, adding the control group back in comes with another (relatively strong) assumption:</p>
-<p><strong>Parallel trends between “treatment” and “control” units</strong></p>
-<p>Comparing the 3 waves before the treatment above, this assumption here holds. Both - those who marry and those who never marry - have the same time trend in wages before the “treated” marry.</p>
-<p>However, consider the following example. We still have a marriage premium of 500.</p>
-<div class="sourceCode" id="cb47"><pre class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>zp5 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df2, <span class="fu">aes</span>(wave, wage2)) <span class="sc">+</span></span>
+<p>In the example above, the twoways FE model works very well. However,
+adding the control group back in comes with another (relatively strong)
+assumption:</p>
+<p><strong>Parallel trends between “treatment” and “control”
+units</strong></p>
+<p>Comparing the 3 waves before the treatment above, this assumption
+here holds. Both - those who marry and those who never marry - have the
+same time trend in wages before the “treated” marry.</p>
+<p>However, consider the following example. We still have a marriage
+premium of 500.</p>
+<div class="sourceCode" id="cb47"><pre
+class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>zp5 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df2, <span class="fu">aes</span>(wave, wage2)) <span class="sc">+</span></span>
 <span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> wave, <span class="at">y =</span> wage2, <span class="at">group =</span> id), <span class="at">lty =</span> <span class="st">&quot;solid&quot;</span>, <span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">lwd =</span> <span class="dv">1</span>) <span class="sc">+</span> </span>
 <span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>( <span class="fu">aes</span>(<span class="at">x =</span> wave, <span class="at">y =</span> wage2, <span class="at">shape =</span> marriage, <span class="at">colour =</span> marriage), </span>
 <span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>              <span class="at">size =</span> <span class="dv">2</span>, <span class="at">stroke =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
@@ -1405,8 +1591,11 @@ y_{it} = \beta x_{it} + \alpha_i + \zeta_t + \epsilon_{it},
 ## R-Squared:      0.93766
 ## Adj. R-Squared: 0.89759
 ## F-statistic: 210.583 on 1 and 14 DF, p-value: 7.8808e-10</code></pre>
-<p>The problem: the model does not take into account that the treatment group already had a steeper wage trajectory than the control group. The parallel trends assumption fails.</p>
-<div class="sourceCode" id="cb50"><pre class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>zp5 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df2, <span class="fu">aes</span>(wave, wage2)) <span class="sc">+</span></span>
+<p>The problem: the model does not take into account that the treatment
+group already had a steeper wage trajectory than the control group. The
+parallel trends assumption fails.</p>
+<div class="sourceCode" id="cb50"><pre
+class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>zp5 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df2, <span class="fu">aes</span>(wave, wage2)) <span class="sc">+</span></span>
 <span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> wave, <span class="at">y =</span> wage2, <span class="at">group =</span> id), <span class="at">lty =</span> <span class="st">&quot;solid&quot;</span>, <span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">lwd =</span> <span class="dv">1</span>) <span class="sc">+</span> </span>
 <span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>( <span class="fu">aes</span>(<span class="at">x =</span> wave, <span class="at">y =</span> wage2, <span class="at">shape =</span> marriage, <span class="at">colour =</span> marriage), </span>
 <span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>              <span class="at">size =</span> <span class="dv">2</span>, <span class="at">stroke =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
@@ -1424,20 +1613,35 @@ y_{it} = \beta x_{it} + \alpha_i + \zeta_t + \epsilon_{it},
 <span id="cb50-16"><a href="#cb50-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.spacing.y =</span> <span class="fu">unit</span>(<span class="sc">-</span><span class="fl">0.1</span>, <span class="st">&quot;cm&quot;</span>))</span>
 <span id="cb50-17"><a href="#cb50-17" aria-hidden="true" tabindex="-1"></a>zp5</span></code></pre></div>
 <p><img src="Panel_part1_files/figure-html/unnamed-chunk-32-1.png" width="672" /></p>
-<p>A possible extension to tackle this problem are fixed effects individual slopes (FEIS) estimators. See the second part.</p>
+<p>A possible extension to tackle this problem are fixed effects
+individual slopes (FEIS) estimators. See the second part.</p>
 </div>
 <div id="difference-in-differences" class="section level3">
 <h3>Difference in Differences</h3>
-<p>The difference-in-differences (DD) design is a very basic and popular design to identify causal treatment effects in a panel data setting.</p>
-<p>The most basic setting, is a <span class="math inline">\(2\times 2\)</span> DD estimator. It consists of a setting where we have 2 groups: a treatment group (<span class="math inline">\(T\)</span>) and control group (<span class="math inline">\(C\)</span>). Each group has been observed at 2 time points: before treatment (<span class="math inline">\(pre\)</span>) and after treatment (<span class="math inline">\(post\)</span>).</p>
-<p>In this setting we can calculate the change in the treatment group: <span class="math display">\[
-\mathrm{E}(\Delta y_{T}) = \mathrm{E}(y_{T}^{post}) - \mathrm{E}(y_{T}^{pre}),
+<p>The difference-in-differences (DD) design is a very basic and popular
+design to identify causal treatment effects in a panel data setting.</p>
+<p>The most basic setting, is a <span class="math inline">\(2\times
+2\)</span> DD estimator. It consists of a setting where we have 2
+groups: a treatment group (<span class="math inline">\(T\)</span>) and
+control group (<span class="math inline">\(C\)</span>). Each group has
+been observed at 2 time points: before treatment (<span
+class="math inline">\(pre\)</span>) and after treatment (<span
+class="math inline">\(post\)</span>).</p>
+<p>In this setting we can calculate the change in the treatment group:
+<span class="math display">\[
+\mathrm{E}(\Delta y_{T}) = \mathrm{E}(y_{T}^{post}) -
+\mathrm{E}(y_{T}^{pre}),
 \]</span></p>
 <p>and likewise in the control group: <span class="math display">\[
-\mathrm{E}(\Delta y_{C}) = \mathrm{E}(y_{C}^{post}) - \mathrm{E}(y_{C}^{pre}).
-\]</span> The simple DD estimator is then the difference between the differences in the treatment group and the differences in the control group:</p>
+\mathrm{E}(\Delta y_{C}) = \mathrm{E}(y_{C}^{post}) -
+\mathrm{E}(y_{C}^{pre}).
+\]</span> The simple DD estimator is then the difference between the
+differences in the treatment group and the differences in the control
+group:</p>
 <p><span class="math display">\[
-\hat{\delta}_{DD} = \mathrm{E}(\Delta y_{T}) - \mathrm{E}(\Delta y_{C}) = (\mathrm{E}(y_{T}^{post}) - \mathrm{E}(y_{T}^{pre})) - (\mathrm{E}(y_{C}^{post}) - \mathrm{E}(y_{C}^{pre})).
+\hat{\delta}_{DD} = \mathrm{E}(\Delta y_{T}) - \mathrm{E}(\Delta y_{C})
+= (\mathrm{E}(y_{T}^{post}) - \mathrm{E}(y_{T}^{pre})) -
+(\mathrm{E}(y_{C}^{post}) - \mathrm{E}(y_{C}^{pre})).
 \]</span></p>
 <p>In our marriage example:</p>
 <div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>df2<span class="sc">$</span>marry_post <span class="ot">&lt;-</span> <span class="dv">0</span></span>
@@ -1452,21 +1656,40 @@ y_{it} = \beta x_{it} + \alpha_i + \zeta_t + \epsilon_{it},
 <span id="cb51-10"><a href="#cb51-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Diff in Diff</span></span>
 <span id="cb51-11"><a href="#cb51-11" aria-hidden="true" tabindex="-1"></a>(y_t_post <span class="sc">-</span> y_t_pre) <span class="sc">-</span> (y_c_post <span class="sc">-</span> y_c_pre)</span></code></pre></div>
 <pre><code>## [1] 500</code></pre>
-<p>In a setting where <span class="math inline">\(T=2\)</span> or in a setting where every observation is treated at the same time, the DD equals the two-ways FE. In general, DD and two-ways DD are often seen as equivalents. However, the situation becomes more complicated when treatment timing varies <span class="citation">(<a href="#ref-GoodmanBacon.2021" role="doc-biblioref">Goodman-Bacon 2021</a>)</span>.</p>
-<p>We can receive the same estimator in a simple regression. Lets assume <span class="math inline">\(D \in {0, 1}\)</span> is a binary indicator of the treatment group and <span class="math inline">\(Post \in {0, 1}\)</span> a binary indicator of pre- or post-treatment period. Then we can get the DD estimator with an interaction between those two two variables:</p>
+<p>In a setting where <span class="math inline">\(T=2\)</span> or in a
+setting where every observation is treated at the same time, the DD
+equals the two-ways FE. In general, DD and two-ways DD are often seen as
+equivalents. However, the situation becomes more complicated when
+treatment timing varies <span class="citation">(<a
+href="#ref-GoodmanBacon.2021" role="doc-biblioref">Goodman-Bacon
+2021</a>)</span>.</p>
+<p>We can receive the same estimator in a simple regression. Lets assume
+<span class="math inline">\(D \in {0, 1}\)</span> is a binary indicator
+of the treatment group and <span class="math inline">\(Post \in {0,
+1}\)</span> a binary indicator of pre- or post-treatment period. Then we
+can get the DD estimator with an interaction between those two two
+variables:</p>
 <p><span class="math display">\[
-y_{it} = \alpha + \gamma D_{i} + \lambda Post_{t} + \delta_{DD} (D_{i} \times Post_{t}) + \upsilon_{it}.
+y_{it} = \alpha + \gamma D_{i} + \lambda Post_{t} + \delta_{DD} (D_{i}
+\times Post_{t}) + \upsilon_{it}.
 \]</span></p>
 <div class="figure">
 <img src="fig/dd-diagram-1.png" alt="" />
-<p class="caption">Diff-in-Diff design, adopted from <span class="citation"><a href="#ref-Cunningham.2021" role="doc-biblioref">Cunningham</a> (<a href="#ref-Cunningham.2021" role="doc-biblioref">2021</a>)</span></p>
+<p class="caption">Diff-in-Diff design, adopted from <span
+class="citation">Cunningham (<a href="#ref-Cunningham.2021"
+role="doc-biblioref">2021</a>)</span></p>
 </div>
 <p>The coefficients correspond to:</p>
 <ul>
-<li><p><span class="math inline">\(\alpha\)</span>: average outcome of control group in pre-treatment period</p></li>
-<li><p><span class="math inline">\(\gamma\)</span>: average difference between treatment and control group in pre-treatment period</p></li>
-<li><p><span class="math inline">\(\lambda\)</span>: average difference between post- pre-treatment period in control group</p></li>
-<li><p><span class="math inline">\(\delta_{DD}\)</span>: difference between treatment and control group in difference between post- pre-treatment period</p></li>
+<li><p><span class="math inline">\(\alpha\)</span>: average outcome of
+control group in pre-treatment period</p></li>
+<li><p><span class="math inline">\(\gamma\)</span>: average difference
+between treatment and control group in pre-treatment period</p></li>
+<li><p><span class="math inline">\(\lambda\)</span>: average difference
+between post- pre-treatment period in control group</p></li>
+<li><p><span class="math inline">\(\delta_{DD}\)</span>: difference
+between treatment and control group in difference between post-
+pre-treatment period</p></li>
 </ul>
 <div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(wage <span class="sc">~</span> marriage_ever<span class="sc">*</span>marry_post, <span class="at">data =</span> df2))</span></code></pre></div>
 <pre><code>## 
@@ -1493,43 +1716,75 @@ y_{it} = \alpha + \gamma D_{i} + \lambda Post_{t} + \delta_{DD} (D_{i} \times Po
 </div>
 <div id="random-effects-estimator" class="section level1">
 <h1>Random effects estimator</h1>
-<p>There is another popular estimation strategy for panel data: the random effects (RE) estimator. The RE estimator is not only popular for panel data but also very commonly used for hierarchical data, where it is usually called a “multilevel model.” More precisely, the RE estimator in the panel context equals a “multilevel model with random intercepts.”</p>
+<p>There is another popular estimation strategy for panel data: the
+random effects (RE) estimator. The RE estimator is not only popular for
+panel data but also very commonly used for hierarchical data, where it
+is usually called a “multilevel model”. More precisely, the RE estimator
+in the panel context equals a “multilevel model with random
+intercepts”.</p>
 <p>The RE estimator has two main “advantages” over the FE estimator:</p>
 <ol style="list-style-type: decimal">
-<li><p>It is more efficient if <span class="math inline">\(\mathrm{E}(\alpha_{i} | x_{it}) = 0\)</span>: it has lower standard errors</p></li>
-<li><p>It allows to estimate the effects of time-constant variables</p></li>
+<li><p>It is more efficient if <span
+class="math inline">\(\mathrm{E}(\alpha_{i} | x_{it}) = 0\)</span>: it
+has lower standard errors</p></li>
+<li><p>It allows to estimate the effects of time-constant
+variables</p></li>
 </ol>
-<p>However, it obscures the main advantage of panel data: the relaxation of assumptions for consistency of estimators. The RE model needs the same assumptions as POLS for consistency:</p>
+<p>However, it obscures the main advantage of panel data: the relaxation
+of assumptions for consistency of estimators. The RE model needs the
+same assumptions as POLS for consistency:</p>
 <ul>
-<li><p><span class="math inline">\(\mathrm{E}(\alpha_{i} | x_{it}) = 0\)</span>: No time-constant unobserved heterogeneity</p></li>
-<li><p><span class="math inline">\(\mathrm{E}(\epsilon_{it} | x_{it}) = 0\)</span>: No time-varying unobserved heterogeneity</p></li>
+<li><p><span class="math inline">\(\mathrm{E}(\alpha_{i} | x_{it}) =
+0\)</span>: No time-constant unobserved heterogeneity</p></li>
+<li><p><span class="math inline">\(\mathrm{E}(\epsilon_{it} | x_{it}) =
+0\)</span>: No time-varying unobserved heterogeneity</p></li>
 </ul>
 <p>The RE model can be written as:</p>
 <p><span class="math display">\[
 y_{it} = \alpha + \beta x_{it} + \alpha_i + \vartheta_{it}.
 \]</span></p>
-<p>Instead of assuming <span class="math inline">\(\alpha_i\)</span> are fixed effects, we treat them as i.i.d random effects, usually assuming they are normally distributed</p>
+<p>Instead of assuming <span class="math inline">\(\alpha_i\)</span> are
+fixed effects, we treat them as i.i.d random effects, usually assuming
+they are normally distributed</p>
 <p>We can also write the RE as q quasi-demeaned estimator:</p>
 <p><span class="math display">\[
-(y_{it} - \lambda\bar{y}_i) = \beta (x_{it} - \lambda\bar{x}_i) + (\epsilon_{it} - \lambda\bar{\epsilon}_i)  
-\]</span> where <span class="math inline">\(\hat{\lambda} = 1 - \sqrt{\frac{\sigma^2_\epsilon}{\sigma^2_\epsilon + T\sigma^2_\alpha}}\)</span>, with <span class="math inline">\(\sigma^2_\epsilon\)</span> denoting the residual variance, and <span class="math inline">\(\sigma^2_\alpha\)</span> denoting the variance of the individual effects <span class="math inline">\(\alpha_i\)</span>.</p>
-<p>The RE (as POLS) is thus a weighted average of between and within estimator. The weights are determined by the residual variance in FE as share of total residual variance:</p>
+(y_{it} - \lambda\bar{y}_i) = \beta (x_{it} - \lambda\bar{x}_i) +
+(\epsilon_{it} - \lambda\bar{\epsilon}_i)  
+\]</span> where <span class="math inline">\(\hat{\lambda} = 1 -
+\sqrt{\frac{\sigma^2_\epsilon}{\sigma^2_\epsilon +
+T\sigma^2_\alpha}}\)</span>, with <span
+class="math inline">\(\sigma^2_\epsilon\)</span> denoting the residual
+variance, and <span class="math inline">\(\sigma^2_\alpha\)</span>
+denoting the variance of the individual effects <span
+class="math inline">\(\alpha_i\)</span>.</p>
+<p>The RE (as POLS) is thus a weighted average of between and within
+estimator. The weights are determined by the residual variance in FE as
+share of total residual variance:</p>
 <p><span class="math display">\[
 \beta_{RE} = \omega_{GLS} \beta_{FE} + (1-\omega_{GLS}) \beta_{BE},\\
-\omega_{GLS} = \frac{\sigma^2_{\tilde{x}}}{\sigma^2_{\tilde{x}} + \phi^2 (\sigma^2_x-\sigma^2_{\tilde{x}})},\\
+\omega_{GLS} = \frac{\sigma^2_{\tilde{x}}}{\sigma^2_{\tilde{x}} + \phi^2
+(\sigma^2_x-\sigma^2_{\tilde{x}})},\\
 \phi = \sqrt{\frac{\hat{\sigma}^2_{FE}}{\hat{\sigma}^2_{BE}}},
 \]</span></p>
 <p>It thus follows that:</p>
 <ul>
-<li><p><span class="math inline">\(T\)</span> large, <span class="math inline">\(\sigma^2_\alpha\)</span> large, then RE <span class="math inline">\(\rightarrow\)</span> FE</p></li>
-<li><p><span class="math inline">\(\sigma^2_\alpha\)</span> small, then RE <span class="math inline">\(\rightarrow\)</span> POLS</p></li>
+<li><p><span class="math inline">\(T\)</span> large, <span
+class="math inline">\(\sigma^2_\alpha\)</span> large, then RE <span
+class="math inline">\(\rightarrow\)</span> FE</p></li>
+<li><p><span class="math inline">\(\sigma^2_\alpha\)</span> small, then
+RE <span class="math inline">\(\rightarrow\)</span> POLS</p></li>
 </ul>
-<p>The RE uses all the available information - between and within variance - and weights the two components by its “predictive power.” This makes it the most efficient estimator.</p>
-<p>We could, by the way, do the same for the POLS estimator. Here, however, the weights are just determined by the overall and the within variance in the independent variable: <span class="math display">\[
+<p>The RE uses all the available information - between and within
+variance - and weights the two components by its “predictive power”.
+This makes it the most efficient estimator.</p>
+<p>We could, by the way, do the same for the POLS estimator. Here,
+however, the weights are just determined by the overall and the within
+variance in the independent variable: <span class="math display">\[
 \beta_{POLS} = \omega_{OLS} \beta_{FE} + (1-\omega_{OLS}) \beta_{BE},\\
 \omega_{OLS} = \sigma^2_{\tilde{x}} / \sigma^2_x.
 \]</span></p>
-<p>Let’s estimate the RE for the happiness - age example, again using the <code>plm</code> package.</p>
+<p>Let’s estimate the RE for the happiness - age example, again using
+the <code>plm</code> package.</p>
 <div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>re1 <span class="ot">&lt;-</span> <span class="fu">plm</span>(happiness <span class="sc">~</span> age, <span class="at">data =</span> df,</span>
 <span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">index =</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;wave&quot;</span>),</span>
 <span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">effect =</span> <span class="st">&quot;individual&quot;</span>, <span class="at">model =</span> <span class="st">&quot;random&quot;</span>)</span>
@@ -1565,8 +1820,11 @@ y_{it} = \alpha + \beta x_{it} + \alpha_i + \vartheta_{it}.
 ## R-Squared:      0.011211
 ## Adj. R-Squared: -0.033734
 ## Chisq: 0.249442 on 1 DF, p-value: 0.61747</code></pre>
-<p>This indicates that there is barely any relation between age and happiness. This is because the within and the between estimates cancel out each other.</p>
-<div class="sourceCode" id="cb57"><pre class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">6</span></span>
+<p>This indicates that there is barely any relation between age and
+happiness. This is because the within and the between estimates cancel
+out each other.</p>
+<div class="sourceCode" id="cb57"><pre
+class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">6</span></span>
 <span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>T <span class="ot">&lt;-</span> <span class="dv">4</span></span>
 <span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a><span class="do">### Models</span></span>
 <span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Total line for plot</span></span>
@@ -1635,9 +1893,13 @@ y_{it} = \alpha + \beta x_{it} + \alpha_i + \vartheta_{it}.
 <span id="cb57-67"><a href="#cb57-67" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>))</span>
 <span id="cb57-68"><a href="#cb57-68" aria-hidden="true" tabindex="-1"></a>zp6</span></code></pre></div>
 <p><img src="Panel_part1_files/figure-html/unnamed-chunk-36-1.png" width="672" /></p>
-<p>Both - within and between estimator - get a similar weight for the RE estimator in our example. The reason is that we have nearly identical errors / noise in the in the between model and the within model.</p>
-<p>However, this obviously can vary strongly across empirical settings. Lets see what happens when we increase T in our example:</p>
-<div class="sourceCode" id="cb58"><pre class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">6</span></span>
+<p>Both - within and between estimator - get a similar weight for the RE
+estimator in our example. The reason is that we have nearly identical
+errors / noise in the in the between model and the within model.</p>
+<p>However, this obviously can vary strongly across empirical settings.
+Lets see what happens when we increase T in our example:</p>
+<div class="sourceCode" id="cb58"><pre
+class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">6</span></span>
 <span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>T <span class="ot">&lt;-</span> <span class="dv">8</span></span>
 <span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
@@ -1710,10 +1972,19 @@ y_{it} = \alpha + \beta x_{it} + \alpha_i + \vartheta_{it}.
 <span id="cb58-71"><a href="#cb58-71" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>))</span>
 <span id="cb58-72"><a href="#cb58-72" aria-hidden="true" tabindex="-1"></a>zp7</span></code></pre></div>
 <p><img src="Panel_part1_files/figure-html/unnamed-chunk-37-1.png" width="672" /></p>
-<p>The POLS goes very slightly towards the within estimator. This is because we have increased the within variance in age, but there is still much more variance in age between individuals.</p>
-<p>The RE goes strongly towards FE. This is because - by increasing T - the between model now makes a larger error: there are more data points far away from the green BE line. The error or the within model, in contrast, remain unchanged. So RE gives more weight to the within estimator.</p>
-<p>However, if we increase the noise in the within estimator (bringing the data points further away from each id-specific regression line), RE would move back towards the between estimator:</p>
-<div class="sourceCode" id="cb59"><pre class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">6</span></span>
+<p>The POLS goes very slightly towards the within estimator. This is
+because we have increased the within variance in age, but there is still
+much more variance in age between individuals.</p>
+<p>The RE goes strongly towards FE. This is because - by increasing T -
+the between model now makes a larger error: there are more data points
+far away from the green BE line. The error or the within model, in
+contrast, remain unchanged. So RE gives more weight to the within
+estimator.</p>
+<p>However, if we increase the noise in the within estimator (bringing
+the data points further away from each id-specific regression line), RE
+would move back towards the between estimator:</p>
+<div class="sourceCode" id="cb59"><pre
+class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">6</span></span>
 <span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>T <span class="ot">&lt;-</span> <span class="dv">8</span></span>
 <span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
@@ -1786,23 +2057,55 @@ y_{it} = \alpha + \beta x_{it} + \alpha_i + \vartheta_{it}.
 <span id="cb59-71"><a href="#cb59-71" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>))</span>
 <span id="cb59-72"><a href="#cb59-72" aria-hidden="true" tabindex="-1"></a>zp7</span></code></pre></div>
 <p><img src="Panel_part1_files/figure-html/unnamed-chunk-38-1.png" width="672" /></p>
-<p>Do you have an idea what happens if we reduce the range of the starting age of the individuals (bringing them closer together)?</p>
-<div id="there-are-two-main-problems-with-the-re-estimator" class="section level3">
+<p>Do you have an idea what happens if we reduce the range of the
+starting age of the individuals (bringing them closer together)?</p>
+<div id="there-are-two-main-problems-with-the-re-estimator"
+class="section level3">
 <h3>There are two main problems with the RE estimator:</h3>
 <ol style="list-style-type: decimal">
-<li><p>Interpretation: how to interpret an estimator based on a mix of <strong>within</strong> and <strong>between</strong> variance?</p></li>
-<li><p>Strong assumptions for consistency of no time-constant unobserved heterogeneity: very likely to be biased in practice</p></li>
+<li><p>Interpretation: how to interpret an estimator based on a mix of
+<strong>within</strong> and <strong>between</strong> variance?</p></li>
+<li><p>Strong assumptions for consistency of no time-constant unobserved
+heterogeneity: very likely to be biased in practice</p></li>
 </ol>
-<p>I personally would generally suggest against the use of RE. Rather, ask yourself whether you are interested in a between or a within question and use the theoretically relevant method.</p>
+<p>I personally would generally suggest against the use of RE. Rather,
+ask yourself whether you are interested in a between or a within
+question and use the theoretically relevant method.</p>
 </div>
 <div id="hausman-test" class="section level3">
 <h3>Hausman test</h3>
-<p>If one has a strong reason to use the RE, it is at least advisable to perform a specification test. The Hausman test <span class="citation">(<a href="#ref-Hausman.1978.0" role="doc-biblioref">Hausman 1978</a>)</span> is the most common specification test to test the consistency of the RE estimator.</p>
+<p>If one has a strong reason to use the RE, it is at least advisable to
+perform a specification test. The Hausman test <span
+class="citation">(<a href="#ref-Hausman.1978.0"
+role="doc-biblioref">Hausman 1978</a>)</span> is the most common
+specification test to test the consistency of the RE estimator.</p>
 <p><span class="math display">\[
-H = (\hat{\boldsymbol{\mathbf{\beta}}}_1 - \hat{\boldsymbol{\mathbf{\beta}}}_0)^\intercal (N^{-1} {\boldsymbol{\mathbf{V}}}_{\hat{\boldsymbol{\mathbf{\beta}}}_1 - \hat{\boldsymbol{\mathbf{\beta}}}_0})^{-1} (\hat{\boldsymbol{\mathbf{\beta}}}_1 - \hat{\boldsymbol{\mathbf{\beta}}}_0),
-\]</span> where <span class="math inline">\(\hat{\boldsymbol{\mathbf{\beta}}}_1\)</span> is consistent, and <span class="math inline">\(\hat{\boldsymbol{\mathbf{\beta}}}_0\)</span> is efficient, <span class="math inline">\(N^{-1} {\boldsymbol{\mathbf{V}}}_{\hat{\boldsymbol{\mathbf{\beta}}}_1 - \hat{\boldsymbol{\mathbf{\beta}}}_0} = \mathrm{Var}(\hat{\boldsymbol{\mathbf{\beta}}}_1 - \hat{\boldsymbol{\mathbf{\beta}}}_0)\)</span>, and with RE being fully efficient: <span class="math inline">\(\mathrm{Var}(\hat{\boldsymbol{\mathbf{\beta}}}_1 - \hat{\boldsymbol{\mathbf{\beta}}}_0) = \mathrm{Var}(\hat{\boldsymbol{\mathbf{\beta}}}_1) - \mathrm{Var}(\hat{\boldsymbol{\mathbf{\beta}}}_0)\)</span>.</p>
-<p>This basically perform a test of the Null H<span class="math inline">\(_0\)</span>: <span class="math inline">\(\hat{\beta}_{FE} = \hat{\beta}_{RE}\)</span>, and shows us if the two estimates differ significantly.</p>
-<p><strong>Use FE if Hausman test significant, and H<span class="math inline">\(_0\)</span> rejected.</strong></p>
+H = (\hat{\boldsymbol{\mathbf{\beta}}}_1 -
+\hat{\boldsymbol{\mathbf{\beta}}}_0)^\intercal (N^{-1}
+{\boldsymbol{\mathbf{V}}}_{\hat{\boldsymbol{\mathbf{\beta}}}_1 -
+\hat{\boldsymbol{\mathbf{\beta}}}_0})^{-1}
+(\hat{\boldsymbol{\mathbf{\beta}}}_1 -
+\hat{\boldsymbol{\mathbf{\beta}}}_0),
+\]</span> where <span
+class="math inline">\(\hat{\boldsymbol{\mathbf{\beta}}}_1\)</span> is
+consistent, and <span
+class="math inline">\(\hat{\boldsymbol{\mathbf{\beta}}}_0\)</span> is
+efficient, <span class="math inline">\(N^{-1}
+{\boldsymbol{\mathbf{V}}}_{\hat{\boldsymbol{\mathbf{\beta}}}_1 -
+\hat{\boldsymbol{\mathbf{\beta}}}_0} =
+\mathrm{Var}(\hat{\boldsymbol{\mathbf{\beta}}}_1 -
+\hat{\boldsymbol{\mathbf{\beta}}}_0)\)</span>, and with RE being fully
+efficient: <span
+class="math inline">\(\mathrm{Var}(\hat{\boldsymbol{\mathbf{\beta}}}_1 -
+\hat{\boldsymbol{\mathbf{\beta}}}_0) =
+\mathrm{Var}(\hat{\boldsymbol{\mathbf{\beta}}}_1) -
+\mathrm{Var}(\hat{\boldsymbol{\mathbf{\beta}}}_0)\)</span>.</p>
+<p>This basically perform a test of the Null H<span
+class="math inline">\(_0\)</span>: <span
+class="math inline">\(\hat{\beta}_{FE} = \hat{\beta}_{RE}\)</span>, and
+shows us if the two estimates differ significantly.</p>
+<p><strong>Use FE if Hausman test significant, and H<span
+class="math inline">\(_0\)</span> rejected.</strong></p>
 <p>Let’s check in our example:</p>
 <div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">phtest</span>(fe1, re1)</span></code></pre></div>
 <pre><code>## 
@@ -1811,20 +2114,36 @@ H = (\hat{\boldsymbol{\mathbf{\beta}}}_1 - \hat{\boldsymbol{\mathbf{\beta}}}_0)^
 ## data:  happiness ~ age
 ## chisq = 26.063, df = 1, p-value = 3.304e-07
 ## alternative hypothesis: one model is inconsistent</code></pre>
-<p>The test is highly significant and thus suggest that we should use the FE rather than the RE.</p>
+<p>The test is highly significant and thus suggest that we should use
+the FE rather than the RE.</p>
 <p>Obviously, this test is not helpful if both estimates are biased.</p>
 </div>
 </div>
 <div id="hybrid-models" class="section level1">
 <h1>Hybrid models</h1>
-<p>One of the stated advantages of the RE is that we can also estimate the effect for time-constant variables. However, there is an easy way of combining the benefits of both worlds: we can just estimate the within effects of time-varying variables in a RE model.</p>
-<p>This is often called the correlated random effects (CRE) model <span class="citation">(<a href="#ref-Chamberlain.1982" role="doc-biblioref">Chamberlain 1982</a>; <a href="#ref-Mundlak.1978.0" role="doc-biblioref">Mundlak 1978</a>)</span>. In sociology, the very similar hybrid model <span class="citation">(<a href="#ref-Allison.2009.128" role="doc-biblioref">Allison 2009</a>)</span> is more common.</p>
-<p>In general, we just add the person specific means as additional covariates, and estimate a random effects model:</p>
+<p>One of the stated advantages of the RE is that we can also estimate
+the effect for time-constant variables. However, there is an easy way of
+combining the benefits of both worlds: we can just estimate the within
+effects of time-varying variables in a RE model.</p>
+<p>This is often called the correlated random effects (CRE) model <span
+class="citation">(<a href="#ref-Chamberlain.1982"
+role="doc-biblioref">Chamberlain 1982</a>; <a href="#ref-Mundlak.1978.0"
+role="doc-biblioref">Mundlak 1978</a>)</span>. In sociology, the very
+similar hybrid model <span class="citation">(<a
+href="#ref-Allison.2009.128" role="doc-biblioref">Allison
+2009</a>)</span> is more common.</p>
+<p>In general, we just add the person specific means as additional
+covariates, and estimate a random effects model:</p>
 <p><span class="math display">\[
 y_{it} = \alpha + \beta x_{it} + \gamma \bar{x}_{i} + \xi_{it}  
 \]</span></p>
-<p>We split up the individual effect <span class="math inline">\(\alpha_i = \gamma \bar{x}_{i} + \eta_i\)</span>, and thus only control partially for time-constant heterogeneity by adding the person-specific means <span class="math inline">\(\bar{x}_{i}\)</span>.</p>
-<p><strong><span class="math inline">\(\hat{\beta}\)</span> gives us the within estimate for <span class="math inline">\(x\)</span></strong></p>
+<p>We split up the individual effect <span
+class="math inline">\(\alpha_i = \gamma \bar{x}_{i} + \eta_i\)</span>,
+and thus only control partially for time-constant heterogeneity by
+adding the person-specific means <span
+class="math inline">\(\bar{x}_{i}\)</span>.</p>
+<p><strong><span class="math inline">\(\hat{\beta}\)</span> gives us the
+within estimate for <span class="math inline">\(x\)</span></strong></p>
 <p>See our happiness example</p>
 <div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Person specific means</span></span>
 <span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>m_age <span class="ot">&lt;-</span> <span class="fu">ave</span>(df<span class="sc">$</span>age,</span>
@@ -1855,35 +2174,82 @@ y_{it} = \alpha + \beta x_{it} + \gamma \bar{x}_{i} + \xi_{it}
 ## s_id                                 0.645       0.645    
 ## ==========================================================
 ## *** p &lt; 0.001; ** p &lt; 0.01; * p &lt; 0.05</code></pre>
-<p>The estimate for <span class="math inline">\(\beta_{CRE}\)</span> equals the within effect. Note that the coefficient for the mean does not equal the between effect. It equals <span class="math inline">\(\hat{\beta}_{BTW} - \hat{\beta}_{FE}\)</span>. This differs from <span class="citation"><a href="#ref-Allison.2009.128" role="doc-biblioref">Allison</a> (<a href="#ref-Allison.2009.128" role="doc-biblioref">2009</a>)</span> hybrid model.</p>
-<p>For consistency of <span class="math inline">\(\hat{\beta}_x\)</span> we only need <span class="math inline">\(\mathrm{E}(\epsilon_{it} | x_{i}, \bar{x}_{i}) = 0\)</span>: equals the FE assumption for variables additionally included as person-specific means. Usually, one would include person-specific means for all time-varying <span class="math inline">\(\boldsymbol{\mathbf{x}}\)</span> (except <span class="math inline">\(\mu_t\)</span> in case of a twoways specification).</p>
-<p>Note that the CRE can also be quite helpful in the case of non-linear models.</p>
+<p>The estimate for <span class="math inline">\(\beta_{CRE}\)</span>
+equals the within effect. Note that the coefficient for the mean does
+not equal the between effect. It equals <span
+class="math inline">\(\hat{\beta}_{BTW} - \hat{\beta}_{FE}\)</span>.
+This differs from <span class="citation">Allison (<a
+href="#ref-Allison.2009.128" role="doc-biblioref">2009</a>)</span>
+hybrid model.</p>
+<p>For consistency of <span class="math inline">\(\hat{\beta}_x\)</span>
+we only need <span class="math inline">\(\mathrm{E}(\epsilon_{it} |
+x_{i}, \bar{x}_{i}) = 0\)</span>: equals the FE assumption for variables
+additionally included as person-specific means. Usually, one would
+include person-specific means for all time-varying <span
+class="math inline">\(\boldsymbol{\mathbf{x}}\)</span> (except <span
+class="math inline">\(\mu_t\)</span> in case of a twoways
+specification).</p>
+<p>Note that the CRE can also be quite helpful in the case of non-linear
+models.</p>
 </div>
 <div id="statistical-inference" class="section level1">
 <h1>Statistical inference</h1>
-<p>The standard errors we have seen so far, were conventional standard error, not taking into account the panel structure.</p>
-<p>In the case of a simple linear regression of the form <span class="math inline">\(\boldsymbol{\mathbf{y}} = \boldsymbol{\mathbf{X}} \boldsymbol{\mathbf{\beta }}+ \boldsymbol{\mathbf{\upsilon}}\)</span> with the coefficients calculated by OLS <span class="math inline">\(\hat{\boldsymbol{\mathbf{\beta}}} = (\boldsymbol{\mathbf{X}}^\intercal\boldsymbol{\mathbf{X}})^{-1}\boldsymbol{\mathbf{X}}^\intercal \boldsymbol{\mathbf{y}}\)</span>, the covariance matrix is usually calculated as:</p>
+<p>The standard errors we have seen so far, were conventional standard
+error, not taking into account the panel structure.</p>
+<p>In the case of a simple linear regression of the form <span
+class="math inline">\(\boldsymbol{\mathbf{y}} = \boldsymbol{\mathbf{X}}
+\boldsymbol{\mathbf{\beta }}+ \boldsymbol{\mathbf{\upsilon}}\)</span>
+with the coefficients calculated by OLS <span
+class="math inline">\(\hat{\boldsymbol{\mathbf{\beta}}} =
+(\boldsymbol{\mathbf{X}}^\intercal\boldsymbol{\mathbf{X}})^{-1}\boldsymbol{\mathbf{X}}^\intercal
+\boldsymbol{\mathbf{y}}\)</span>, the covariance matrix is usually
+calculated as:</p>
 <p><span class="math display">\[
-\mathrm{Var}(\hat{\boldsymbol{\mathbf{\beta}}}) = \hat{\sigma}^2(\boldsymbol{\mathbf{X}}^\intercal \boldsymbol{\mathbf{X}})^{-1},
-\]</span> where <span class="math inline">\(\hat{\sigma}^2\)</span> is the estimated error variance:</p>
+\mathrm{Var}(\hat{\boldsymbol{\mathbf{\beta}}}) =
+\hat{\sigma}^2(\boldsymbol{\mathbf{X}}^\intercal
+\boldsymbol{\mathbf{X}})^{-1},
+\]</span> where <span class="math inline">\(\hat{\sigma}^2\)</span> is
+the estimated error variance:</p>
 <p><span class="math display">\[
 \hat{\sigma}^2 = \frac{1}{N-K}\sum^N_{i=1}(\hat\upsilon_i)^2
 \]</span></p>
 <p>However, with panel data, the idiosyncratic errors are probably:</p>
 <ul>
 <li><p>heteroskedastic: have a non-constant variance</p></li>
-<li><p>autocorrelated: error in one period correlate with errors in other periods</p></li>
+<li><p>autocorrelated: error in one period correlate with errors in
+other periods</p></li>
 </ul>
-<p><strong>The conventional errors (as reported in <code>lm()</code> and <code>plm()</code>) are thus likely to be underestimated.</strong></p>
-<p>The easiest solution is to estimate panel-robust standard errors <span class="citation">(<a href="#ref-Millo.2017" role="doc-biblioref">Millo 2017</a>; <a href="#ref-Wooldridge.2010.384" role="doc-biblioref">Wooldridge 2010</a>)</span>.</p>
-<p>There are various ways for correcting heteroskedastic and autocorrelated standard errors. The most common version is based on work by Arellano and White and takes the form:</p>
+<p><strong>The conventional errors (as reported in <code>lm()</code> and
+<code>plm()</code>) are thus likely to be underestimated.</strong></p>
+<p>The easiest solution is to estimate panel-robust standard errors
+<span class="citation">(<a href="#ref-Millo.2017"
+role="doc-biblioref">Millo 2017</a>; <a href="#ref-Wooldridge.2010.384"
+role="doc-biblioref">Wooldridge 2010</a>)</span>.</p>
+<p>There are various ways for correcting heteroskedastic and
+autocorrelated standard errors. The most common version is based on work
+by Arellano and White and takes the form:</p>
 <p><span class="math display">\[
-\mathrm{Var}(\hat{\boldsymbol{\mathbf{\beta}}}_{FE}) = (\tilde{\boldsymbol{\mathbf{X}}}^\intercal \tilde{\boldsymbol{\mathbf{X}}})^{-1} 
-(\sum_{i=1}^N \tilde{\boldsymbol{\mathbf{X}}}^\intercal_i \hat{\tilde{\boldsymbol{\mathbf{\epsilon}}}}_i \hat{\tilde{\boldsymbol{\mathbf{\epsilon}}}}_i^\intercal \tilde{\boldsymbol{\mathbf{X}}}_i) 
-\hat{\sigma}^2(\tilde{\boldsymbol{\mathbf{X}}}^\intercal \tilde{\boldsymbol{\mathbf{X}}})^{-1},
+\mathrm{Var}(\hat{\boldsymbol{\mathbf{\beta}}}_{FE}) =
+(\tilde{\boldsymbol{\mathbf{X}}}^\intercal
+\tilde{\boldsymbol{\mathbf{X}}})^{-1}
+(\sum_{i=1}^N \tilde{\boldsymbol{\mathbf{X}}}^\intercal_i
+\hat{\tilde{\boldsymbol{\mathbf{\epsilon}}}}_i
+\hat{\tilde{\boldsymbol{\mathbf{\epsilon}}}}_i^\intercal
+\tilde{\boldsymbol{\mathbf{X}}}_i)
+\hat{\sigma}^2(\tilde{\boldsymbol{\mathbf{X}}}^\intercal
+\tilde{\boldsymbol{\mathbf{X}}})^{-1},
 \]</span></p>
-<p>where <span class="math inline">\(\hat{\tilde{\boldsymbol{\mathbf{\epsilon}}}}_i\)</span> is the vector of FE residuals for each person <span class="math inline">\(i\)</span>, and <span class="math inline">\(\tilde{\boldsymbol{\mathbf{X}}}\)</span> are the transformed data.</p>
-<p>to calculate those standard errors, we can use the <code>sandwich</code> and <code>coeftest</code> packages. For more information on the various types and options in the command see <span class="citation"><a href="#ref-Millo.2017" role="doc-biblioref">Millo</a> (<a href="#ref-Millo.2017" role="doc-biblioref">2017</a>)</span>.</p>
+<p>where <span
+class="math inline">\(\hat{\tilde{\boldsymbol{\mathbf{\epsilon}}}}_i\)</span>
+is the vector of FE residuals for each person <span
+class="math inline">\(i\)</span>, and <span
+class="math inline">\(\tilde{\boldsymbol{\mathbf{X}}}\)</span> are the
+transformed data.</p>
+<p>to calculate those standard errors, we can use the
+<code>sandwich</code> and <code>coeftest</code> packages. For more
+information on the various types and options in the command see <span
+class="citation">Millo (<a href="#ref-Millo.2017"
+role="doc-biblioref">2017</a>)</span>.</p>
 <div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fe1)</span></code></pre></div>
 <pre><code>## Oneway (individual) effect Within Model
 ## 
@@ -1920,8 +2286,19 @@ y_{it} = \alpha + \beta x_{it} + \gamma \bar{x}_{i} + \xi_{it}
 ## age -0.148245   0.016494 -8.9879 7.223e-08 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<p>In this case the robust SEs are actually smaller!! This is because this stylized example does not include heteroskedasticity or autocorrelation. However, we will see the difference with some real data.</p>
-<p><strong>One hint for large data</strong>: <code>coeftest</code> and <code>sandwich</code> can be slow on large data. It might be more efficient to use the package <code>lfe</code> right away. The <code>felm()</code> function (to estimate FE models) requires a four part formula of the form <code>y ~ x1 + x2 | f1 + f2 | (Q|W ~ x3+x4) | clu1 + clu2</code>, where “x” are ordinary covariates, “f” are the fixed effects, the third part allows to instrument covariates, and “clu” are clusters for robust standard errors:</p>
+<p>In this case the robust SEs are actually smaller!! This is because
+this stylized example does not include heteroskedasticity or
+autocorrelation. However, we will see the difference with some real
+data.</p>
+<p><strong>One hint for large data</strong>: <code>coeftest</code> and
+<code>sandwich</code> can be slow on large data. It might be more
+efficient to use the package <code>lfe</code> right away. The
+<code>felm()</code> function (to estimate FE models) requires a four
+part formula of the form
+<code>y ~ x1 + x2 | f1 + f2 | (Q|W ~ x3+x4) | clu1 + clu2</code>, where
+“x” are ordinary covariates, “f” are the fixed effects, the third part
+allows to instrument covariates, and “clu” are clusters for robust
+standard errors:</p>
 <div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>fe1_2 <span class="ot">&lt;-</span> <span class="fu">felm</span>(happiness <span class="sc">~</span> age <span class="sc">|</span> id <span class="sc">|</span> <span class="dv">0</span> <span class="sc">|</span> id,</span>
 <span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>               <span class="at">data =</span> df, <span class="at">cmethod =</span> <span class="st">&#39;cgm2&#39;</span>)</span>
 <span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fe1_2)</span></code></pre></div>
@@ -1949,34 +2326,63 @@ y_{it} = \alpha + \beta x_{it} + \gamma \bar{x}_{i} + \xi_{it}
 <h1 class="unnumbered">References</h1>
 <div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-Allison.2009.128" class="csl-entry">
-Allison, Paul David. 2009. <em><span>Fixed Effects Regression Models</span></em>. Vol. 160. <span class="nocase">Quantitative Applications in the Social Sciences</span>. Los Angeles: Sage.
+Allison, Paul David. 2009. <em><span>Fixed Effects Regression
+Models</span></em>. Vol. 160. <span class="nocase">Quantitative
+Applications in the Social Sciences</span>. Los Angeles: Sage.
 </div>
 <div id="ref-Chamberlain.1982" class="csl-entry">
-Chamberlain, Gary. 1982. <span>“<span class="nocase">Multivariate Regression Models for Panel Data</span>.”</span> <em><span>Journal of Econometrics</span></em> 18 (1): 5–46. <a href="https://doi.org/10.1016/0304-4076(82)90094-X">https://doi.org/10.1016/0304-4076(82)90094-X</a>.
+Chamberlain, Gary. 1982. <span>“<span class="nocase">Multivariate
+Regression Models for Panel Data</span>.”</span> <em><span>Journal of
+Econometrics</span></em> 18 (1): 5–46. <a
+href="https://doi.org/10.1016/0304-4076(82)90094-X">https://doi.org/10.1016/0304-4076(82)90094-X</a>.
 </div>
 <div id="ref-Cunningham.2021" class="csl-entry">
-Cunningham, Scott. 2021. <em><span>Causal Inference: The Mixtape</span></em>. New Haven; London: <span>Yale University Press</span>.
+Cunningham, Scott. 2021. <em><span>Causal Inference: The
+Mixtape</span></em>. New Haven; London: <span>Yale University
+Press</span>.
 </div>
 <div id="ref-GoodmanBacon.2021" class="csl-entry">
-Goodman-Bacon, Andrew. 2021. <span>“<span class="nocase">Difference-in-differences with variation in treatment timing</span>.”</span> <em><span>Journal of Econometrics</span></em> 225 (2): 254–77. <a href="https://doi.org/10.1016/j.jeconom.2021.03.014">https://doi.org/10.1016/j.jeconom.2021.03.014</a>.
+Goodman-Bacon, Andrew. 2021. <span>“<span
+class="nocase">Difference-in-differences with variation in treatment
+timing</span>.”</span> <em><span>Journal of Econometrics</span></em> 225
+(2): 254–77. <a
+href="https://doi.org/10.1016/j.jeconom.2021.03.014">https://doi.org/10.1016/j.jeconom.2021.03.014</a>.
 </div>
 <div id="ref-Hausman.1978.0" class="csl-entry">
-Hausman, Jerry A. 1978. <span>“<span class="nocase">Specification Tests in Econometrics</span>.”</span> <em><span>Econometrica</span></em> 46 (6): 1251–71. <a href="https://doi.org/10.2307/1913827">https://doi.org/10.2307/1913827</a>.
+Hausman, Jerry A. 1978. <span>“<span class="nocase">Specification Tests
+in Econometrics</span>.”</span> <em><span>Econometrica</span></em> 46
+(6): 1251–71. <a
+href="https://doi.org/10.2307/1913827">https://doi.org/10.2307/1913827</a>.
 </div>
 <div id="ref-Kratz.2021" class="csl-entry">
-Kratz, Fabian, and Josef Brüderl. 2021. <span>“<span class="nocase">The Age Trajectory of Happiness</span>.”</span> <em><span>PsyArXiv</span></em>. <a href="https://doi.org/10.31234/osf.io/d8f2z">https://doi.org/10.31234/osf.io/d8f2z</a>.
+Kratz, Fabian, and Josef Brüderl. 2021. <span>“<span class="nocase">The
+Age Trajectory of Happiness</span>.”</span>
+<em><span>PsyArXiv</span></em>. <a
+href="https://doi.org/10.31234/osf.io/d8f2z">https://doi.org/10.31234/osf.io/d8f2z</a>.
 </div>
 <div id="ref-Ludwig.2018.0" class="csl-entry">
-Ludwig, Volker, and Josef Brüderl. 2018. <span>“<span class="nocase">Is There a Male Marital Wage Premium? New Evidence from the United States</span>.”</span> <em><span>American Sociological Review</span></em> 83 (4): 744–70. <a href="https://doi.org/10.1177/0003122418784909">https://doi.org/10.1177/0003122418784909</a>.
+Ludwig, Volker, and Josef Brüderl. 2018. <span>“<span class="nocase">Is
+There a Male Marital Wage Premium? New Evidence from the United
+States</span>.”</span> <em><span>American Sociological
+Review</span></em> 83 (4): 744–70. <a
+href="https://doi.org/10.1177/0003122418784909">https://doi.org/10.1177/0003122418784909</a>.
 </div>
 <div id="ref-Millo.2017" class="csl-entry">
-Millo, Giovanni. 2017. <span>“<span class="nocase">Robust Standard Error Estimators for Panel Models: A Unifying Approach</span>.”</span> <em><span>Journal of Statistical Software</span></em> 82 (3). <a href="https://doi.org/10.18637/jss.v082.i03">https://doi.org/10.18637/jss.v082.i03</a>.
+Millo, Giovanni. 2017. <span>“<span class="nocase">Robust Standard Error
+Estimators for Panel Models: A Unifying Approach</span>.”</span>
+<em><span>Journal of Statistical Software</span></em> 82 (3). <a
+href="https://doi.org/10.18637/jss.v082.i03">https://doi.org/10.18637/jss.v082.i03</a>.
 </div>
 <div id="ref-Mundlak.1978.0" class="csl-entry">
-Mundlak, Yair. 1978. <span>“<span class="nocase">On the Pooling of Time Series and Cross Section Data</span>.”</span> <em><span>Econometrica</span></em> 46 (1): 69. <a href="https://doi.org/10.2307/1913646">https://doi.org/10.2307/1913646</a>.
+Mundlak, Yair. 1978. <span>“<span class="nocase">On the Pooling of Time
+Series and Cross Section Data</span>.”</span>
+<em><span>Econometrica</span></em> 46 (1): 69. <a
+href="https://doi.org/10.2307/1913646">https://doi.org/10.2307/1913646</a>.
 </div>
 <div id="ref-Wooldridge.2010.384" class="csl-entry">
-Wooldridge, Jeffrey M. 2010. <em><span class="nocase">Econometric Analysis of Cross Section and Panel Data</span></em>. Cambridge, Mass.: <span>MIT Press</span>.
+Wooldridge, Jeffrey M. 2010. <em><span class="nocase">Econometric
+Analysis of Cross Section and Panel Data</span></em>. Cambridge, Mass.:
+<span>MIT Press</span>.
 </div>
 </div>
 </div>

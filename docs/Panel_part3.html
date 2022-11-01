@@ -15,7 +15,7 @@
 
 <title>Exercise</title>
 
-<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.17/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
@@ -45,6 +45,7 @@
   div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
   ul.task-list{list-style: none;}
     </style>
+
 
 
 <style type="text/css">
@@ -132,13 +133,20 @@ code span.wa { color: #008000; font-weight: bold; } /* Warning */
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    for (var j = 0; j < rules.length; j++) {
+    var j = 0;
+    while (j < rules.length) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -196,6 +204,9 @@ button.code-folding-btn:focus {
 summary {
   display: list-item;
 }
+details > summary > p:only-child {
+  display: inline;
+}
 pre code {
   padding: 0;
 }
@@ -252,11 +263,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -285,8 +300,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -294,16 +309,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -429,7 +437,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -464,7 +472,7 @@ div.tocify {
 <div id="header">
 
 <div class="btn-group pull-right float-right">
-<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
 <ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
 <li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
 <li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
@@ -488,47 +496,73 @@ div.tocify {
 <div id="session-info" class="section level3">
 <h3>Session info</h3>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
-<pre><code>## R version 4.1.0 (2021-05-18)
+<pre><code>## R version 4.2.1 (2022-06-23 ucrt)
 ## Platform: x86_64-w64-mingw32/x64 (64-bit)
-## Running under: Windows 10 x64 (build 19042)
+## Running under: Windows 10 x64 (build 19043)
 ## 
 ## Matrix products: default
 ## 
 ## locale:
-## [1] LC_COLLATE=English_United Kingdom.1252 
-## [2] LC_CTYPE=English_United Kingdom.1252   
-## [3] LC_MONETARY=English_United Kingdom.1252
+## [1] LC_COLLATE=English_United Kingdom.utf8 
+## [2] LC_CTYPE=English_United Kingdom.utf8   
+## [3] LC_MONETARY=English_United Kingdom.utf8
 ## [4] LC_NUMERIC=C                           
-## [5] LC_TIME=English_United Kingdom.1252    
+## [5] LC_TIME=English_United Kingdom.utf8    
 ## 
 ## attached base packages:
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] ggforce_0.3.3  ggplot2_3.3.5  dplyr_1.0.6    haven_2.4.2    tidyr_1.1.3   
-## [6] texreg_1.37.5  sandwich_3.0-1 feisr_1.2.0    plm_2.4-1     
+##  [1] haven_2.5.1      panelView_1.1.11 SCtools_0.3.2.1  future_1.28.0   
+##  [5] Synth_1.1-6      did_2.1.2        feisr_1.3.0      ggforce_0.4.1   
+##  [9] ggplot2_3.3.6    sandwich_3.0-2   lmtest_0.9-40    zoo_1.8-11      
+## [13] dplyr_1.0.10     tidyr_1.2.1      texreg_1.38.6    lfe_2.8-8       
+## [17] Matrix_1.5-1     plm_2.6-2       
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] zoo_1.8-9         tidyselect_1.1.1  xfun_0.23         bslib_0.2.5.1    
-##  [5] purrr_0.3.4       lattice_0.20-44   colorspace_2.0-1  vctrs_0.3.8      
-##  [9] generics_0.1.0    htmltools_0.5.1.1 yaml_2.2.1        utf8_1.2.1       
-## [13] rlang_0.4.11      jquerylib_0.1.4   pillar_1.6.2      withr_2.4.2      
-## [17] glue_1.4.2        DBI_1.1.1         tweenr_1.0.2      lifecycle_1.0.0  
-## [21] stringr_1.4.0     munsell_0.5.0     gtable_0.3.0      bdsmatrix_1.3-4  
-## [25] evaluate_0.14     knitr_1.33        miscTools_0.6-26  forcats_0.5.1    
-## [29] lmtest_0.9-38     fansi_0.5.0       Rcpp_1.0.7        scales_1.1.1     
-## [33] jsonlite_1.7.2    farver_2.1.0      maxLik_1.4-8      hms_1.1.0        
-## [37] digest_0.6.27     stringi_1.6.2     polyclip_1.10-0   rbibutils_2.2    
-## [41] grid_4.1.0        Rdpack_2.1.2      tools_4.1.0       magrittr_2.0.1   
-## [45] sass_0.4.0        tibble_3.1.2      Formula_1.2-4     crayon_1.4.1     
-## [49] pkgconfig_2.0.3   MASS_7.3-54       ellipsis_0.3.2    assertthat_0.2.1 
-## [53] rmarkdown_2.11    httr_1.4.2        R6_2.5.1          nlme_3.1-152     
-## [57] compiler_4.1.0</code></pre>
+##  [1] nlme_3.1-157        httr_1.4.4          dreamerr_1.2.3     
+##  [4] numDeriv_2016.8-1.1 tools_4.2.1         BMisc_1.4.5        
+##  [7] backports_1.4.1     bslib_0.4.0         utf8_1.2.2         
+## [10] R6_2.5.1            DBI_1.1.3           mgcv_1.8-40        
+## [13] colorspace_2.0-3    withr_2.5.0         gridExtra_2.3      
+## [16] tidyselect_1.2.0    curl_4.3.3          compiler_4.2.1     
+## [19] cli_3.4.1           labeling_0.4.2      sass_0.4.2         
+## [22] scales_1.2.1        rgenoud_5.9-0.3     fixest_0.10.4      
+## [25] stringr_1.4.1       digest_0.6.29       rmarkdown_2.17     
+## [28] pkgconfig_2.0.3     htmltools_0.5.3     parallelly_1.32.1  
+## [31] fastmap_1.1.0       collapse_1.8.9      highr_0.9          
+## [34] rlang_1.0.6         rstudioapi_0.14     jquerylib_0.1.4    
+## [37] farver_2.1.1        generics_0.1.3      jsonlite_1.8.2     
+## [40] car_3.1-0           magrittr_2.0.3      Formula_1.2-4      
+## [43] Rcpp_1.0.9          munsell_0.5.0       fansi_1.0.3        
+## [46] abind_1.4-5         furrr_0.3.1         lifecycle_1.0.3    
+## [49] stringi_1.7.8       yaml_2.3.5          carData_3.0-5      
+## [52] MASS_7.3-57         DRDID_1.0.4         grid_4.2.1         
+## [55] listenv_0.8.0       parallel_4.2.1      forcats_0.5.2      
+## [58] bdsmatrix_1.3-6     lattice_0.20-45     splines_4.2.1      
+## [61] hms_1.1.2           knitr_1.40          pillar_1.8.1       
+## [64] ggpubr_0.4.0        ggsignif_0.6.4      codetools_0.2-18   
+## [67] glue_1.6.2          evaluate_0.17       trust_0.1-8        
+## [70] V8_4.2.1            LowRankQP_1.0.5     data.table_1.14.2  
+## [73] vctrs_0.4.2         tweenr_2.0.2        Rdpack_2.4         
+## [76] miscTools_0.6-26    gtable_0.3.1        purrr_0.3.5        
+## [79] polyclip_1.10-4     kernlab_0.9-31      assertthat_0.2.1   
+## [82] cachem_1.0.6        xfun_0.33           rbibutils_2.2.9    
+## [85] xtable_1.8-4        broom_1.0.1         rstatix_0.7.0      
+## [88] tibble_3.1.8        optimx_2022-4.30    maxLik_1.5-2       
+## [91] globals_0.16.1      concaveman_1.1.0    ellipsis_0.3.2</code></pre>
 </div>
 <div id="load-data" class="section level3">
 <h3>Load data</h3>
-<p>For the purpose of this exercise, we will use a real-world data set. However, instead of constructing our own data, we use a shortcut and use data from the replication package of <span class="citation"><a href="#ref-Hospido.2012" role="doc-biblioref">Hospido</a> (<a href="#ref-Hospido.2012" role="doc-biblioref">2012</a>)</span>. The replication package can be found <a href="http://qed.econ.queensu.ca/jae/datasets/hospido001/">here</a>.</p>
-<p>THis is an unbalanced panel with 32,066 observations and 2066 individuals for the period 1968–1993 of the PSID. It consists of male heads aged 25–55 with at least 9 years of usable wages data.</p>
+<p>For the purpose of this exercise, we will use a real-world data set.
+However, instead of constructing our own data, we use a shortcut and use
+data from the replication package of <span class="citation">Hospido (<a
+href="#ref-Hospido.2012" role="doc-biblioref">2012</a>)</span>. The
+replication package can be found <a
+href="http://qed.econ.queensu.ca/jae/datasets/hospido001/">here</a>.</p>
+<p>THis is an unbalanced panel with 32,066 observations and 2066
+individuals for the period 1968–1993 of the PSID. It consists of male
+heads aged 25–55 with at least 9 years of usable wages data.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load stata file</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>data.df <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">&quot;_data/h-data.dta&quot;</span>)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -539,6 +573,10 @@ div.tocify {
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>data.df <span class="ot">&lt;-</span> data.df[<span class="fu">order</span>(data.df<span class="sc">$</span>pid, data.df<span class="sc">$</span>year), ]</span></code></pre></div>
 <table>
+<colgroup>
+<col width="23%" />
+<col width="76%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th>variable name</th>
@@ -671,11 +709,14 @@ div.tocify {
 </div>
 <div id="exercise-1" class="section level1">
 <h1>Exercise 1</h1>
-<p>Can we use this dataset to replicate our earlier analysis on the marital wage premium? What might be a problem here?</p>
+<p>Can we use this dataset to replicate our earlier analysis on the
+marital wage premium? What might be a problem here?</p>
 </div>
 <div id="exercise-2" class="section level1">
 <h1>Exercise 2</h1>
-<p>However, we do something similar: is there a fatherhood wage premium? In other words, do men experience an increase in wages when they become fathers?</p>
+<p>However, we do something similar: is there a fatherhood wage premium?
+In other words, do men experience an increase in wages when they become
+fathers?</p>
 <pre><code>* Restrict the age at the start (first wage) to people aged 25-35
 
 
@@ -685,7 +726,9 @@ div.tocify {
 
 
 * Make sure we start only with men who are not yet fathers.</code></pre>
-<p><strong>Note: this feels like dropping a lot of information! However, it makes sense if we want to correctly identify the effect of interest.</strong></p>
+<p><strong>Note: this feels like dropping a lot of information! However,
+it makes sense if we want to correctly identify the effect of
+interest.</strong></p>
 <pre><code>* Do we need to drop observations where people go from child to no child?
 
 
@@ -704,14 +747,19 @@ div.tocify {
 
 * Interpret the results </code></pre>
 <ul>
-<li>Try to perform a placebo test: what happens if you use the “lead” of becoming father. Why is this an interesting test?</li>
+<li>Try to perform a placebo test: what happens if you use the “lead” of
+becoming father. Why is this an interesting test?</li>
 </ul>
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1 class="unnumbered">References</h1>
 <div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-Hospido.2012" class="csl-entry">
-Hospido, L. 2012. <span>“<span class="nocase">Modelling heterogeneity and dynamics in the volatility of individual wages</span>.”</span> <em><span>Journal of Applied Econometrics</span></em> 27 (3): 386–414. <a href="https://doi.org/10.1002/jae.1204">https://doi.org/10.1002/jae.1204</a>.
+Hospido, L. 2012. <span>“<span class="nocase">Modelling heterogeneity
+and dynamics in the volatility of individual wages</span>.”</span>
+<em><span>Journal of Applied Econometrics</span></em> 27 (3): 386–414.
+<a
+href="https://doi.org/10.1002/jae.1204">https://doi.org/10.1002/jae.1204</a>.
 </div>
 </div>
 </div>
