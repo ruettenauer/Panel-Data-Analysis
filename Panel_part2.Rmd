@@ -557,16 +557,16 @@ where the control group can either be the never-treated or the not-yet-treated.
 
 Intuitively, this means, we estimate an individual treatment effect for each combination of treatment-timing-group and control group.
 
-Obviously, this gives us a large number of different treatment effects. So, in a second step, we re-aggregate these individual combinations back to group or time averaged treatment effect. In an event study design, propose the following dynamic treatment effect:
+Obviously, this gives us a large number of different treatment effects. So, in a second step, we re-aggregate these individual combinations back to group or time averaged treatment effect. In an event study design, @Callaway.2020 propose the following dynamic treatment effect for each period $e$ after the treatment:
 
 $$
-  \theta_D(e) := \sum_{g=2}^T \mathbf{1} \{ g + e \leq T \} \delta(g,g+e) P(G=g | G+e \leq T),
+  \theta_D(e) := \sum_{g=1}^G \mathbf{1} \{ g + e \leq T \} \delta(g,g+e) P(G=g | G+e \leq T),
 $$
-where $e$ specifies for how long a unit has been exposed to the treatment.
+where $e$ specifies for how long a unit has been exposed to the treatment. It's basically the average effects across all treatment-timing groups at the period $e$ after treatment. From here, one can easily calculate the cumulative effect or the overall aggregated effect.
 
 Let's consider a setting equal to the situation above [@GoodmanBacon.2021] where we have a control group of never-treated units, one treatment group that is treated early (group 1) and one treatment group that is treated late (group 2). As shown below, with $T=12$ we can estimate 11 2 $\times$ 2 Diff-in-Diff estimates of group 1 against the never treated, we can estimate 6 2 $\times$ 2 Diff-in-Diff estimates of group 1 against the not-yet treated (late treatment group), and we can estimate 11 2 $\times$ 2 Diff-in-Diff estimates of group 2 against the never treated.
 
-Note that the control period for all treated periods is set to the period before the treatment happened in each group. For group 1 this is period 3, and for group 2 this is period 7.
+Note that the control period for all treated periods by default is set to the period before the treatment happened in each group. For group 1 this is period 3, and for group 2 this is period 7. This makes only sense if there is __no treatment anticipation__. Obviously, we can also use other (earlier) periods if we assume treatment anticipation.
 
 ```{r, class.source = 'fold-hide'}
 ################################
