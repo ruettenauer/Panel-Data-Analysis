@@ -498,7 +498,7 @@ a) __the number of periods each subsample uses__, and
 
 b) __the amount of treatment variance within each subsample__.
 
-Define $\bar{D_{kl}}$ as the variance of $D_{it}$ in the subsample that compares groups $k$ and $l$, and the relative size of each group in the pair $n_{kl} = \frac{n_k}{n_k + n_l}$. Then, the weights are given by:
+Define $\bar{D}_{kl}$ as the variance of $D_{it}$ in the subsample that compares groups $k$ and $l$, and the relative size of each group in the pair $n_{kl} = \frac{n_k}{n_k + n_l}$. Then, the weights are given by:
 
 $$
 W_{jC} = \frac{(n_j + n_C)^2 \hat{V}_D^{jU}}{\hat{V}_D}, ~\text{with}~ \hat{V}_D^{jU} = n_{jU}(1-n_{jU}) \bar{D}_j(1-\bar{D}_j), ~for~ j = k,l. 
@@ -526,13 +526,13 @@ So why (or when) could this lead to problems with the twoways FE estimator? @deC
 
 > "Negative weights only arise when average treatment effects vary over time. The DD decomposition shows why: when already-treated units act as controls, changes in their outcomes are subtracted and these changes may include time-varying treatment effects. This does not imply a failure of the design in the sense of non-parallel trends in counterfactual outcomes, but it does suggest caution when using TWFE estimators to summarize treatment effects."
 
-Basically, if the treatment effect varies over time (e.g. treatment effect grows over time) TWFE might be biased because early treated groups (with an increasing treatment effect) are used at control groups for late treated groups, thereby masking the treatment effect of these late treated groups (which might however receive a high weight for the overall treatment effect).
+Basically, if the treatment effect varies over time (e.g. treatment effect grows over time) TWFE might be biased because early treated groups (with an increasing treatment effect) are used as control groups for late treated groups, thereby masking the treatment effect of these late treated groups (which might however receive a high weight for the overall treatment effect).
 
 Especially for "trend-breaking" treatment effects like in the following figure, this will lead to biased estimates of the average treatment effect [@GoodmanBacon.2021; @Meer.2016].
 
 ![Bias of two-ways FE with trend-breaking treatment [@GoodmanBacon.2021].](fig/goodman2.jpg)
 
-In this example, in the middle period, we compare the break in trend in the early tread with the late treated, and we see the divergence between those two groups. However, for the later treated (right third), the earlier treated are the control cases, and we do not observe that there is actually a break in trend.
+In the middle period, we compare the trend in the early treated with the not-yet treated periods of the late treatment group, and we see the divergence between those two groups (a positive treatment effect). However, for the late treated (right art of the figure), the earlier treated are the control cases (which already includes a trend-breaking treatment effect). For the late treatment group, and we do not observe a positive, but actually a negative treatment effect as we erroneously have the treatment effect in the control group!!!
 
 One way of counteracting this problem is to use event study / impact function designs (see above) to explicitly model time varying treatment effects.
 
@@ -675,6 +675,13 @@ par(mar = c(4, 4, .1, .1))
 zp1
 zp2
 zp3
+text <- paste("We DO NOT compare\n",
+                             "group 2 (late treatment) against\n",
+                             "the already treated periods of group 1")
+ggplot() + 
+  annotate("text", x = 4, y = 25, size=8, label = text, color = "red") + 
+  theme_void()
+
 ```
 
 
