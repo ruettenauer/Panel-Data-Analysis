@@ -512,7 +512,7 @@ $$
 W_{lk} = \frac{\bigl( (n_l + n_k)\bar{D}_k \bigr)^2 \hat{V}_D^{lk}}{\hat{V}_D}, ~\text{with}~ \hat{V}_D^{lk} = n_{lk}(1-n_{lk}) \frac{\bar{D}_l}{\bar{D}_k} \frac{\bar{D}_k-\bar{D}_l}{\bar{D}_k}. 
 $$
 
-If group-sizes are equal, then the treatment variance $\hat{V}_D$ in each combination group depends on the timing of the treatment. The variance get larger the more similar the groups sizes $n_{ju}$, and the more central the treatment timing ($\bar{D}_k, \frac{\bar{D}_k-\bar{D}_l}{1-\bar{D}_l}, \frac{\bar{D}_l}{\bar{D}_k}$ close to 0.5).
+If group-sizes are equal, then the treatment variance $\hat{V}_D$ in each combination group depends on the timing of the treatment. The variance get larger the more similar the groups sizes $n_{ju}$, and the more central (in the middle of the observation period) the treatment timing ($\bar{D}_k, \frac{\bar{D}_k-\bar{D}_l}{1-\bar{D}_l}, \frac{\bar{D}_l}{\bar{D}_k}$ close to 0.5).
 
 Note that __these weights are always positive__.
 
@@ -563,6 +563,120 @@ $$
   \theta_D(e) := \sum_{g=2}^T \mathbf{1} \{ g + e \leq T \} \delta(g,g+e) P(G=g | G+e \leq T),
 $$
 where $e$ specifies for how long a unit has been exposed to the treatment.
+
+Let's consider a setting equal to the situation above [@GoodmanBacon.2021] where we have a control group of never-treated units, one treatment group that is treated early (group 1) and one treatment group that is treated late (group 2). As shown below, with $T=12$ we can estimate 11 2 $\times$ 2 Diff-in-Diff estimates of group 1 against the never treated, we can estimate 6 2 $\times$ 2 Diff-in-Diff estimates of group 1 against the not-yet treated (late treatment group), and we can estimate 11 2 $\times$ 2 Diff-in-Diff estimates of group 2 against the never treated.
+
+Note that the control period for all treated periods is set to the period before the treatment happened in each group. For group 1 this is period 3, and for group 2 this is period 7.
+
+```{r, class.source = 'fold-hide'}
+################################
+### Example: Marriage Income ###
+################################
+
+### Set up six individuals with age and happiness
+N <- 3
+T <- 12
+
+# id and wave
+df2 <- data.frame(matrix(NA, ncol = 2, nrow = N*T))
+names(df2) <- c("id", "wave")
+
+df2$id <- rep(1:N, each = T)
+df2$wave <- rep(1:T, times = N)
+df2$idname <- factor(df2$id, levels = c(1:N), labels = paste("Person", c(1:N)))
+
+# Treatment group
+df2$D <- 0 
+df2$D[(1*T + 1):(2*T)] <- 1
+df2$D[(2*T + 1):(3*T)] <- 2
+
+df2$Treatment <- ifelse(df2$wave >= 4 & df2$D == 1, 1, 0)
+oo <- which(df2$wave >= 8 & df2$D == 2)
+df2$Treatment[oo] <- 1
+
+# Starting wage
+stw <- c(2000, 3000, 4000)
+
+# wage equation
+df2$wage <- unname(rep(stw, each = T)) + (df2$wave - 1)*50 + df2$Treatment * 500
+df2$Treatment <- as.factor(df2$Treatment)
+
+# Add comparison groups
+df2$wage2 <- ave(df2$wage,
+                 df2$id,
+                 FUN = function(x) lag(x))
+df2$wave2 <- ave(df2$wave,
+                 df2$id,
+                 FUN = function(x) lag(x))
+oo <- which(df2$Treatment == 1)
+df2$wage2[oo] <- ave(df2$wage2[oo],
+                 df2$id[oo],
+                 FUN = function(x) x[1])
+df2$wave2[oo] <- ave(df2$wave2[oo],
+                 df2$id[oo],
+                 FUN = function(x) x[1])
+
+
+### Plot 
+zp1 <- ggplot(df2, aes(wave, wage)) +
+  geom_line(aes(x = wave, y = wage, group = id, alpha = as.factor(D)), lty = "solid", colour = "black", lwd = 1) + 
+  geom_point( aes(x = wave, y = wage, shape = Treatment, color = Treatment, alpha = as.factor(D)), 
+              size = 2, stroke = 2) +
+  scale_alpha_manual(values = c(1, 1, 0.2), guide = "none") +
+  theme_bw() +
+  scale_x_continuous( breaks = seq(1, 12, 2))  +
+  ggtitle("Group 1: 11 2x2 DID estimates against never-treated") +
+  theme(legend.position = c(0.05,0.95), legend.justification = c("left", "top"),
+        legend.background = element_blank(),
+        legend.box.background = element_rect(colour = "black")) +
+  geom_curve(aes(x = wave2, y = wage2, xend = wave, yend = wage, color = Treatment), 
+             curvature = 0.3, data = df2[df2$D == 1 & !is.na(df2$wage2), ])
+
+
+zp2 <- ggplot(df2, aes(wave, wage)) +
+  geom_line(aes(x = wave, y = wage, group = id, alpha = as.factor(D)), lty = "solid", colour = "black", lwd = 1) + 
+  geom_point( aes(x = wave, y = wage, shape = Treatment, color = Treatment, alpha = as.factor(D)), 
+              size = 2, stroke = 2) +
+  scale_alpha_manual(values = c(0.2, 1, 0.2), guide = "none") +
+  geom_line(aes(x = wave, y = wage, group = id, ), lty = "solid", colour = "black", lwd = 1,
+            data = df2[df2$D == 2 & df2$wave <= 7, ]) + 
+  geom_point( aes(x = wave, y = wage, shape = Treatment, color = Treatment), 
+              size = 2, stroke = 2,
+              data = df2[df2$D == 2 & df2$wave <= 7, ]) +
+  theme_bw() +
+  scale_x_continuous( breaks = seq(1, 12, 2))  +
+  ggtitle("Group 1: 6 2x2 DID estimates against not-yet-treated") +
+  theme(legend.position = c(0.05,0.95), legend.justification = c("left", "top"),
+        legend.background = element_blank(),
+        legend.box.background = element_rect(colour = "black")) +
+  geom_curve(aes(x = wave2, y = wage2, xend = wave, yend = wage, color = Treatment), 
+             curvature = 0.3, data = df2[df2$D == 1 & !is.na(df2$wage2) & df2$wave <= 7, ])
+
+
+zp3 <- ggplot(df2, aes(wave, wage)) +
+  geom_line(aes(x = wave, y = wage, group = id, alpha = as.factor(D)), lty = "solid", colour = "black", lwd = 1) + 
+  geom_point( aes(x = wave, y = wage, shape = Treatment, color = Treatment, alpha = as.factor(D)), 
+              size = 2, stroke = 2) +
+  scale_alpha_manual(values = c(1, 0.2, 1), guide = "none") +
+  theme_bw() +
+  scale_x_continuous( breaks = seq(1, 12, 2))  +
+  ggtitle("Group 2: 11 2x2 DID estimates against never-treated") +
+  theme(legend.position = c(0.05,0.95), legend.justification = c("left", "top"),
+        legend.background = element_blank(),
+        legend.box.background = element_rect(colour = "black")) +
+  geom_curve(aes(x = wave2, y = wage2, xend = wave, yend = wage, color = Treatment), 
+             curvature = 0.3, data = df2[df2$D == 2 & !is.na(df2$wage2), ])
+
+
+```
+
+```{r, class.source = 'fold-hide', figures-side, fig.show="hold", out.width="50%"}
+par(mar = c(4, 4, .1, .1))
+zp1
+zp2
+zp3
+```
+
 
 For a more detailled introdution see @Callaway.2020 or the respective [package introcution](https://cran.r-project.org/web/packages/did/vignettes/multi-period-did.html).
 
