@@ -1028,8 +1028,17 @@ The real treatment region seems quite special. For some control regions, we obse
 
 # Generalized Synthetic Control
 
-__tbd (+ Matrix Completion?)__
+__tbd__
 
+@Xu.2017
+
+# Matrix Completion
+
+__tbd__
+
+@Athey.2021
+
+![](fig/correlation.png)
 
 # References
 

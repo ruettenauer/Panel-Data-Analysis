@@ -39,7 +39,7 @@ This course profited a lot from teaching materials by Josef Brüderl and Volker 
 
 In empirical social sciences, we are often interested in the __causal research questions__: we want to investigate questions of cause and effect. Using purely cross-sectional data, we can compare two (or more) different units (e.g. people, states, companies) and test is there exist differences according to our treatment or variable of interest. 
 
-However, these units may not only differ in the dimension of interest, but may also be different in many other other aspects, and it is likely that we do not obverse all the relevant aspects. In the end, we might erroneously conclude that there is a causal effect, even though we only observe correlation (which is confounded by other differences).
+However, these units may not only differ in the dimension of interest, but may also be different in many other aspects, and it is likely that we do not obverse all the relevant aspects. In the end, we might erroneously conclude that there is a causal effect, even though we only observe correlation (which is confounded by other differences).
 
 ![](fig/matrix.jpg)
 
@@ -51,10 +51,14 @@ However, randomly exposing some individuals to treatment and withholding treatme
 
 A potential compromise between those two approaches: "compare alike with alike". This is what we usually aim for by using panel data. We do not compare two different units to each other. Rather, we compare a unit in an earlier stage to the same unit in a later stage. Not as save as an RCT, but much more ethical for many research questions.
 
+![](fig/NHK_Control.gif){width=48%} ![](fig/NHK_FE.gif){width=48%}
+
+Illustration by @HuntingtonKlein.2021: Introducing a binary control variable (left) and introducing fixed effects (right)
+
 # Some examples
 
 
-### Pant openings and housing prices [@Currie.2015]
+### Plant openings and housing prices [@Currie.2015]
 
 ![](fig/currie.PNG)
 
@@ -62,9 +66,9 @@ A potential compromise between those two approaches: "compare alike with alike".
 
 ![](fig/lifecourse-events.PNG)
 
-### "Male marital wage premium" [@Ludwig.2018.0]
+### London Congestion Charge and School Attendance [@ConteKeivabu.2022]
 
-![](fig/mwp.PNG)
+![](fig/ccz.PNG)
 
 ### Extreme Weather Events Elevate Climate Change Belief but not Pro-Environmental Behaviour [@Ruttenauer.2021c]
 

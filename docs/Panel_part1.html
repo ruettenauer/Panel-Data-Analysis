@@ -565,7 +565,7 @@ observations (rows), with variables “id” and “time”.</p></li>
 and <span class="math inline">\(T \times K\)</span> variables, which one
 variable for each time-period.</p></li>
 </ul>
-<p>Let’s have a look at the Wages data of the <code>plm</code>
+<p>Let’s have a look at the “Males” data of the <code>plm</code>
 package.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;Males&quot;</span>)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(Males[,<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>], <span class="at">n =</span> <span class="dv">16</span>)</span></code></pre></div>
@@ -586,8 +586,9 @@ package.</p>
 ## 14 17 1985     13     9    no
 ## 15 17 1986     13    10    no
 ## 16 17 1987     13    11    no</code></pre>
-<p>This is long format, with nr as id and year as time indicator. Long
-format is what we usually need when analysing data.</p>
+<p>This is long format, with <code>nr</code> as person identifier (id)
+and <code>year</code> as time indicator. Long format is what we usually
+need for analysing data.</p>
 <p>Sometimes data comes in wide format. Luckily, we can easily switch
 between those formats using <code>tidyr</code>.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>Males_wide <span class="ot">&lt;-</span> <span class="fu">pivot_wider</span>(Males, <span class="at">id_cols =</span> nr, <span class="at">names_from =</span> year, </span>
@@ -654,54 +655,63 @@ properly before you do!</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Order data</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>Males <span class="ot">&lt;-</span> Males[<span class="fu">order</span>(Males<span class="sc">$</span>nr, Males<span class="sc">$</span>year),]</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Lag (last years value)</span></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>Males<span class="sc">$</span>lag_wage <span class="ot">&lt;-</span> <span class="fu">ave</span>(Males<span class="sc">$</span>wage,</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>                      Males<span class="sc">$</span>nr,</span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>                      <span class="at">FUN =</span> <span class="cf">function</span>(x) dplyr<span class="sc">::</span><span class="fu">lag</span>(x, <span class="at">n =</span> <span class="dv">1</span>))</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Person specific means</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>Males<span class="sc">$</span>m_wage <span class="ot">&lt;-</span> <span class="fu">ave</span>(Males<span class="sc">$</span>wage,</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>                    Males<span class="sc">$</span>nr,</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>                    <span class="at">FUN =</span> <span class="cf">function</span>(x) <span class="fu">mean</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
 <span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Lead (next years value)</span></span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>Males<span class="sc">$</span>lead_wage <span class="ot">&lt;-</span> <span class="fu">ave</span>(Males<span class="sc">$</span>wage,</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Lag (last years value)</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>Males<span class="sc">$</span>lag_wage <span class="ot">&lt;-</span> <span class="fu">ave</span>(Males<span class="sc">$</span>wage,</span>
 <span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>                      Males<span class="sc">$</span>nr,</span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>                      <span class="at">FUN =</span> <span class="cf">function</span>(x) dplyr<span class="sc">::</span><span class="fu">lead</span>(x, <span class="at">n =</span> <span class="dv">1</span>))</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>                      <span class="at">FUN =</span> <span class="cf">function</span>(x) dplyr<span class="sc">::</span><span class="fu">lag</span>(x, <span class="at">n =</span> <span class="dv">1</span>))</span>
 <span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a><span class="co"># First difference (this years value minus last years value)</span></span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>Males<span class="sc">$</span>fd_wage <span class="ot">&lt;-</span> <span class="fu">ave</span>(Males<span class="sc">$</span>wage,</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Lead (next years value)</span></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>Males<span class="sc">$</span>lead_wage <span class="ot">&lt;-</span> <span class="fu">ave</span>(Males<span class="sc">$</span>wage,</span>
 <span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>                      Males<span class="sc">$</span>nr,</span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>                      <span class="at">FUN =</span> <span class="cf">function</span>(x) x <span class="sc">-</span> dplyr<span class="sc">::</span><span class="fu">lag</span>(x, <span class="at">n =</span> <span class="dv">1</span>))</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>                      <span class="at">FUN =</span> <span class="cf">function</span>(x) dplyr<span class="sc">::</span><span class="fu">lead</span>(x, <span class="at">n =</span> <span class="dv">1</span>))</span>
 <span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(Males[, <span class="fu">c</span>(<span class="st">&quot;nr&quot;</span>, <span class="st">&quot;year&quot;</span>, <span class="st">&quot;wage&quot;</span>, <span class="st">&quot;lag_wage&quot;</span>, <span class="st">&quot;lead_wage&quot;</span>, <span class="st">&quot;fd_wage&quot;</span>)], <span class="at">n =</span> <span class="dv">16</span>)</span></code></pre></div>
-<pre><code>##    nr year       wage   lag_wage  lead_wage     fd_wage
-## 1  13 1980  1.1975402         NA  1.8530600          NA
-## 2  13 1981  1.8530600  1.1975402  1.3444617  0.65551979
-## 3  13 1982  1.3444617  1.8530600  1.4332133 -0.50859832
-## 4  13 1983  1.4332133  1.3444617  1.5681251  0.08875166
-## 5  13 1984  1.5681251  1.4332133  1.6998909  0.13491174
-## 6  13 1985  1.6998909  1.5681251 -0.7202626  0.13176586
-## 7  13 1986 -0.7202626  1.6998909  1.6691879 -2.42015352
-## 8  13 1987  1.6691879 -0.7202626         NA  2.38945049
-## 9  17 1980  1.6759624         NA  1.5183982          NA
-## 10 17 1981  1.5183982  1.6759624  1.5591905 -0.15756420
-## 11 17 1982  1.5591905  1.5183982  1.7254101  0.04079228
-## 12 17 1983  1.7254101  1.5591905  1.6220223  0.16621961
-## 13 17 1984  1.6220223  1.7254101  1.6085883 -0.10338777
-## 14 17 1985  1.6085883  1.6220223  1.5723854 -0.01343405
-## 15 17 1986  1.5723854  1.6085883  1.8203339 -0.03620286
-## 16 17 1987  1.8203339  1.5723854         NA  0.24794844</code></pre>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a><span class="co"># First difference (this years value minus last years value)</span></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>Males<span class="sc">$</span>fd_wage <span class="ot">&lt;-</span> <span class="fu">ave</span>(Males<span class="sc">$</span>wage,</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>                      Males<span class="sc">$</span>nr,</span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>                      <span class="at">FUN =</span> <span class="cf">function</span>(x) x <span class="sc">-</span> dplyr<span class="sc">::</span><span class="fu">lag</span>(x, <span class="at">n =</span> <span class="dv">1</span>))</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(Males[, <span class="fu">c</span>(<span class="st">&quot;nr&quot;</span>, <span class="st">&quot;year&quot;</span>, <span class="st">&quot;wage&quot;</span>, <span class="st">&quot;m_wage&quot;</span>, <span class="st">&quot;lag_wage&quot;</span>, <span class="st">&quot;lead_wage&quot;</span>, <span class="st">&quot;fd_wage&quot;</span>)], <span class="at">n =</span> <span class="dv">16</span>)</span></code></pre></div>
+<pre><code>##    nr year       wage   m_wage   lag_wage  lead_wage     fd_wage
+## 1  13 1980  1.1975402 1.255652         NA  1.8530600          NA
+## 2  13 1981  1.8530600 1.255652  1.1975402  1.3444617  0.65551979
+## 3  13 1982  1.3444617 1.255652  1.8530600  1.4332133 -0.50859832
+## 4  13 1983  1.4332133 1.255652  1.3444617  1.5681251  0.08875166
+## 5  13 1984  1.5681251 1.255652  1.4332133  1.6998909  0.13491174
+## 6  13 1985  1.6998909 1.255652  1.5681251 -0.7202626  0.13176586
+## 7  13 1986 -0.7202626 1.255652  1.6998909  1.6691879 -2.42015352
+## 8  13 1987  1.6691879 1.255652 -0.7202626         NA  2.38945049
+## 9  17 1980  1.6759624 1.637786         NA  1.5183982          NA
+## 10 17 1981  1.5183982 1.637786  1.6759624  1.5591905 -0.15756420
+## 11 17 1982  1.5591905 1.637786  1.5183982  1.7254101  0.04079228
+## 12 17 1983  1.7254101 1.637786  1.5591905  1.6220223  0.16621961
+## 13 17 1984  1.6220223 1.637786  1.7254101  1.6085883 -0.10338777
+## 14 17 1985  1.6085883 1.637786  1.6220223  1.5723854 -0.01343405
+## 15 17 1986  1.5723854 1.637786  1.6085883  1.8203339 -0.03620286
+## 16 17 1987  1.8203339 1.637786  1.5723854         NA  0.24794844</code></pre>
 <p>There are a lot of different panel data sources available. Some
 examples are:</p>
 <ul>
 <li><p><a href="https://psidonline.isr.umich.edu/">PSID</a></p></li>
+<li><p><a href="https://www.nlsinfo.org/content/cohorts/nlsy79">National
+Longitudinal Survey of Youth</a></p></li>
 <li><p><a href="https://www.understandingsociety.ac.uk/">Understanding
 Society</a></p></li>
 <li><p><a
+href="https://cls.ucl.ac.uk/cls-studies/millennium-cohort-study/">Millennium
+Cohort Study</a></p></li>
+<li><p><a
 href="https://www.diw.de/en/diw_01.c.615551.en/research_infrastructure__socio-economic_panel__soep.html">SOEP</a></p></li>
+<li><p><a href="https://www.pairfam.de/">Pairfam</a></p></li>
 <li><p><a
 href="http://www.share-project.org/home0.html">SHARE</a></p></li>
-<li><p><a href="https://www.nlsinfo.org/content/cohorts/nlsy79">National
-Longitudinal Survey of Youth</a></p></li>
 </ul>
 <p>And there are various process generated data having a longitudinal /
-pnale dimension as well. For instance:</p>
+panel dimension as well. For instance:</p>
 <ul>
 <li><p><a href="https://github.com/owid/covid-19-data">Our world in data
 COVID</a></p></li>
@@ -715,7 +725,7 @@ Tree Cover Density</a></p></li>
 </ul>
 <p>One thing that is often difficult: Many panel data come as a bunch of
 single (cross-sectional) files and have to be combined into a single
-dataset. However, many of those providers (or nice colleagues) now offer
+dataset. However, many data providers (or nice colleagues) now offer
 simplified long-format data or pre-written scripts to merge data across
 waves (e.g. <a
 href="https://www.understandingsociety.ac.uk/documentation/mainstage/syntax">here</a>
@@ -734,6 +744,12 @@ class="uri">https://www.diw.de/documents/publikationen/73/diw_01.c.745900.de/diw
 <p>The main question here: Is attrition (as good as) random or are
 drop-outs systematic? How does this affect the sample composition and
 representativeness?</p>
+<p>Most panels also provide inverse-probability of staying weights to
+account for the possibility of non-random attrition. Note that these
+also probability weights can only account for attrition based on
+observables. For a general discussion about weighting see for instance
+<span class="citation">Solon, Haider, and Wooldridge (<a
+href="#ref-Solon.2015" role="doc-biblioref">2015</a>)</span>.</p>
 </div>
 <div id="decomposing-variance" class="section level1">
 <h1>Decomposing variance</h1>
@@ -2290,6 +2306,10 @@ role="doc-biblioref">2017</a>)</span>.</p>
 this stylized example does not include heteroskedasticity or
 autocorrelation. However, we will see the difference with some real
 data.</p>
+<p>For a timely discussion on clustering standard error, when to
+cluster, and which variables to cluster on see <span
+class="citation">Abadie et al. (<a href="#ref-Abadie.2022"
+role="doc-biblioref">2022</a>)</span>.</p>
 <p><strong>One hint for large data</strong>: <code>coeftest</code> and
 <code>sandwich</code> can be slow on large data. It might be more
 efficient to use the package <code>lfe</code> right away. The
@@ -2325,6 +2345,12 @@ standard errors:</p>
 <div id="references" class="section level1 unnumbered">
 <h1 class="unnumbered">References</h1>
 <div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Abadie.2022" class="csl-entry">
+Abadie, Alberto, Susan Athey, Guido Imbens, and Jeffrey Wooldridge.
+2022. <span>“When <span>Should You Adjust Standard Errors</span> for
+<span>Clustering</span>?”</span> <span>arXiv</span>. <a
+href="https://arxiv.org/abs/1710.02926">https://arxiv.org/abs/1710.02926</a>.
+</div>
 <div id="ref-Allison.2009.128" class="csl-entry">
 Allison, Paul David. 2009. <em><span>Fixed Effects Regression
 Models</span></em>. Vol. 160. <span class="nocase">Quantitative
@@ -2378,6 +2404,12 @@ Mundlak, Yair. 1978. <span>“<span class="nocase">On the Pooling of Time
 Series and Cross Section Data</span>.”</span>
 <em><span>Econometrica</span></em> 46 (1): 69. <a
 href="https://doi.org/10.2307/1913646">https://doi.org/10.2307/1913646</a>.
+</div>
+<div id="ref-Solon.2015" class="csl-entry">
+Solon, Gary, Steven J. Haider, and Jeffrey M. Wooldridge. 2015.
+<span>“What <span>Are We Weighting For</span>?”</span> <em>Journal of
+Human Resources</em> 50 (2): 301–16. <a
+href="https://doi.org/10.3368/jhr.50.2.301">https://doi.org/10.3368/jhr.50.2.301</a>.
 </div>
 <div id="ref-Wooldridge.2010.384" class="csl-entry">
 Wooldridge, Jeffrey M. 2010. <em><span class="nocase">Econometric

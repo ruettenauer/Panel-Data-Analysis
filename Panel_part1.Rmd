@@ -66,14 +66,14 @@ Usually cross-sectional data is organized as a matrix, where rows represent the 
 
 * Wide format: $N$ observations, and $T \times K$ variables, which one variable for each time-period.
 
-Let's have a look at the Wages data of the `plm` package.
+Let's have a look at the "Males" data of the `plm` package.
 
 ```{r}
 data("Males")
 head(Males[,1:5], n = 16)
 ```
 
-This is long format, with nr as id and year as time indicator. Long format is what we usually need when analysing data.
+This is long format, with `nr` as person identifier (id) and `year` as time indicator. Long format is what we usually need for analysing data.
 
 Sometimes data comes in wide format. Luckily, we can easily switch between those formats using `tidyr`.
 
@@ -109,6 +109,11 @@ A nice feature of panel data is that we can do some within-person transformation
 # Order data
 Males <- Males[order(Males$nr, Males$year),]
 
+# Person specific means
+Males$m_wage <- ave(Males$wage,
+                    Males$nr,
+                    FUN = function(x) mean(x, na.rm = TRUE))
+
 # Lag (last years value)
 Males$lag_wage <- ave(Males$wage,
                       Males$nr,
@@ -124,22 +129,26 @@ Males$fd_wage <- ave(Males$wage,
                       Males$nr,
                       FUN = function(x) x - dplyr::lag(x, n = 1))
 
-head(Males[, c("nr", "year", "wage", "lag_wage", "lead_wage", "fd_wage")], n = 16)
+head(Males[, c("nr", "year", "wage", "m_wage", "lag_wage", "lead_wage", "fd_wage")], n = 16)
 ```
 
 There are a lot of different panel data sources available. Some examples are:
 
 * [PSID](https://psidonline.isr.umich.edu/)
 
+* [National Longitudinal Survey of Youth](https://www.nlsinfo.org/content/cohorts/nlsy79)
+
 * [Understanding Society](https://www.understandingsociety.ac.uk/)
+
+* [Millennium Cohort Study](https://cls.ucl.ac.uk/cls-studies/millennium-cohort-study/)
 
 * [SOEP](https://www.diw.de/en/diw_01.c.615551.en/research_infrastructure__socio-economic_panel__soep.html)
 
+* [Pairfam](https://www.pairfam.de/)
+
 * [SHARE](http://www.share-project.org/home0.html)
 
-* [National Longitudinal Survey of Youth](https://www.nlsinfo.org/content/cohorts/nlsy79)
-
-And there are various process generated data having a longitudinal / pnale dimension as well. For instance:
+And there are various process generated data having a longitudinal / panel dimension as well. For instance:
 
 * [Our world in data COVID](https://github.com/owid/covid-19-data)
 
@@ -149,7 +158,7 @@ And there are various process generated data having a longitudinal / pnale dimen
 
 * [European Tree Cover Density](https://land.copernicus.eu/pan-european/high-resolution-layers/forests/tree-cover-density/status-maps)
 
-One thing that is often difficult: Many panel data come as a bunch of single (cross-sectional) files and have to be combined into a single dataset. However, many of those providers (or nice colleagues) now offer simplified long-format data or pre-written scripts to merge data across waves (e.g. [here](https://www.understandingsociety.ac.uk/documentation/mainstage/syntax) for Understanding Society, or [here](https://www.ls3.soziologie.uni-muenchen.de/studium-lehre/lehrmaterialien/index.html) for SOEP).
+One thing that is often difficult: Many panel data come as a bunch of single (cross-sectional) files and have to be combined into a single dataset. However, many data providers (or nice colleagues) now offer simplified long-format data or pre-written scripts to merge data across waves (e.g. [here](https://www.understandingsociety.ac.uk/documentation/mainstage/syntax) for Understanding Society, or [here](https://www.ls3.soziologie.uni-muenchen.de/studium-lehre/lehrmaterialien/index.html) for SOEP).
 
 
 A second problem is panel attrition. Usually, the number of individuals participating repeatedly goes down over time.
@@ -157,6 +166,8 @@ A second problem is panel attrition. Usually, the number of individuals particip
 ![Rainer Siegers, Veronika Belcheva, Tobias Silbermann 2020: https://www.diw.de/documents/publikationen/73/diw_01.c.745900.de/diw_ssp0826.pdf](fig/soep.PNG)
 
 The main question here: Is attrition (as good as) random or are drop-outs systematic? How does this affect the sample composition and representativeness?
+
+Most panels also provide inverse-probability of staying weights to account for the possibility of non-random attrition. Note that these also probability weights can only account for attrition based on observables. For a general discussion about weighting see for instance @Solon.2015.
 
 # Decomposing variance
 
@@ -1262,6 +1273,8 @@ coeftest(fe1, vcov = function(x) vcovHC(x, method = "arellano", type = "HC3"))
 ```
 
 In this case the robust SEs are actually smaller!! This is because this stylized example does not include heteroskedasticity or autocorrelation. However, we will see the difference with some real data.
+
+For a timely discussion on clustering standard error, when to cluster, and which variables to cluster on see @Abadie.2022.
 
 __One hint for large data__: `coeftest` and `sandwich` can be slow on large data. It might be more efficient to use the package `lfe` right away. The `felm()` function (to estimate FE models) requires a four part formula of the form `y ~ x1 + x2 | f1 + f2 | (Q|W ~ x3+x4) | clu1 + clu2`, where "x" are ordinary covariates, "f" are the fixed effects, the third part allows to instrument covariates, and "clu" are clusters for robust standard errors:
 
