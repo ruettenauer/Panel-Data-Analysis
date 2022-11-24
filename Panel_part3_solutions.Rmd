@@ -1,7 +1,7 @@
 ---
 title: "Exercise: solutions"
 author: "Tobias Rüttenauer"
-date: "December 03, 2021"
+date: "November 24, 2022"
 output_dir: docs
 output: 
   html_document:
@@ -21,7 +21,7 @@ link-citations: yes
 ### Required packages
 
 ```{r, message = FALSE, warning = FALSE, results = 'hide'}
-pkgs <- c("plm", "feisr", "sandwich", "texreg", "tidyr", "haven", "dplyr", "ggplot2", "ggforce") 
+pkgs <- c("plm", "feisr", "sandwich", "did", "texreg", "tidyr", "haven", "dplyr", "ggplot2", "ggforce") 
 lapply(pkgs, require, character.only = TRUE)
 ```
 
@@ -129,7 +129,7 @@ data.df <- data.df[data.df$f_age <= 35,]
 ```
     
 
-    * Use number of children to contruct a binary indicator of wether the is a child in the household or not
+    * Use number of children to construct a binary indicator of wether the is a child in the household or not
     
 ```{r}
 data.df$child_hh <- ifelse(data.df$child > 0, 1, 0)
@@ -170,7 +170,6 @@ data.df$fd_child_hh <- ave(data.df$child_hh,
 table(data.df$fd_child_hh)
 
 # There are indeed people going from child to "no child"
-# Given the high number, this is unlike all deaths of children
 # It might be that children leave the households, or parents get divorced?
 
 # One should usually look into this more carefully, but here let's just drop those observations.
@@ -259,7 +258,7 @@ FE: If men become fathers, this increases their annual wage by ~ 4%. The effect 
 
 FEIS: Given the heterogeneous wage trajectories, if men become fathers, this increases their annual wage by ~ 5%. 
 
-This time FEIS estimates a higher premium than FE. This indicates that those with steeper wage trajectories actually are less likely to get children or get their children later.
+In this case, FEIS estimates a higher premium than FE. This could indicate that those with steeper wage trajectories actually are less likely to get children or get their children later.
 
 Do you know why FEIS has a lower $N$ than the other models?
 
@@ -284,7 +283,8 @@ lag.fe <- plm(logwages ~ lag_child_hh +
                    hours + age_gr +
                    profes + admin  + sales + crafts + operat + servic  + 
                    smsa   +
-                   ten1 + ten2 + ten3 + ten4 + ten5 + ten6, data = data.df,
+                   ten1 + ten2 + ten3 + ten4 + ten5 + ten6, 
+              data = data.df,
               index = c("pid", "year"),
               effect = "twoways", model = "within")
 
@@ -292,7 +292,8 @@ lead.fe <- plm(logwages ~ lead_child_hh +
                    hours + age_gr +
                    profes + admin  + sales + crafts + operat + servic  + 
                    smsa   +
-                   ten1 + ten2 + ten3 + ten4 + ten5 + ten6, data = data.df,
+                   ten1 + ten2 + ten3 + ten4 + ten5 + ten6, 
+               data = data.df,
               index = c("pid", "year"),
               effect = "twoways", model = "within")
 
@@ -307,6 +308,74 @@ Interestingly we already see a significant and non-trivial fatherhood effect on 
 If we observe a treatment effect for a treatment that has not yet happened, this might indicate either 1) anticipation effects, or 2) that something is actually confounding our treatment (e.g. selection on pre-treatment trends)
 
 What do you think, what might be happening here?
+
+# Exercise 3
+
+Can we use one of the new event-study approaches, such as the Callaway and SantAnna estimator?
+
+* Preprocess data (treatment group and timing indicator)
+
+```{r}
+# treatment timing = year if child in household
+data.df$treat_timing <- ifelse(data.df$child_hh == 1, data.df$year, NA)
+
+# Define those who never have a child
+data.df$tmp <- ave(data.df$child_hh,
+                   data.df$pid,
+                   FUN = function(x) mean(x, na.rm = TRUE))
+
+data.df$never_child <- ifelse(data.df$tmp == 0, 1, 0)
+
+# set never treated to zero
+data.df$treat_timing[data.df$never_child == 1] <- 0
+
+# if married is not NA, used min year per id (removing NAs)
+oo <- which(!is.na(data.df$child_hh))
+data.df$treat_timing[oo] <- ave(data.df$treat_timing[oo],
+                                data.df$pid[oo],
+                                FUN = function(x) min(x, na.rm = TRUE))
+
+
+head(data.df[, c("pid", "year", "child_hh", "never_child", "treat_timing")], n = 35)
+```
+
+* Estimate the model using `att_gt`
+
+```{r, warning=FALSE}
+# estimate group-time average treatment effects using att_gt method
+wages.attgt <- att_gt(yname = "logwages",
+                      tname = "year",
+                      idname = "pid",
+                      gname = "treat_timing",
+                      xformla = ~ hours + age_gr,
+                      data = data.df,
+                      allow_unbalanced_panel = TRUE,
+                      control_group = "notyettreated",
+                      est_method = "ipw"
+                        )
+```
+
+
+
+```{r}
+# Show the group-time specific estimates
+wages.dyn <- aggte(wages.attgt, type = "dynamic", na.rm = TRUE,
+                   min_e = -3, max_e = 6)
+summary(wages.dyn)
+
+zp3 <- ggdid(wages.dyn) 
+  
+zp3 <- zp3 + 
+  geom_hline(yintercept = 0, colour = gray(1/2), lty = 2) +
+  geom_vline(xintercept = -0.5, colour = "black", lty = 1)
+
+zp3
+```
+
+* Interpret the results 
+
+The event-time results above again tell a little different story. First, hose getting father already have a little higher wage two and three years before they become fathers. Then, there is a negative anticipation effect in the year before birth (why could this be plausible?). After birth of the first child, fathers' wages increase significantly more then the wages of non-fathers (however, this is not much more than the effect in year -3).
+
 
 # References
   

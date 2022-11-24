@@ -11,7 +11,7 @@
 
 <meta name="author" content="Tobias Rüttenauer" />
 
-<meta name="date" content="2021-12-03" />
+<meta name="date" content="2022-11-24" />
 
 <title>Exercise</title>
 
@@ -483,7 +483,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Exercise</h1>
 <h4 class="author">Tobias Rüttenauer</h4>
-<h4 class="date">December 03, 2021</h4>
+<h4 class="date">November 24, 2022</h4>
 
 </div>
 
@@ -498,7 +498,7 @@ div.tocify {
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
 <pre><code>## R version 4.2.1 (2022-06-23 ucrt)
 ## Platform: x86_64-w64-mingw32/x64 (64-bit)
-## Running under: Windows 10 x64 (build 19043)
+## Running under: Windows 10 x64 (build 19044)
 ## 
 ## Matrix products: default
 ## 
@@ -560,7 +560,7 @@ data from the replication package of <span class="citation">Hospido (<a
 href="#ref-Hospido.2012" role="doc-biblioref">2012</a>)</span>. The
 replication package can be found <a
 href="http://qed.econ.queensu.ca/jae/datasets/hospido001/">here</a>.</p>
-<p>THis is an unbalanced panel with 32,066 observations and 2066
+<p>This is an unbalanced panel with 32,066 observations and 2066
 individuals for the period 1968–1993 of the PSID. It consists of male
 heads aged 25–55 with at least 9 years of usable wages data.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load stata file</span></span>
@@ -709,14 +709,15 @@ heads aged 25–55 with at least 9 years of usable wages data.</p>
 </div>
 <div id="exercise-1" class="section level1">
 <h1>Exercise 1</h1>
+<p>Download and load the data.</p>
 <p>Can we use this dataset to replicate our earlier analysis on the
 marital wage premium? What might be a problem here?</p>
 </div>
 <div id="exercise-2" class="section level1">
 <h1>Exercise 2</h1>
-<p>However, we do something similar: is there a fatherhood wage premium?
-In other words, do men experience an increase in wages when they become
-fathers?</p>
+<p>However, we do something similar: We want to investigate if there is
+a fatherhood wage premium? In other words, do men experience an increase
+in wages when they become fathers?</p>
 <pre><code>* Restrict the age at the start (first wage) to people aged 25-35
 
 
@@ -733,7 +734,7 @@ interest.</strong></p>
 
 
 
-* Calculate the effect of having a child on th wage of men (including controls if reasonable). 
+* Calculate the effect of having a child on the wage of men (including controls if reasonable). 
 
 
 
@@ -750,6 +751,18 @@ interest.</strong></p>
 <li>Try to perform a placebo test: what happens if you use the “lead” of
 becoming father. Why is this an interesting test?</li>
 </ul>
+</div>
+<div id="exercise-3" class="section level1">
+<h1>Exercise 3</h1>
+<p>Can we use one of the new event-study approaches, such as the
+Callaway and SantAnna estimator?</p>
+<pre><code>* Preprocess data (treatment group and timing indicator)
+
+* Estimate the model using `att_gt`
+
+* Show the group-time specific estimates (use `method=ipw` and only restricted set of controls)
+
+* Interpret the results </code></pre>
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1 class="unnumbered">References</h1>

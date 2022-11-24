@@ -1,7 +1,7 @@
 ---
 title: "Exercise"
 author: "Tobias Rüttenauer"
-date: "December 03, 2021"
+date: "November 24, 2022"
 output_dir: docs
 output: 
   html_document:
@@ -36,7 +36,7 @@ sessionInfo()
 
 For the purpose of this exercise, we will use a real-world data set. However, instead of constructing our own data, we use a shortcut and use data from the replication package of @Hospido.2012. The replication package can be found [here](http://qed.econ.queensu.ca/jae/datasets/hospido001/).
 
-THis is an unbalanced panel with 32,066 observations and 2066 individuals for the period 1968–1993 of the PSID. It consists of male heads aged 25–55 with at least 9 years of usable wages data.
+This is an unbalanced panel with 32,066 observations and 2066 individuals for the period 1968–1993 of the PSID. It consists of male heads aged 25–55 with at least 9 years of usable wages data.
 
 
 ```{r}
@@ -90,12 +90,14 @@ data.df <- data.df[order(data.df$pid, data.df$year), ]
 
 # Exercise 1
 
+Download and load the data. 
+
 Can we use this dataset to replicate our earlier analysis on the marital wage premium? What might be a problem here?
 
 
 # Exercise 2
 
-However, we do something similar: is there a fatherhood wage premium? In other words, do men experience an increase in wages when they become fathers?
+However, we do something similar: We want to investigate if there is a fatherhood wage premium? In other words, do men experience an increase in wages when they become fathers?
 
     * Restrict the age at the start (first wage) to people aged 25-35
 
@@ -115,7 +117,7 @@ __Note: this feels like dropping a lot of information! However, it makes sense i
     
 
 
-    * Calculate the effect of having a child on th wage of men (including controls if reasonable). 
+    * Calculate the effect of having a child on the wage of men (including controls if reasonable). 
     
     
     
@@ -134,8 +136,17 @@ __Note: this feels like dropping a lot of information! However, it makes sense i
    * Try to perform a placebo test: what happens if you use the "lead" of becoming father. Why is this an interesting test?
    
 
+# Exercise 3
 
+Can we use one of the new event-study approaches, such as the Callaway and SantAnna estimator?
 
+    * Preprocess data (treatment group and timing indicator)
+    
+    * Estimate the model using `att_gt`
+    
+    * Show the group-time specific estimates (use `method=ipw` and only restricted set of controls)
+    
+    * Interpret the results 
 
 # References
   
