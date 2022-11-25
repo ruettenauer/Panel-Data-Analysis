@@ -157,6 +157,28 @@ code span.wa { color: #008000; font-weight: bold; } /* Warning */
 
 
 
+<style type="text/css">
+/* for pandoc --citeproc since 2.11 */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
 
 
 
@@ -522,8 +544,669 @@ div.tocify {
 ## [73] parallel_4.2.1      Rcpp_1.0.9          vctrs_0.4.2        
 ## [76] tidyselect_1.2.0    xfun_0.33           lmtest_0.9-40</code></pre>
 </div>
-<div id="tba" class="section level3">
-<h3>TBA</h3>
+<div id="load-data" class="section level3">
+<h3>Load data</h3>
+<p>For the purpose of this exercise, we will use a real-world data set.
+However, instead of constructing our own data, we use a shortcut and use
+data from the replication package of <span class="citation">Hospido (<a
+href="#ref-Hospido.2012" role="doc-biblioref">2012</a>)</span>. The
+replication package can be found <a
+href="http://qed.econ.queensu.ca/jae/datasets/hospido001/">here</a>.</p>
+<p>THis is an unbalanced panel with 32,066 observations and 2066
+individuals for the period 1968–1993 of the PSID. It consists of male
+heads aged 25–55 with at least 9 years of usable wages data.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load stata file</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>data.df <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">&quot;_data/h-data.dta&quot;</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Lets order this</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>names <span class="ot">&lt;-</span> <span class="fu">names</span>(data.df)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>names <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;pid&quot;</span>, <span class="st">&quot;year&quot;</span>, names[<span class="sc">-</span><span class="fu">which</span>(names <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;pid&quot;</span>, <span class="st">&quot;year&quot;</span>))])</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>data.df <span class="ot">&lt;-</span> data.df[, names]</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>data.df <span class="ot">&lt;-</span> data.df[<span class="fu">order</span>(data.df<span class="sc">$</span>pid, data.df<span class="sc">$</span>year), ]</span></code></pre></div>
+<table>
+<colgroup>
+<col width="23%" />
+<col width="76%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>variable name</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>pid</td>
+<td>INDIVIDUAL IDENTIFIER</td>
+</tr>
+<tr class="even">
+<td>year</td>
+<td>YEAR OF INTERVIEW</td>
+</tr>
+<tr class="odd">
+<td>age</td>
+<td>AGE OF INDIVIDUAL</td>
+</tr>
+<tr class="even">
+<td>white</td>
+<td>WHITE DUMMY</td>
+</tr>
+<tr class="odd">
+<td>dropout</td>
+<td>DROPOUT DUMMY</td>
+</tr>
+<tr class="even">
+<td>grad</td>
+<td>GRADUATE DUMMY</td>
+</tr>
+<tr class="odd">
+<td>college</td>
+<td>COLLEGE DUMMY</td>
+</tr>
+<tr class="even">
+<td>married</td>
+<td>MARRIED DUMMY</td>
+</tr>
+<tr class="odd">
+<td>child</td>
+<td>NUMBER OF CHILDREN</td>
+</tr>
+<tr class="even">
+<td>fsize</td>
+<td>FAMILY SIZE</td>
+</tr>
+<tr class="odd">
+<td>hours</td>
+<td>YEARLY HOURS OF WORK</td>
+</tr>
+<tr class="even">
+<td>logwages</td>
+<td>LOG OF REAL ANNUAL WAGES</td>
+</tr>
+<tr class="odd">
+<td>changejob</td>
+<td>JOB CHANGE DUMMY</td>
+</tr>
+<tr class="even">
+<td>ten1</td>
+<td>TENURE DUMMY less than a year</td>
+</tr>
+<tr class="odd">
+<td>ten2</td>
+<td>TENURE DUMMY a year</td>
+</tr>
+<tr class="even">
+<td>ten3</td>
+<td>TENURE DUMMY 2-3 years</td>
+</tr>
+<tr class="odd">
+<td>ten4</td>
+<td>TENURE DUMMY 4 through 9 years</td>
+</tr>
+<tr class="even">
+<td>ten5</td>
+<td>TENURE DUMMY 10 through 19 years</td>
+</tr>
+<tr class="odd">
+<td>ten6</td>
+<td>TENURE DUMMY 20 years or more</td>
+</tr>
+<tr class="even">
+<td>profes</td>
+<td>PROFESSIONAL, TECHNICAL, AND KINDRED WORKERS DUMMY</td>
+</tr>
+<tr class="odd">
+<td>admin</td>
+<td>MANAGERS AND ADMINISTRATORS DUMMY</td>
+</tr>
+<tr class="even">
+<td>sales</td>
+<td>CLERICAL AND SALES WORKERS DUMMY</td>
+</tr>
+<tr class="odd">
+<td>crafts</td>
+<td>CRAFTSMAN AND KINDRED WORKERS DUMMY</td>
+</tr>
+<tr class="even">
+<td>operat</td>
+<td>OPERATIVES WORKERS DUMMY</td>
+</tr>
+<tr class="odd">
+<td>servic</td>
+<td>LABORERS AND SERVICES WORKERS DUMMY</td>
+</tr>
+<tr class="even">
+<td>smsa</td>
+<td>SMSA (Standard Metropolitan Statistical Area) DUMMY</td>
+</tr>
+<tr class="odd">
+<td>neast</td>
+<td>NORTH-EAST DUMMY</td>
+</tr>
+<tr class="even">
+<td>ncentr</td>
+<td>NORTH-CENTRAL DUMMY</td>
+</tr>
+<tr class="odd">
+<td>south</td>
+<td>SOUTH DUMMY</td>
+</tr>
+<tr class="even">
+<td>west</td>
+<td>WEST DUMMY</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="exercise-1" class="section level1">
+<h1>Exercise 1</h1>
+<p>Can we use this dataset to replicate our earlier analysis on the
+marital wage premium? What might be a problem here?</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="do">### Lets check if variable are time-varying or constant</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(data.df, <span class="at">FUN =</span> <span class="cf">function</span>(x) <span class="fu">mean</span>(<span class="fu">ave</span>(x, data.df<span class="sc">$</span>pid, <span class="at">FUN =</span> sd)))</span></code></pre></div>
+<pre><code>## $pid
+## [1] 0
+## 
+## $year
+## [1] 5.084193
+## 
+## $age
+## [1] 5.091139
+## 
+## $fsize
+## [1] 0.8707511
+## 
+## $hours
+## [1] 371.2656
+## 
+## $child
+## [1] 0.8319735
+## 
+## $ten1
+## [1] 0.2655135
+## 
+## $ten2
+## [1] 0.2251966
+## 
+## $ten3
+## [1] 0.3190326
+## 
+## $ten4
+## [1] 0.4291132
+## 
+## $ten5
+## [1] 0.3305668
+## 
+## $ten6
+## [1] 0.1446421
+## 
+## $changejob
+## [1] 0.293274
+## 
+## $logwages
+## [1] 0.2923183
+## 
+## $white
+## [1] 0.01130643
+## 
+## $smsa
+## [1] 0.1294999
+## 
+## $dropout
+## [1] 0.03838475
+## 
+## $grad
+## [1] 0.06823993
+## 
+## $college
+## [1] 0.03114909
+## 
+## $neast
+## [1] 0.01985548
+## 
+## $ncentr
+## [1] 0.02750533
+## 
+## $south
+## [1] 0.03582719
+## 
+## $west
+## [1] 0.02641131
+## 
+## $married
+## [1] 0
+## 
+## $profes
+## [1] 0.1099356
+## 
+## $admin
+## [1] 0.1295905
+## 
+## $sales
+## [1] 0.09946584
+## 
+## $crafts
+## [1] 0.1912406
+## 
+## $operat
+## [1] 0.1720871
+## 
+## $servic
+## [1] 0.1322412</code></pre>
+<p>The variable married is time-constant and does not have any
+within-person variance. This is somehow not very useful, as marital
+status obviously is not a time-constant trait.</p>
+</div>
+<div id="exercise-2" class="section level1">
+<h1>Exercise 2</h1>
+<p>However, we do something similar: is there a fatherhood wage premium?
+In other words, do men experience an increase in wages when they become
+fathers?</p>
+<pre><code>* Restrict the age at the start (first wage) to people aged 25-35</code></pre>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>data.df <span class="ot">&lt;-</span> data.df[<span class="fu">order</span>(data.df<span class="sc">$</span>pid, data.df<span class="sc">$</span>year), ] <span class="co"># just to be sure</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Person year number</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>data.df<span class="sc">$</span>pynr <span class="ot">&lt;-</span> <span class="fu">ave</span>(data.df<span class="sc">$</span>year,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>                data.df<span class="sc">$</span>pid,</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>                <span class="at">FUN =</span> <span class="cf">function</span>(x) <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(x))</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Age at first wave</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>data.df<span class="sc">$</span>f_age <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(data.df<span class="sc">$</span>pynr <span class="sc">==</span> <span class="dv">1</span>, data.df<span class="sc">$</span>age, <span class="cn">NA</span>)</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Distribute across individual, using mean and na.rm = TRUE</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>data.df<span class="sc">$</span>f_age <span class="ot">&lt;-</span> <span class="fu">ave</span>(data.df<span class="sc">$</span>f_age,</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>                     data.df<span class="sc">$</span>pid,</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>                     <span class="at">FUN =</span> <span class="cf">function</span>(x) <span class="fu">mean</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(data.df<span class="sc">$</span>f_age)</span></code></pre></div>
+<pre><code>## 
+##    25    26    27    28    29    30    31    32    33    34    35    36    37 
+## 14803  2973  1417  1091  1155   813   743   496   715   888   678   564   653 
+##    38    39    40    41    42    43    44    45    46    47    48    49    50 
+##   618   673   709   553   549   419   398   402   365   296    47    28    20</code></pre>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Restrict</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>data.df <span class="ot">&lt;-</span> data.df[data.df<span class="sc">$</span>f_age <span class="sc">&lt;=</span> <span class="dv">35</span>,]</span></code></pre></div>
+<pre><code>* Use number of children to construct a binary indicator of wether the is a child in the household or not</code></pre>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>data.df<span class="sc">$</span>child_hh <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(data.df<span class="sc">$</span>child <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(data.df<span class="sc">$</span>child, data.df<span class="sc">$</span>child_hh)</span></code></pre></div>
+<pre><code>##     
+##         0    1
+##   0  7651    0
+##   1     0 5428
+##   2     0 7397
+##   3     0 3525
+##   4     0 1207
+##   5     0  328
+##   6     0  158
+##   7     0   42
+##   8     0   15
+##   9     0   12
+##   10    0    8
+##   11    0    1</code></pre>
+<pre><code>* Make sure we start only with men who are not yet fathers.</code></pre>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Child status at first wave</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>data.df<span class="sc">$</span>f_child_hh <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(data.df<span class="sc">$</span>pynr <span class="sc">==</span> <span class="dv">1</span>, data.df<span class="sc">$</span>child_hh, <span class="cn">NA</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(data.df<span class="sc">$</span>f_child_hh) <span class="co"># More than 1,500 individuals are already child_hh from the start on</span></span></code></pre></div>
+<pre><code>## 
+##   0   1 
+## 748 859</code></pre>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Distribute across individual, using mean and na.rm = TRUE</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>data.df<span class="sc">$</span>f_child_hh <span class="ot">&lt;-</span> <span class="fu">ave</span>(data.df<span class="sc">$</span>f_child_hh,</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>                         data.df<span class="sc">$</span>pid,</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>                         <span class="at">FUN =</span> <span class="cf">function</span>(x) <span class="fu">mean</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(data.df<span class="sc">$</span>f_child_hh)</span></code></pre></div>
+<pre><code>## 
+##     0     1 
+## 11424 14348</code></pre>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Drop those who are child_hh from the start</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>data.df <span class="ot">&lt;-</span> data.df[data.df<span class="sc">$</span>f_child_hh <span class="sc">==</span> <span class="dv">0</span>, ]</span></code></pre></div>
+<p><strong>Note: this feels like dropping a lot of information! However,
+it makes sense if we want to correctly identify the effect of
+interest.</strong></p>
+<pre><code>* Do we need to drop observations where people go from child to no child?</code></pre>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>data.df <span class="ot">&lt;-</span> data.df[<span class="fu">order</span>(data.df<span class="sc">$</span>pid, data.df<span class="sc">$</span>year), ]</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Change in child status within an id</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>data.df<span class="sc">$</span>fd_child_hh <span class="ot">&lt;-</span> <span class="fu">ave</span>(data.df<span class="sc">$</span>child_hh,</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>                          data.df<span class="sc">$</span>pid,</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>                          <span class="at">FUN =</span> <span class="cf">function</span>(x) x <span class="sc">-</span> dplyr<span class="sc">::</span><span class="fu">lag</span>(x, <span class="dv">1</span>, <span class="at">default =</span> <span class="dv">0</span>)) <span class="co"># 0 instead of NA for 1st year</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(data.df<span class="sc">$</span>fd_child_hh)</span></code></pre></div>
+<pre><code>## 
+##    -1     0     1 
+##   143 10660   621</code></pre>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># There are indeed people going from child to &quot;no child&quot;</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="co"># It might be that children leave the households, or parents get divorced?</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="co"># One should usually look into this more carefully, but here let&#39;s just drop those observations.</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Mark observations starting with a negative fd value (jump from marry=1 to marry =0)</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>data.df<span class="sc">$</span>notstag_child_hh <span class="ot">&lt;-</span> <span class="fu">ave</span>(<span class="fu">ifelse</span>(data.df<span class="sc">$</span>fd_child_hh <span class="sc">==</span> <span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>),</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>                               data.df<span class="sc">$</span>pid,</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>                               <span class="at">FUN =</span> <span class="cf">function</span>(x) <span class="fu">cumsum</span>(x))</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(data.df<span class="sc">$</span>notstag_child_hh)</span></code></pre></div>
+<pre><code>## 
+##     0     1     2 
+## 10560   821    43</code></pre>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Drop after &quot;loosing a child&quot;</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>data.df <span class="ot">&lt;-</span> data.df[data.df<span class="sc">$</span>notstag_child_hh <span class="sc">==</span> <span class="dv">0</span>, ]</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(data.df<span class="sc">$</span>fd_child_hh)</span></code></pre></div>
+<pre><code>## 
+##    0    1 
+## 9979  581</code></pre>
+<pre><code>* Calculate the effect of having a child on th wage of men (including controls if reasonable). 
+
+* Calculate effects for POLS, RE, and FE (if you have some extra time, also FEIS). (#Hint: feis needs a class `data.frame` as input data)</code></pre>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Age intervals</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>int <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">25</span>, <span class="fu">max</span>(data.df<span class="sc">$</span>age), <span class="dv">5</span>)</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>data.df<span class="sc">$</span>age_gr <span class="ot">&lt;-</span> <span class="fu">cut</span>(data.df<span class="sc">$</span>age, int, <span class="at">include.lowest =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Formula with controls</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>fm <span class="ot">&lt;-</span> <span class="fu">as.formula</span>(logwages <span class="sc">~</span> child_hh <span class="sc">+</span> </span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>                   hours <span class="sc">+</span> age_gr <span class="sc">+</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>                   profes <span class="sc">+</span> admin  <span class="sc">+</span> sales <span class="sc">+</span> crafts <span class="sc">+</span> operat <span class="sc">+</span> servic  <span class="sc">+</span> </span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>                   smsa   <span class="sc">+</span></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>                   ten1 <span class="sc">+</span> ten2 <span class="sc">+</span> ten3 <span class="sc">+</span> ten4 <span class="sc">+</span> ten5 <span class="sc">+</span> ten6)</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a><span class="do">### POLS</span></span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>mod.lm <span class="ot">&lt;-</span> <span class="fu">lm</span>(fm, <span class="at">data =</span> data.df)</span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a><span class="do">### RE</span></span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a>mod.re <span class="ot">&lt;-</span> <span class="fu">plm</span>(fm, <span class="at">data =</span> data.df,</span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a>              <span class="at">index =</span> <span class="fu">c</span>(<span class="st">&quot;pid&quot;</span>, <span class="st">&quot;year&quot;</span>),</span>
+<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a>              <span class="at">effect =</span> <span class="st">&quot;twoways&quot;</span>, <span class="at">model =</span> <span class="st">&quot;random&quot;</span>)</span>
+<span id="cb28-19"><a href="#cb28-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-20"><a href="#cb28-20" aria-hidden="true" tabindex="-1"></a><span class="do">### FE</span></span>
+<span id="cb28-21"><a href="#cb28-21" aria-hidden="true" tabindex="-1"></a>mod.fe <span class="ot">&lt;-</span> <span class="fu">plm</span>(fm, <span class="at">data =</span> data.df,</span>
+<span id="cb28-22"><a href="#cb28-22" aria-hidden="true" tabindex="-1"></a>              <span class="at">index =</span> <span class="fu">c</span>(<span class="st">&quot;pid&quot;</span>, <span class="st">&quot;year&quot;</span>),</span>
+<span id="cb28-23"><a href="#cb28-23" aria-hidden="true" tabindex="-1"></a>              <span class="at">effect =</span> <span class="st">&quot;twoways&quot;</span>, <span class="at">model =</span> <span class="st">&quot;within&quot;</span>)</span>
+<span id="cb28-24"><a href="#cb28-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-25"><a href="#cb28-25" aria-hidden="true" tabindex="-1"></a><span class="do">### FEIS</span></span>
+<span id="cb28-26"><a href="#cb28-26" aria-hidden="true" tabindex="-1"></a><span class="co"># GIven that we have a relatively large T, we can actually use the 5 tenure dummies here</span></span>
+<span id="cb28-27"><a href="#cb28-27" aria-hidden="true" tabindex="-1"></a>mod.feis <span class="ot">&lt;-</span> <span class="fu">feis</span>(logwages <span class="sc">~</span> child_hh <span class="sc">+</span> </span>
+<span id="cb28-28"><a href="#cb28-28" aria-hidden="true" tabindex="-1"></a>                   hours <span class="sc">+</span> age_gr <span class="sc">+</span></span>
+<span id="cb28-29"><a href="#cb28-29" aria-hidden="true" tabindex="-1"></a>                   profes <span class="sc">+</span> admin  <span class="sc">+</span> sales <span class="sc">+</span> crafts <span class="sc">+</span> operat <span class="sc">+</span> servic  <span class="sc">+</span> </span>
+<span id="cb28-30"><a href="#cb28-30" aria-hidden="true" tabindex="-1"></a>                   smsa <span class="sc">+</span> </span>
+<span id="cb28-31"><a href="#cb28-31" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">as.factor</span>(year) <span class="sc">|</span> ten1 <span class="sc">+</span> ten2 <span class="sc">+</span> ten3 <span class="sc">+</span> ten4 <span class="sc">+</span> ten5 <span class="sc">+</span> ten6, <span class="co"># Note we add year manually here</span></span>
+<span id="cb28-32"><a href="#cb28-32" aria-hidden="true" tabindex="-1"></a>                <span class="at">data =</span> <span class="fu">data.frame</span>(data.df),</span>
+<span id="cb28-33"><a href="#cb28-33" aria-hidden="true" tabindex="-1"></a>                <span class="at">id =</span> <span class="fu">c</span>(<span class="st">&quot;pid&quot;</span>), <span class="at">robust =</span> <span class="cn">TRUE</span>) <span class="co"># we use the cluster-robust SEs right away</span></span></code></pre></div>
+<pre><code>## Warning in feis(logwages ~ child_hh + hours + age_gr + profes + admin + : FEIS needs at least n(slopes)+1 observations per group. 
+##  You specified 6 slope parameter(s) plus intercept, all groups with t &lt;= 7 dropped</code></pre>
+<pre><code>* Compare using cluster robust standard errors (and screenreg).</code></pre>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="do">### Cluster robust SEs for RE and FE</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>vcov.re <span class="ot">&lt;-</span> <span class="fu">vcovHC</span>(mod.re, <span class="at">cluster =</span> <span class="st">&quot;group&quot;</span>, <span class="at">method =</span> <span class="st">&quot;arellano&quot;</span>, <span class="at">type =</span> <span class="st">&quot;HC3&quot;</span>)</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>vcov.fe <span class="ot">&lt;-</span> <span class="fu">vcovHC</span>(mod.fe, <span class="at">cluster =</span> <span class="st">&quot;group&quot;</span>, <span class="at">method =</span> <span class="st">&quot;arellano&quot;</span>, <span class="at">type =</span> <span class="st">&quot;HC3&quot;</span>)</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Plug into model object</span></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>mod.re<span class="sc">$</span>vcov <span class="ot">&lt;-</span> vcov.re</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>mod.fe<span class="sc">$</span>vcov <span class="ot">&lt;-</span> vcov.fe</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a><span class="do">### Compare</span></span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a><span class="fu">screenreg</span>(<span class="fu">list</span>(mod.lm, mod.re, mod.fe, mod.feis), <span class="at">digits =</span> <span class="dv">3</span>,</span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>          <span class="at">custom.model.names =</span> <span class="fu">c</span>(<span class="st">&quot;POLS&quot;</span>, <span class="st">&quot;RE&quot;</span>, <span class="st">&quot;FE&quot;</span>, <span class="st">&quot;FEIS&quot;</span>), </span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>          <span class="at">include.groups =</span> <span class="cn">FALSE</span>, <span class="co"># don&#39;t know why include.groups = FALSE is necessary here</span></span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>          <span class="at">omit.coef =</span> <span class="st">&quot;year&quot;</span>) </span></code></pre></div>
+<pre><code>## 
+## =========================================================================
+##                POLS           RE             FE             FEIS         
+## -------------------------------------------------------------------------
+## (Intercept)        8.747 ***      8.976 ***                              
+##                   (0.051)        (0.106)                                 
+## child_hh           0.137 ***      0.101 ***      0.040 *        0.055 ** 
+##                   (0.010)        (0.029)        (0.016)        (0.019)   
+## hours              0.000 ***      0.000 ***      0.000 ***      0.000 ***
+##                   (0.000)        (0.000)        (0.000)        (0.000)   
+## age_gr(30,35]      0.110 ***      0.143 ***      0.008          0.027    
+##                   (0.012)        (0.019)        (0.013)        (0.015)   
+## age_gr(35,40]      0.201 ***      0.233 ***     -0.036         -0.023    
+##                   (0.014)        (0.030)        (0.022)        (0.022)   
+## age_gr(40,45]      0.239 ***      0.282 ***     -0.131 ***     -0.106 ***
+##                   (0.019)        (0.042)        (0.031)        (0.032)   
+## age_gr(45,50]      0.251 ***      0.313 ***     -0.236 ***     -0.208 ***
+##                   (0.029)        (0.060)        (0.043)        (0.046)   
+## age_gr(50,55]      0.173 ***      0.264 *       -0.426 ***     -0.444 ***
+##                   (0.053)        (0.107)        (0.084)        (0.094)   
+## profes             0.249 ***      0.179 *        0.121 **       0.133 ** 
+##                   (0.045)        (0.074)        (0.045)        (0.045)   
+## admin              0.250 ***      0.160 *        0.104 *        0.128 ** 
+##                   (0.046)        (0.076)        (0.045)        (0.046)   
+## sales             -0.004          0.057          0.041          0.084    
+##                   (0.046)        (0.075)        (0.046)        (0.048)   
+## crafts            -0.031          0.057          0.060          0.091 *  
+##                   (0.045)        (0.071)        (0.042)        (0.044)   
+## operat            -0.178 ***      0.032          0.068          0.098 *  
+##                   (0.046)        (0.076)        (0.045)        (0.047)   
+## servic            -0.371 ***     -0.028          0.021          0.057    
+##                   (0.046)        (0.087)        (0.047)        (0.048)   
+## smsa               0.114 ***      0.023          0.018          0.026    
+##                   (0.010)        (0.029)        (0.020)        (0.021)   
+## ten1               0.242 ***      0.112 *        0.101 *                 
+##                   (0.028)        (0.054)        (0.039)                  
+## ten2               0.382 ***      0.223 ***      0.209 ***               
+##                   (0.029)        (0.056)        (0.038)                  
+## ten3               0.404 ***      0.275 ***      0.263 ***               
+##                   (0.028)        (0.054)        (0.037)                  
+## ten4               0.471 ***      0.331 ***      0.308 ***               
+##                   (0.027)        (0.057)        (0.038)                  
+## ten5               0.509 ***      0.317 ***      0.270 ***               
+##                   (0.028)        (0.064)        (0.037)                  
+## ten6               0.536 ***      0.290 **       0.220 ***               
+##                   (0.037)        (0.092)        (0.043)                  
+## -------------------------------------------------------------------------
+## R^2                0.426          0.374          0.287          0.273    
+## Adj. R^2           0.425          0.373          0.230          0.270    
+## Num. obs.      10560          10560          10560          10336        
+## s_idios                           0.299                                  
+## s_id                              0.332                                  
+## s_time                            0.016                                  
+## RMSE                                                            0.313    
+## =========================================================================
+## *** p &lt; 0.001; ** p &lt; 0.01; * p &lt; 0.05</code></pre>
+<ul>
+<li>Interpret the results</li>
+</ul>
+<p>We can interpret the results above as follows:</p>
+<p>POLS and RE: Observations with at least one child in the household
+tend to have higher annual wages</p>
+<p>FE: If men become fathers, this increases their annual wage by ~ 4%.
+The effect is significant (would be highly significant without cluster
+robust SEs).</p>
+<p>FEIS: Given the heterogeneous wage trajectories, if men become
+fathers, this increases their annual wage by ~ 5%.</p>
+<p>In this case, FEIS estimates a higher premium than FE. This could
+indicate that those with steeper wage trajectories actually are less
+likely to get children or get their children later.</p>
+<p>Do you know why FEIS has a lower <span
+class="math inline">\(N\)</span> than the other models?</p>
+<ul>
+<li>Try to perform a placebo test: what happens if you use the “lead” of
+becoming father. Why is this an interesting test?</li>
+</ul>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>data.df <span class="ot">&lt;-</span> data.df[<span class="fu">order</span>(data.df<span class="sc">$</span>pid, data.df<span class="sc">$</span>year), ]</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Lag </span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>data.df<span class="sc">$</span>lag_child_hh <span class="ot">&lt;-</span> <span class="fu">ave</span>(data.df<span class="sc">$</span>child_hh,</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>                            data.df<span class="sc">$</span>pid,</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>                            <span class="at">FUN =</span> <span class="cf">function</span>(x) <span class="fu">lag</span>(x, <span class="dv">2</span>)) <span class="co"># lets use two years</span></span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Lead</span></span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>data.df<span class="sc">$</span>lead_child_hh <span class="ot">&lt;-</span> <span class="fu">ave</span>(data.df<span class="sc">$</span>child_hh,</span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>                             data.df<span class="sc">$</span>pid,</span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>                             <span class="at">FUN =</span> <span class="cf">function</span>(x) <span class="fu">lead</span>(x, <span class="dv">2</span>)) <span class="co"># lets use two years</span></span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a><span class="do">### Estimate FE models</span></span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a>lag.fe <span class="ot">&lt;-</span> <span class="fu">plm</span>(logwages <span class="sc">~</span> lag_child_hh <span class="sc">+</span> </span>
+<span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a>                   hours <span class="sc">+</span> age_gr <span class="sc">+</span></span>
+<span id="cb33-16"><a href="#cb33-16" aria-hidden="true" tabindex="-1"></a>                   profes <span class="sc">+</span> admin  <span class="sc">+</span> sales <span class="sc">+</span> crafts <span class="sc">+</span> operat <span class="sc">+</span> servic  <span class="sc">+</span> </span>
+<span id="cb33-17"><a href="#cb33-17" aria-hidden="true" tabindex="-1"></a>                   smsa   <span class="sc">+</span></span>
+<span id="cb33-18"><a href="#cb33-18" aria-hidden="true" tabindex="-1"></a>                   ten1 <span class="sc">+</span> ten2 <span class="sc">+</span> ten3 <span class="sc">+</span> ten4 <span class="sc">+</span> ten5 <span class="sc">+</span> ten6, </span>
+<span id="cb33-19"><a href="#cb33-19" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> data.df,</span>
+<span id="cb33-20"><a href="#cb33-20" aria-hidden="true" tabindex="-1"></a>              <span class="at">index =</span> <span class="fu">c</span>(<span class="st">&quot;pid&quot;</span>, <span class="st">&quot;year&quot;</span>),</span>
+<span id="cb33-21"><a href="#cb33-21" aria-hidden="true" tabindex="-1"></a>              <span class="at">effect =</span> <span class="st">&quot;twoways&quot;</span>, <span class="at">model =</span> <span class="st">&quot;within&quot;</span>)</span>
+<span id="cb33-22"><a href="#cb33-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-23"><a href="#cb33-23" aria-hidden="true" tabindex="-1"></a>lead.fe <span class="ot">&lt;-</span> <span class="fu">plm</span>(logwages <span class="sc">~</span> lead_child_hh <span class="sc">+</span> </span>
+<span id="cb33-24"><a href="#cb33-24" aria-hidden="true" tabindex="-1"></a>                   hours <span class="sc">+</span> age_gr <span class="sc">+</span></span>
+<span id="cb33-25"><a href="#cb33-25" aria-hidden="true" tabindex="-1"></a>                   profes <span class="sc">+</span> admin  <span class="sc">+</span> sales <span class="sc">+</span> crafts <span class="sc">+</span> operat <span class="sc">+</span> servic  <span class="sc">+</span> </span>
+<span id="cb33-26"><a href="#cb33-26" aria-hidden="true" tabindex="-1"></a>                   smsa   <span class="sc">+</span></span>
+<span id="cb33-27"><a href="#cb33-27" aria-hidden="true" tabindex="-1"></a>                   ten1 <span class="sc">+</span> ten2 <span class="sc">+</span> ten3 <span class="sc">+</span> ten4 <span class="sc">+</span> ten5 <span class="sc">+</span> ten6, </span>
+<span id="cb33-28"><a href="#cb33-28" aria-hidden="true" tabindex="-1"></a>               <span class="at">data =</span> data.df,</span>
+<span id="cb33-29"><a href="#cb33-29" aria-hidden="true" tabindex="-1"></a>              <span class="at">index =</span> <span class="fu">c</span>(<span class="st">&quot;pid&quot;</span>, <span class="st">&quot;year&quot;</span>),</span>
+<span id="cb33-30"><a href="#cb33-30" aria-hidden="true" tabindex="-1"></a>              <span class="at">effect =</span> <span class="st">&quot;twoways&quot;</span>, <span class="at">model =</span> <span class="st">&quot;within&quot;</span>)</span>
+<span id="cb33-31"><a href="#cb33-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-32"><a href="#cb33-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Compare</span></span>
+<span id="cb33-33"><a href="#cb33-33" aria-hidden="true" tabindex="-1"></a><span class="fu">screenreg</span>(<span class="fu">list</span>(lag.fe, lead.fe), <span class="at">digits =</span> <span class="dv">3</span>,</span>
+<span id="cb33-34"><a href="#cb33-34" aria-hidden="true" tabindex="-1"></a>          <span class="at">custom.coef.map =</span> <span class="fu">list</span>(<span class="at">lag_child_hh =</span> <span class="st">&quot;Lag Child&quot;</span>, </span>
+<span id="cb33-35"><a href="#cb33-35" aria-hidden="true" tabindex="-1"></a>                              <span class="at">lead_child_hh =</span> <span class="st">&quot;Lead Child&quot;</span>))</span></code></pre></div>
+<pre><code>## 
+## ====================================
+##             Model 1     Model 2     
+## ------------------------------------
+## Lag Child      0.025 *              
+##               (0.011)               
+## Lead Child                 0.070 ***
+##                           (0.013)   
+## ------------------------------------
+## R^2            0.248       0.286    
+## Adj. R^2       0.176       0.218    
+## Num. obs.   9064        9064        
+## ====================================
+## *** p &lt; 0.001; ** p &lt; 0.01; * p &lt; 0.05</code></pre>
+<p>Interestingly we already see a significant and non-trivial fatherhood
+effect on the wage two years before the future father actually become
+fathers.</p>
+<p>If we observe a treatment effect for a treatment that has not yet
+happened, this might indicate either 1) anticipation effects, or 2) that
+something is actually confounding our treatment (e.g. selection on
+pre-treatment trends)</p>
+<p>What do you think, what might be happening here?</p>
+</div>
+<div id="exercise-3" class="section level1">
+<h1>Exercise 3</h1>
+<p>Can we use one of the new event-study approaches, such as the
+Callaway and SantAnna estimator?</p>
+<ul>
+<li>Preprocess data (treatment group and timing indicator)</li>
+</ul>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># treatment timing = year if child in household</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>data.df<span class="sc">$</span>treat_timing <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(data.df<span class="sc">$</span>child_hh <span class="sc">==</span> <span class="dv">1</span>, data.df<span class="sc">$</span>year, <span class="cn">NA</span>)</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Define those who never have a child</span></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>data.df<span class="sc">$</span>tmp <span class="ot">&lt;-</span> <span class="fu">ave</span>(data.df<span class="sc">$</span>child_hh,</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>                   data.df<span class="sc">$</span>pid,</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">FUN =</span> <span class="cf">function</span>(x) <span class="fu">mean</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>data.df<span class="sc">$</span>never_child <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(data.df<span class="sc">$</span>tmp <span class="sc">==</span> <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a><span class="co"># set never treated to zero</span></span>
+<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a>data.df<span class="sc">$</span>treat_timing[data.df<span class="sc">$</span>never_child <span class="sc">==</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a><span class="co"># if married is not NA, used min year per id (removing NAs)</span></span>
+<span id="cb35-15"><a href="#cb35-15" aria-hidden="true" tabindex="-1"></a>oo <span class="ot">&lt;-</span> <span class="fu">which</span>(<span class="sc">!</span><span class="fu">is.na</span>(data.df<span class="sc">$</span>child_hh))</span>
+<span id="cb35-16"><a href="#cb35-16" aria-hidden="true" tabindex="-1"></a>data.df<span class="sc">$</span>treat_timing[oo] <span class="ot">&lt;-</span> <span class="fu">ave</span>(data.df<span class="sc">$</span>treat_timing[oo],</span>
+<span id="cb35-17"><a href="#cb35-17" aria-hidden="true" tabindex="-1"></a>                                data.df<span class="sc">$</span>pid[oo],</span>
+<span id="cb35-18"><a href="#cb35-18" aria-hidden="true" tabindex="-1"></a>                                <span class="at">FUN =</span> <span class="cf">function</span>(x) <span class="fu">min</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb35-19"><a href="#cb35-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-20"><a href="#cb35-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-21"><a href="#cb35-21" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(data.df[, <span class="fu">c</span>(<span class="st">&quot;pid&quot;</span>, <span class="st">&quot;year&quot;</span>, <span class="st">&quot;child_hh&quot;</span>, <span class="st">&quot;never_child&quot;</span>, <span class="st">&quot;treat_timing&quot;</span>)], <span class="at">n =</span> <span class="dv">35</span>)</span></code></pre></div>
+<pre><code>## # A tibble: 35 × 5
+##      pid  year child_hh never_child treat_timing
+##    &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;       &lt;dbl&gt;        &lt;dbl&gt;
+##  1 11003  1979        0           1            0
+##  2 11003  1980        0           1            0
+##  3 11003  1981        0           1            0
+##  4 11003  1982        0           1            0
+##  5 11003  1983        0           1            0
+##  6 11003  1984        0           1            0
+##  7 11003  1985        0           1            0
+##  8 11003  1986        0           1            0
+##  9 11003  1987        0           1            0
+## 10 11003  1988        0           1            0
+## # … with 25 more rows</code></pre>
+<ul>
+<li>Estimate the model using <code>att_gt</code></li>
+</ul>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># estimate group-time average treatment effects using att_gt method</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>wages.attgt <span class="ot">&lt;-</span> <span class="fu">att_gt</span>(<span class="at">yname =</span> <span class="st">&quot;logwages&quot;</span>,</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>                      <span class="at">tname =</span> <span class="st">&quot;year&quot;</span>,</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>                      <span class="at">idname =</span> <span class="st">&quot;pid&quot;</span>,</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>                      <span class="at">gname =</span> <span class="st">&quot;treat_timing&quot;</span>,</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>                      <span class="at">xformla =</span> <span class="sc">~</span> hours <span class="sc">+</span> age_gr,</span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>                      <span class="at">data =</span> data.df,</span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>                      <span class="at">allow_unbalanced_panel =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>                      <span class="at">control_group =</span> <span class="st">&quot;notyettreated&quot;</span>,</span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>                      <span class="at">est_method =</span> <span class="st">&quot;ipw&quot;</span></span>
+<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a>                        )</span></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Show the group-time specific estimates</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>wages.dyn <span class="ot">&lt;-</span> <span class="fu">aggte</span>(wages.attgt, <span class="at">type =</span> <span class="st">&quot;dynamic&quot;</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>                   <span class="at">min_e =</span> <span class="sc">-</span><span class="dv">3</span>, <span class="at">max_e =</span> <span class="dv">6</span>)</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(wages.dyn)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## aggte(MP = wages.attgt, type = &quot;dynamic&quot;, min_e = -3, max_e = 6, 
+##     na.rm = TRUE)
+## 
+## Reference: Callaway, Brantly and Pedro H.C. Sant&#39;Anna.  &quot;Difference-in-Differences with Multiple Time Periods.&quot; Journal of Econometrics, Vol. 225, No. 2, pp. 200-230, 2021. &lt;https://doi.org/10.1016/j.jeconom.2020.12.001&gt;, &lt;https://arxiv.org/abs/1803.09015&gt; 
+## 
+## 
+## Overall summary of ATT&#39;s based on event-study/dynamic aggregation:  
+##     ATT    Std. Error     [ 95%  Conf. Int.]  
+##  0.1035        0.0281     0.0483      0.1587 *
+## 
+## 
+## Dynamic Effects:
+##  Event time Estimate Std. Error [95% Simult.  Conf. Band]  
+##          -3   0.0589     0.0375       -0.0373      0.1550  
+##          -2   0.0292     0.0264       -0.0385      0.0968  
+##          -1  -0.0566     0.0216       -0.1121     -0.0011 *
+##           0   0.0424     0.0190       -0.0063      0.0910  
+##           1   0.0573     0.0242       -0.0049      0.1195  
+##           2   0.0843     0.0270        0.0151      0.1534 *
+##           3   0.1103     0.0305        0.0320      0.1886 *
+##           4   0.1462     0.0361        0.0535      0.2389 *
+##           5   0.1487     0.0389        0.0489      0.2484 *
+##           6   0.1353     0.0447        0.0206      0.2501 *
+## ---
+## Signif. codes: `*&#39; confidence band does not cover 0
+## 
+## Control Group:  Not Yet Treated,  Anticipation Periods:  0
+## Estimation Method:  Inverse Probability Weighting</code></pre>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>zp3 <span class="ot">&lt;-</span> <span class="fu">ggdid</span>(wages.dyn) </span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>zp3 <span class="ot">&lt;-</span> zp3 <span class="sc">+</span> </span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">colour =</span> <span class="fu">gray</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>), <span class="at">lty =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="sc">-</span><span class="fl">0.5</span>, <span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">lty =</span> <span class="dv">1</span>)</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>zp3</span></code></pre></div>
+<p><img src="Panel_part3_solutions_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<ul>
+<li>Interpret the results</li>
+</ul>
+<p>The event-time results above again tell a little different story.
+First, hose getting father already have a little higher wage two and
+three years before they become fathers. Then, there is a negative
+anticipation effect in the year before birth (why could this be
+plausible?). After birth of the first child, fathers’ wages increase
+significantly more then the wages of non-fathers (however, this is not
+much more than the effect in year -3).</p>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1 class="unnumbered">References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Hospido.2012" class="csl-entry">
+Hospido, L. 2012. <span>“<span class="nocase">Modelling heterogeneity
+and dynamics in the volatility of individual wages</span>.”</span>
+<em><span>Journal of Applied Econometrics</span></em> 27 (3): 386–414.
+<a
+href="https://doi.org/10.1002/jae.1204">https://doi.org/10.1002/jae.1204</a>.
+</div>
+</div>
 </div>
 
 
