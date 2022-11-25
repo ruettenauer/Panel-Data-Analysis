@@ -1224,7 +1224,7 @@ cre <- plm(happiness ~ age + m_age, data = df_orig,
            index = c("id", "wave"),
            effect = "individual", model = "random")
 
-screenreg(list(fe1, btw2, re, cre), digits = 3,
+screenreg(list(fe1, btw2, re1, cre), digits = 3,
           custom.model.names = c("FE", "BTW", "RE", "CRE"))
 ```
 
