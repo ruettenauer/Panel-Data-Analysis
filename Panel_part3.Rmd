@@ -103,11 +103,11 @@ However, we do something similar: We want to investigate if there is a fatherhoo
 
     
 
-    * Use number of children to contruct a binary indicator of wether the is a child in the household or not
+    * Use number of children to construct a binary indicator of wether there is a child in the household or not
     
 
     
-    * Make sure we start only with men who are not yet fathers.
+    * Make sure we start only with men who are not yet fathers in the first period.
     
 
 
