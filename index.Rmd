@@ -60,19 +60,19 @@ Illustration by @HuntingtonKlein.2021: Introducing a binary control variable (le
 
 ### Plant openings and housing prices [@Currie.2015]
 
-![](fig/currie.PNG)
+![](fig/currie.PNG){width=75%}
 
 ### Life course events and happiness [@Clark.2013]
 
-![](fig/lifecourse-events.PNG)
+![](fig/lifecourse-events.PNG){width=75%}
 
 ### London Congestion Charge and School Attendance [@ConteKeivabu.2022]
 
-![](fig/ccz.PNG)
+![](fig/ccz.PNG){width=75%}
 
 ### Extreme Weather Events Elevate Climate Change Belief but not Pro-Environmental Behaviour [@Ruttenauer.2021c]
 
-![](fig/Ruettenauer.png)
+![](fig/Ruettenauer.png){width=75%}
 
 
 # Further materials

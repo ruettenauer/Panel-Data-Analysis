@@ -271,12 +271,12 @@ zp1 <- ggplot(df, aes(age, happiness)) +
 zp1  
 ```
 
-Obviously, we might suspect some other characteristics to influence our results. For instance, birth cohort might be factor that affects age and happiness. We can easily add a control for the cohort so account for this possibility. We would then estiamte the model  
+Obviously, we might suspect some other characteristics to influence our results. For instance, birth cohort might be a potential confounder that affects age and happiness. We can easily add a control for the cohort to account for this possibility. We would then estimate the model  
 
 $$
 y_{i} = \alpha + \beta_1 x_{i} + \beta_2 z_{it} + \upsilon_{i},
 $$
-where $z_i$ is the control variable (cohort).
+where $z_i$ is the control variable or confounder (cohort).
 
 ```{r}
 lm2 <- lm(happiness ~ age + cohort, data = df)
@@ -302,7 +302,9 @@ zp2 <- ggplot(df, aes(age, happiness)) +
 zp2  
 ```
 
-So, what we basically receive here is the (weighted) average effect within each birth cohort. We use only similar observations (in terms of cohort) to estimate our effect of interest. If we add some controls, we also decompose the variance which goes into our estimator
+So, what we basically receive here is the (weighted) average effect within each birth cohort. We use only similar observations (in terms of cohort) to estimate our effect of interest - the correlation between age and happiness. If we add any controls, we always decompose the variance which contributes to our estimator, and we eliminate the variance that is attributed to the confounder / control variable.
+
+![Illustration by @HuntingtonKlein.2021: Introducing a binary control variable](fig/NHK_Control.gif)
 
 ## Panel data setting
 
@@ -338,7 +340,7 @@ $$
 y_{it} = \alpha + \beta_{POLS} x_{it} + \upsilon_{it},
 $$
 
-And, as above, we use the simple `lm()' command
+And, as above, we use the simple `lm()` command
 
 ```{r}
 lm1 <- lm(happiness ~ age, data = df)
@@ -361,6 +363,7 @@ zp3 <- ggplot(df, aes(age, happiness)) +
 zp3 
 ```
 
+Interpretation: The higher the age of an observation, the higher their happiness.
 
 ### Between estimator
 
@@ -410,6 +413,7 @@ zp4 <- ggplot(df, aes(age, happiness)) +
 zp4  
 ```
 
+Interpretation: The older a person the higher their hapinness (as compared to younger people).
 
 ### Within estimator
 
@@ -457,6 +461,11 @@ zp5
 
 Now, we have estimated the effect by only taking observations within each person into account: given the person id, how does age correlate with happiness.
 
+Interpretation: The older a person gets, the lower this person's happiness (as compared to the same persons younger age).
+
+The principle is very similar to including a (binary) control variable. It's just that we include a lot of them to get rid of a lot of (potentially confounded) variance.
+
+![Illustration by @HuntingtonKlein.2021: Introducing fixed effects](fig/NHK_FE.gif)
 
 ### Comparison
 
@@ -473,7 +482,7 @@ Within: Increasing age within a person goes along with declining happiness withi
 
 The estimates for $\beta_{POLS}$ and $\beta_{BTW}$ are very similar here. We will see below why.
 
-### This is by the way how the relationship looks like with real world data (in Germany)
+### This is by the way how the within-person relationship looks with real world data in Germany (SOEP)
 
 
 ![Working paper by @Kratz.2021](fig/kratz.PNG)
@@ -567,7 +576,7 @@ The main problem: this model relies on very strong assumptions for consistency, 
 
 * $\E(\upsilon_{it} | x_{it}) = 0$, or $Cov(x_{it}, \upsilon_{it}) = 0$
 
-The error (including omitted variables) must not be correlated with $x_{it}$. In observational studies, we have or cannot observe a lot of things. However, everything that influences $y_{it}$ but is unobserved ends up in $\upsilon_{it}$. If anything correlates with $x_{it}$, it is endogenous, and $\hat{\beta}_x$ will be biased.  
+The error (including omitted variables) must not be correlated with $x_{it}$. In observational studies, we cannot observe a lot of things and characteristics (unobservables) such as personal views, physical traits, or empathy. However, everything that influences $y_{it}$ but is unobserved ends up in $\upsilon_{it}$. If anything correlates with $x_{it}$, it is endogenous, and $\hat{\beta}_x$ will be biased.  
 
 Take our marriage example. 
 
@@ -575,7 +584,7 @@ Take our marriage example.
 summary(lm(wage ~ marriage, data = df2))
 ```
 
-We would estimate a marriage premium of more than 2,000. The true value is 500. The reason: those who marry at some point already had higher wages before they married. 
+We would estimate a marriage premium of more than 2,000. The true value is 500. The reason: those who marry at some point already had higher wages before they married. Maybe friendly or emphatic people are more likely to mary and also do better in their job.
 
 ```{r class.source = 'fold-hide', message = FALSE, warning = FALSE}
 ### Plot 
@@ -595,7 +604,7 @@ zp2
 
 ### One-way fixed effects
 
-To relax the strong assumption, we can decompose the error into two parts (between and within) with panel data: $\upsilon_{it} = \alpha_i + \epsilon_{it} = 0$, where $\alpha_i$ is the time-constant (person-specific or between) part of the error, and $\epsilon_{it} = 0$ is the time-varying (idiosyncratic or within) part of the error. 
+To relax the strong assumption, we can decompose the error into two parts (between and within) if we use panel data: $\upsilon_{it} = \alpha_i + \epsilon_{it}$, where $\alpha_i$ is the time-constant (person-specific or between) part of the error, and $\epsilon_{it}$ is the time-varying (idiosyncratic or within) part of the error. 
 
 We can thus split up our main assumption for consistency:
 
@@ -625,7 +634,7 @@ $$
 
 This is called the within transformation. For each group (individual, district, firm), we subtract the group-specific mean from the original variable. This eliminates all between-group variance, including the person-specific part of the error term ($\alpha_i$).
 
-The $\hat{beta}_{FE}$ is then just the OLS estimator on the transformed data:
+The $\hat{\beta}_{FE}$ is then just the OLS estimator on the transformed data:
 
 $$
 \hat{\bm \beta} = (\bm X^\intercal\bm X)^{-1}\bm X^\intercal \bm y
@@ -639,7 +648,7 @@ The main assumption for consistency now is
 
 * $\E(\epsilon_{it} | x_{it}, \alpha_i) = 0$
 
-Idiosyncratic time-variation in $\epsilon_i$ must be uncorrelated with variation in $x_i$ across all time periods. However, $\E(\alpha_{i} | x_{i})$ can be any function of $x_i$.
+Idiosyncratic time-variation in $\epsilon_it$ must be uncorrelated with variation in $x_it$ across all time periods. However, $\E(\alpha_{i} | x_{i})$ can be any function of $x_i$.
 
 * Time-constant unobserved heterogeneity is allowed
 
@@ -866,13 +875,13 @@ The RE estimator has two main "advantages" over the FE estimator:
 
 2) It allows to estimate the effects of time-constant variables
 
-However, it obscures the main advantage of panel data: the relaxation of assumptions for consistency of estimators. The RE model needs the same assumptions as POLS for consistency:
+However, it obscures the main advantage of panel data: the relaxation of assumptions for consistency of estimators. The RE estimator needs the same assumptions as POLS for consistency:
 
 * $\E(\alpha_{i} | x_{it}) = 0$: No time-constant unobserved heterogeneity
 
 * $\E(\epsilon_{it} | x_{it}) = 0$: No time-varying unobserved heterogeneity
 
-The RE model can be written as:
+The RE estimator can be written as:
 
 $$
 y_{it} = \alpha + \beta x_{it} + \alpha_i + \vartheta_{it}.
@@ -880,7 +889,7 @@ $$
 
 Instead of assuming $\alpha_i$ are fixed effects, we treat them as i.i.d random effects, usually assuming they are normally distributed
 
-We can also write the RE as q quasi-demeaned estimator:
+We can also write the RE as a quasi-demeaned estimator:
 
 $$
 (y_{it} - \lambda\bar{y}_i) = \beta (x_{it} - \lambda\bar{x}_i) + (\epsilon_{it} - \lambda\bar{\epsilon}_i)  

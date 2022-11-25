@@ -872,13 +872,14 @@ class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb17-1"><a h
 <span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>zp1  </span></code></pre></div>
 <p><img src="Panel_part1_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 <p>Obviously, we might suspect some other characteristics to influence
-our results. For instance, birth cohort might be factor that affects age
-and happiness. We can easily add a control for the cohort so account for
-this possibility. We would then estiamte the model</p>
+our results. For instance, birth cohort might be a potential confounder
+that affects age and happiness. We can easily add a control for the
+cohort to account for this possibility. We would then estimate the
+model</p>
 <p><span class="math display">\[
 y_{i} = \alpha + \beta_1 x_{i} + \beta_2 z_{it} + \upsilon_{i},
 \]</span> where <span class="math inline">\(z_i\)</span> is the control
-variable (cohort).</p>
+variable or confounder (cohort).</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>lm2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(happiness <span class="sc">~</span> age <span class="sc">+</span> cohort, <span class="at">data =</span> df)</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lm2)</span></code></pre></div>
 <pre><code>## 
@@ -920,8 +921,17 @@ class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb20-1"><a h
 <p><img src="Panel_part1_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 <p>So, what we basically receive here is the (weighted) average effect
 within each birth cohort. We use only similar observations (in terms of
-cohort) to estimate our effect of interest. If we add some controls, we
-also decompose the variance which goes into our estimator</p>
+cohort) to estimate our effect of interest - the correlation between age
+and happiness. If we add any controls, we always decompose the variance
+which contributes to our estimator, and we eliminate the variance that
+is attributed to the confounder / control variable.</p>
+<div class="figure">
+<img src="fig/NHK_Control.gif" alt="" />
+<p class="caption">Illustration by <span
+class="citation">Huntington-Klein (<a href="#ref-HuntingtonKlein.2021"
+role="doc-biblioref">2021</a>)</span>: Introducing a binary control
+variable</p>
+</div>
 </div>
 <div id="panel-data-setting" class="section level2">
 <h2>Panel data setting</h2>
@@ -956,7 +966,7 @@ simply:</p>
 <p><span class="math display">\[
 y_{it} = \alpha + \beta_{POLS} x_{it} + \upsilon_{it},
 \]</span></p>
-<p>And, as above, we use the simple `lm()’ command</p>
+<p>And, as above, we use the simple <code>lm()</code> command</p>
 <div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>lm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(happiness <span class="sc">~</span> age, <span class="at">data =</span> df)</span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lm1)</span></code></pre></div>
 <pre><code>## 
@@ -991,6 +1001,8 @@ class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb24-1"><a h
 <span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.box.background =</span> <span class="fu">element_rect</span>(<span class="at">colour =</span> <span class="st">&quot;black&quot;</span>))</span>
 <span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>zp3 </span></code></pre></div>
 <p><img src="Panel_part1_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p>Interpretation: The higher the age of an observation, the higher
+their happiness.</p>
 </div>
 <div id="between-estimator" class="section level3">
 <h3>Between estimator</h3>
@@ -1075,6 +1087,8 @@ class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb29-1"><a h
 <span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.box.background =</span> <span class="fu">element_rect</span>(<span class="at">colour =</span> <span class="st">&quot;black&quot;</span>))</span>
 <span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>zp4  </span></code></pre></div>
 <p><img src="Panel_part1_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<p>Interpretation: The older a person the higher their hapinness (as
+compared to younger people).</p>
 </div>
 <div id="within-estimator" class="section level3">
 <h3>Within estimator</h3>
@@ -1161,6 +1175,17 @@ class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb34-1"><a h
 <p>Now, we have estimated the effect by only taking observations within
 each person into account: given the person id, how does age correlate
 with happiness.</p>
+<p>Interpretation: The older a person gets, the lower this person’s
+happiness (as compared to the same persons younger age).</p>
+<p>The principle is very similar to including a (binary) control
+variable. It’s just that we include a lot of them to get rid of a lot of
+(potentially confounded) variance.</p>
+<div class="figure">
+<img src="fig/NHK_FE.gif" alt="" />
+<p class="caption">Illustration by <span
+class="citation">Huntington-Klein (<a href="#ref-HuntingtonKlein.2021"
+role="doc-biblioref">2021</a>)</span>: Introducing fixed effects</p>
+</div>
 </div>
 <div id="comparison" class="section level3">
 <h3>Comparison</h3>
@@ -1202,10 +1227,10 @@ and <span class="math inline">\(\beta_{BTW}\)</span> are very similar
 here. We will see below why.</p>
 </div>
 <div
-id="this-is-by-the-way-how-the-relationship-looks-like-with-real-world-data-in-germany"
+id="this-is-by-the-way-how-the-within-person-relationship-looks-with-real-world-data-in-germany-soep"
 class="section level3">
-<h3>This is by the way how the relationship looks like with real world
-data (in Germany)</h3>
+<h3>This is by the way how the within-person relationship looks with
+real world data in Germany (SOEP)</h3>
 <div class="figure">
 <img src="fig/kratz.PNG" alt="" />
 <p class="caption">Working paper by <span class="citation">Kratz and
@@ -1309,12 +1334,13 @@ consistency, with the most important one being:</p>
 </ul>
 <p>The error (including omitted variables) must not be correlated with
 <span class="math inline">\(x_{it}\)</span>. In observational studies,
-we have or cannot observe a lot of things. However, everything that
-influences <span class="math inline">\(y_{it}\)</span> but is unobserved
-ends up in <span class="math inline">\(\upsilon_{it}\)</span>. If
-anything correlates with <span class="math inline">\(x_{it}\)</span>, it
-is endogenous, and <span class="math inline">\(\hat{\beta}_x\)</span>
-will be biased.</p>
+we cannot observe a lot of things and characteristics (unobservables)
+such as personal views, physical traits, or empathy. However, everything
+that influences <span class="math inline">\(y_{it}\)</span> but is
+unobserved ends up in <span
+class="math inline">\(\upsilon_{it}\)</span>. If anything correlates
+with <span class="math inline">\(x_{it}\)</span>, it is endogenous, and
+<span class="math inline">\(\hat{\beta}_x\)</span> will be biased.</p>
 <p>Take our marriage example.</p>
 <div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(wage <span class="sc">~</span> marriage, <span class="at">data =</span> df2))</span></code></pre></div>
 <pre><code>## 
@@ -1337,7 +1363,8 @@ will be biased.</p>
 ## F-statistic: 21.43 on 1 and 22 DF,  p-value: 0.0001297</code></pre>
 <p>We would estimate a marriage premium of more than 2,000. The true
 value is 500. The reason: those who marry at some point already had
-higher wages before they married.</p>
+higher wages before they married. Maybe friendly or emphatic people are
+more likely to mary and also do better in their job.</p>
 <div class="sourceCode" id="cb40"><pre
 class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="do">### Plot </span></span>
 <span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>zp2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df2, <span class="fu">aes</span>(wave, wage)) <span class="sc">+</span></span>
@@ -1357,11 +1384,11 @@ class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb40-1"><a h
 <div id="one-way-fixed-effects" class="section level3">
 <h3>One-way fixed effects</h3>
 <p>To relax the strong assumption, we can decompose the error into two
-parts (between and within) with panel data: <span
-class="math inline">\(\upsilon_{it} = \alpha_i + \epsilon_{it} =
-0\)</span>, where <span class="math inline">\(\alpha_i\)</span> is the
-time-constant (person-specific or between) part of the error, and <span
-class="math inline">\(\epsilon_{it} = 0\)</span> is the time-varying
+parts (between and within) if we use panel data: <span
+class="math inline">\(\upsilon_{it} = \alpha_i + \epsilon_{it}\)</span>,
+where <span class="math inline">\(\alpha_i\)</span> is the time-constant
+(person-specific or between) part of the error, and <span
+class="math inline">\(\epsilon_{it}\)</span> is the time-varying
 (idiosyncratic or within) part of the error.</p>
 <p>We can thus split up our main assumption for consistency:</p>
 <ul>
@@ -1393,8 +1420,8 @@ district, firm), we subtract the group-specific mean from the original
 variable. This eliminates all between-group variance, including the
 person-specific part of the error term (<span
 class="math inline">\(\alpha_i\)</span>).</p>
-<p>The <span class="math inline">\(\hat{beta}_{FE}\)</span> is then just
-the OLS estimator on the transformed data:</p>
+<p>The <span class="math inline">\(\hat{\beta}_{FE}\)</span> is then
+just the OLS estimator on the transformed data:</p>
 <p><span class="math display">\[
 \hat{\boldsymbol{\mathbf{\beta}}} =
 (\boldsymbol{\mathbf{X}}^\intercal\boldsymbol{\mathbf{X}})^{-1}\boldsymbol{\mathbf{X}}^\intercal
@@ -1411,8 +1438,8 @@ which are at least observed 2 times (<span class="math inline">\(T \geq
 \alpha_i) = 0\)</span></li>
 </ul>
 <p>Idiosyncratic time-variation in <span
-class="math inline">\(\epsilon_i\)</span> must be uncorrelated with
-variation in <span class="math inline">\(x_i\)</span> across all time
+class="math inline">\(\epsilon_it\)</span> must be uncorrelated with
+variation in <span class="math inline">\(x_it\)</span> across all time
 periods. However, <span class="math inline">\(\mathrm{E}(\alpha_{i} |
 x_{i})\)</span> can be any function of <span
 class="math inline">\(x_i\)</span>.</p>
@@ -1747,7 +1774,7 @@ has lower standard errors</p></li>
 variables</p></li>
 </ol>
 <p>However, it obscures the main advantage of panel data: the relaxation
-of assumptions for consistency of estimators. The RE model needs the
+of assumptions for consistency of estimators. The RE estimator needs the
 same assumptions as POLS for consistency:</p>
 <ul>
 <li><p><span class="math inline">\(\mathrm{E}(\alpha_{i} | x_{it}) =
@@ -1755,14 +1782,14 @@ same assumptions as POLS for consistency:</p>
 <li><p><span class="math inline">\(\mathrm{E}(\epsilon_{it} | x_{it}) =
 0\)</span>: No time-varying unobserved heterogeneity</p></li>
 </ul>
-<p>The RE model can be written as:</p>
+<p>The RE estimator can be written as:</p>
 <p><span class="math display">\[
 y_{it} = \alpha + \beta x_{it} + \alpha_i + \vartheta_{it}.
 \]</span></p>
 <p>Instead of assuming <span class="math inline">\(\alpha_i\)</span> are
 fixed effects, we treat them as i.i.d random effects, usually assuming
 they are normally distributed</p>
-<p>We can also write the RE as q quasi-demeaned estimator:</p>
+<p>We can also write the RE as a quasi-demeaned estimator:</p>
 <p><span class="math display">\[
 (y_{it} - \lambda\bar{y}_i) = \beta (x_{it} - \lambda\bar{x}_i) +
 (\epsilon_{it} - \lambda\bar{\epsilon}_i)  
@@ -2379,6 +2406,11 @@ Hausman, Jerry A. 1978. <span>“<span class="nocase">Specification Tests
 in Econometrics</span>.”</span> <em><span>Econometrica</span></em> 46
 (6): 1251–71. <a
 href="https://doi.org/10.2307/1913827">https://doi.org/10.2307/1913827</a>.
+</div>
+<div id="ref-HuntingtonKlein.2021" class="csl-entry">
+Huntington-Klein, Nick. 2021. <em><span class="nocase">The Effect: An
+Introduction to Research Design and Causality</span></em>. 1st ed. Boca
+Raton: <span>Chapman <span>&amp;</span> Hall/CRC</span>.
 </div>
 <div id="ref-Kratz.2021" class="csl-entry">
 Kratz, Fabian, and Josef Brüderl. 2021. <span>“<span class="nocase">The
