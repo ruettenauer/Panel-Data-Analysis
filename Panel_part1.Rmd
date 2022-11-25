@@ -925,6 +925,9 @@ re1 <- plm(happiness ~ age, data = df,
            index = c("id", "wave"),
            effect = "individual", model = "random")
 summary(re1)
+
+# Save for later
+df_orig <- df
 ```
 
 This indicates that there is barely any relation between age and happiness. This is because the within and the between estimates cancel out each other. 
@@ -1217,7 +1220,7 @@ df$m_age <- ave(df$age,
                 df$id,
                 FUN = mean)
 
-cre <- plm(happiness ~ age + m_age, data = df,
+cre <- plm(happiness ~ age + m_age, data = df_orig,
            index = c("id", "wave"),
            effect = "individual", model = "random")
 

@@ -1863,175 +1863,92 @@ the <code>plm</code> package.</p>
 ## R-Squared:      0.011211
 ## Adj. R-Squared: -0.033734
 ## Chisq: 0.249442 on 1 DF, p-value: 0.61747</code></pre>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Save for later</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>df_orig <span class="ot">&lt;-</span> df</span></code></pre></div>
 <p>This indicates that there is barely any relation between age and
 happiness. This is because the within and the between estimates cancel
 out each other.</p>
-<div class="sourceCode" id="cb57"><pre
-class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">6</span></span>
-<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>T <span class="ot">&lt;-</span> <span class="dv">4</span></span>
-<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a><span class="do">### Models</span></span>
-<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Total line for plot</span></span>
-<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>lm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(happiness <span class="sc">~</span> age, <span class="at">data =</span> df)</span>
-<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>lm2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(happiness <span class="sc">~</span> age <span class="sc">+</span> cohort, <span class="at">data =</span> df)</span>
-<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a>lm3 <span class="ot">&lt;-</span> <span class="fu">lm</span>(happiness <span class="sc">~</span> age <span class="sc">+</span> idname, <span class="at">data =</span> df)</span>
-<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a>lm4 <span class="ot">&lt;-</span> <span class="fu">lm</span>(m_happiness <span class="sc">~</span> m_age, <span class="at">data =</span> df)</span>
-<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a>re <span class="ot">&lt;-</span> <span class="fu">plm</span>(happiness <span class="sc">~</span> age, df, <span class="at">model =</span> <span class="st">&quot;random&quot;</span>, <span class="at">effect =</span> <span class="st">&quot;individual&quot;</span>)</span>
-<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb57-11"><a href="#cb57-11" aria-hidden="true" tabindex="-1"></a><span class="do">### Compare POLS, BE, FE, and RE</span></span>
-<span id="cb57-12"><a href="#cb57-12" aria-hidden="true" tabindex="-1"></a>estimates <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">ncol =</span> <span class="dv">3</span>, <span class="at">nrow =</span> <span class="dv">4</span>))</span>
-<span id="cb57-13"><a href="#cb57-13" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(estimates) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Model&quot;</span>, <span class="st">&quot;Intercept&quot;</span>, <span class="st">&quot;slope&quot;</span>)</span>
-<span id="cb57-14"><a href="#cb57-14" aria-hidden="true" tabindex="-1"></a>estimates[<span class="dv">1</span>,] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;POLS&quot;</span>,</span>
-<span id="cb57-15"><a href="#cb57-15" aria-hidden="true" tabindex="-1"></a>                   lm1<span class="sc">$</span>coefficients[<span class="dv">1</span>],</span>
-<span id="cb57-16"><a href="#cb57-16" aria-hidden="true" tabindex="-1"></a>                   lm1<span class="sc">$</span>coefficients[<span class="dv">2</span>])</span>
-<span id="cb57-17"><a href="#cb57-17" aria-hidden="true" tabindex="-1"></a>estimates[<span class="dv">2</span>,] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;BE&quot;</span>,</span>
-<span id="cb57-18"><a href="#cb57-18" aria-hidden="true" tabindex="-1"></a>                   lm4<span class="sc">$</span>coefficients[<span class="dv">1</span>], </span>
-<span id="cb57-19"><a href="#cb57-19" aria-hidden="true" tabindex="-1"></a>                   lm4<span class="sc">$</span>coefficients[<span class="dv">2</span>])</span>
-<span id="cb57-20"><a href="#cb57-20" aria-hidden="true" tabindex="-1"></a>estimates[<span class="dv">3</span>,] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;FE&quot;</span>,</span>
-<span id="cb57-21"><a href="#cb57-21" aria-hidden="true" tabindex="-1"></a>                   lm3<span class="sc">$</span>coefficients[<span class="dv">1</span>] <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> lm3<span class="sc">$</span>coefficients[<span class="dv">3</span>]  <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> lm3<span class="sc">$</span>coefficients[<span class="dv">4</span>] </span>
-<span id="cb57-22"><a href="#cb57-22" aria-hidden="true" tabindex="-1"></a>                   <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> lm3<span class="sc">$</span>coefficients[<span class="dv">5</span>]  <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> lm3<span class="sc">$</span>coefficients[<span class="dv">6</span>]  <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> lm3<span class="sc">$</span>coefficients[<span class="dv">7</span>], </span>
-<span id="cb57-23"><a href="#cb57-23" aria-hidden="true" tabindex="-1"></a>                   lm3<span class="sc">$</span>coefficients[<span class="dv">2</span>])</span>
-<span id="cb57-24"><a href="#cb57-24" aria-hidden="true" tabindex="-1"></a>estimates[<span class="dv">4</span>,] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;RE&quot;</span>,</span>
-<span id="cb57-25"><a href="#cb57-25" aria-hidden="true" tabindex="-1"></a>                   re<span class="sc">$</span>coefficients[<span class="dv">1</span>], </span>
-<span id="cb57-26"><a href="#cb57-26" aria-hidden="true" tabindex="-1"></a>                   re<span class="sc">$</span>coefficients[<span class="dv">2</span>])</span>
-<span id="cb57-27"><a href="#cb57-27" aria-hidden="true" tabindex="-1"></a>estimates[, <span class="sc">-</span><span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fu">apply</span>(estimates[, <span class="sc">-</span><span class="dv">1</span>], <span class="dv">2</span>, <span class="at">FUN =</span> <span class="cf">function</span>(x) <span class="fu">as.numeric</span>(x))</span>
-<span id="cb57-28"><a href="#cb57-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb57-29"><a href="#cb57-29" aria-hidden="true" tabindex="-1"></a>newdf <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">ncol =</span> <span class="dv">2</span>, <span class="at">nrow =</span> <span class="dv">2</span>))</span>
-<span id="cb57-30"><a href="#cb57-30" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(newdf) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>)</span>
-<span id="cb57-31"><a href="#cb57-31" aria-hidden="true" tabindex="-1"></a>newdf<span class="sc">$</span>x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">min</span>(df<span class="sc">$</span>age), <span class="fu">max</span>(df<span class="sc">$</span>age))</span>
-<span id="cb57-32"><a href="#cb57-32" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(estimates)){</span>
-<span id="cb57-33"><a href="#cb57-33" aria-hidden="true" tabindex="-1"></a>  newdf<span class="sc">$</span>y <span class="ot">&lt;-</span> estimates[i, <span class="st">&quot;Intercept&quot;</span>] <span class="sc">+</span> estimates[i, <span class="st">&quot;slope&quot;</span>]<span class="sc">*</span>newdf<span class="sc">$</span>x</span>
-<span id="cb57-34"><a href="#cb57-34" aria-hidden="true" tabindex="-1"></a>  newdf<span class="sc">$</span>Model <span class="ot">&lt;-</span> estimates[i, <span class="st">&quot;Model&quot;</span>]</span>
-<span id="cb57-35"><a href="#cb57-35" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(i <span class="sc">==</span> <span class="dv">1</span>){</span>
-<span id="cb57-36"><a href="#cb57-36" aria-hidden="true" tabindex="-1"></a>    pred <span class="ot">&lt;-</span> newdf</span>
-<span id="cb57-37"><a href="#cb57-37" aria-hidden="true" tabindex="-1"></a>  }<span class="cf">else</span>{pred <span class="ot">&lt;-</span> <span class="fu">rbind</span>(pred, newdf)}</span>
-<span id="cb57-38"><a href="#cb57-38" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb57-39"><a href="#cb57-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb57-40"><a href="#cb57-40" aria-hidden="true" tabindex="-1"></a>estimates<span class="sc">$</span>Model <span class="ot">&lt;-</span> <span class="fu">factor</span>(estimates<span class="sc">$</span>Model, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;POLS&quot;</span>, <span class="st">&quot;BE&quot;</span>, <span class="st">&quot;FE&quot;</span>, <span class="st">&quot;RE&quot;</span>))</span>
-<span id="cb57-41"><a href="#cb57-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb57-42"><a href="#cb57-42" aria-hidden="true" tabindex="-1"></a>gg_color_hue <span class="ot">&lt;-</span> <span class="cf">function</span>(n) {</span>
-<span id="cb57-43"><a href="#cb57-43" aria-hidden="true" tabindex="-1"></a>  hues <span class="ot">=</span> <span class="fu">seq</span>(<span class="dv">15</span>, <span class="dv">375</span>, <span class="at">length =</span> n <span class="sc">+</span> <span class="dv">1</span>)</span>
-<span id="cb57-44"><a href="#cb57-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hcl</span>(<span class="at">h =</span> hues, <span class="at">l =</span> <span class="dv">65</span>, <span class="at">c =</span> <span class="dv">100</span>)[<span class="dv">1</span><span class="sc">:</span>n]</span>
-<span id="cb57-45"><a href="#cb57-45" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb57-46"><a href="#cb57-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb57-47"><a href="#cb57-47" aria-hidden="true" tabindex="-1"></a>zp6 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df, <span class="fu">aes</span>(age, happiness)) <span class="sc">+</span></span>
-<span id="cb57-48"><a href="#cb57-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> happiness, <span class="at">shape =</span> idname),</span>
-<span id="cb57-49"><a href="#cb57-49" aria-hidden="true" tabindex="-1"></a>             <span class="at">colour =</span> <span class="fu">rep</span>(<span class="fu">gg_color_hue</span>(<span class="dv">6</span>), <span class="at">each =</span> T),</span>
-<span id="cb57-50"><a href="#cb57-50" aria-hidden="true" tabindex="-1"></a>              <span class="at">size =</span> <span class="dv">2</span>, <span class="at">stroke =</span> <span class="dv">1</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
-<span id="cb57-51"><a href="#cb57-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">&#39;lm&#39;</span>, <span class="at">formula =</span> y <span class="sc">~</span> x, <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb57-52"><a href="#cb57-52" aria-hidden="true" tabindex="-1"></a>              <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>, <span class="fu">aes</span>(<span class="at">group =</span> idname), <span class="at">colour =</span> <span class="fu">alpha</span>(<span class="st">&quot;gray&quot;</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
-<span id="cb57-53"><a href="#cb57-53" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">data =</span> estimates, <span class="at">lwd =</span> <span class="fl">1.2</span>,</span>
-<span id="cb57-54"><a href="#cb57-54" aria-hidden="true" tabindex="-1"></a>              <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">intercept =</span> Intercept, <span class="at">slope =</span> slope, </span>
-<span id="cb57-55"><a href="#cb57-55" aria-hidden="true" tabindex="-1"></a>                            <span class="at">colour =</span> Model, <span class="at">linetype =</span> Model)) <span class="sc">+</span></span>
-<span id="cb57-56"><a href="#cb57-56" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> <span class="fu">unique</span>(df[, <span class="fu">c</span>(<span class="st">&quot;m_age&quot;</span>, <span class="st">&quot;m_happiness&quot;</span>, <span class="st">&quot;idname&quot;</span>)]),</span>
-<span id="cb57-57"><a href="#cb57-57" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">x =</span> m_age, <span class="at">y =</span> m_happiness, <span class="at">shape =</span> idname),</span>
-<span id="cb57-58"><a href="#cb57-58" aria-hidden="true" tabindex="-1"></a>             <span class="at">colour =</span> <span class="fu">gg_color_hue</span>(<span class="dv">6</span>), <span class="at">alpha =</span> <span class="fl">0.5</span>,</span>
-<span id="cb57-59"><a href="#cb57-59" aria-hidden="true" tabindex="-1"></a>              <span class="at">size =</span> <span class="dv">3</span>, <span class="at">stroke =</span> <span class="dv">2</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
-<span id="cb57-60"><a href="#cb57-60" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_linetype_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;solid&quot;</span>, <span class="st">&quot;twodash&quot;</span>, <span class="st">&quot;longdash&quot;</span>, <span class="st">&quot;dotdash&quot;</span>)) <span class="sc">+</span></span>
-<span id="cb57-61"><a href="#cb57-61" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="fl">3.3</span>, <span class="fl">9.2</span>) <span class="sc">+</span> <span class="fu">expand_limits</span>(<span class="at">y =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>)) <span class="sc">+</span> </span>
-<span id="cb57-62"><a href="#cb57-62" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb57-63"><a href="#cb57-63" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.key =</span> <span class="fu">element_blank</span>(), <span class="at">legend.title =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb57-64"><a href="#cb57-64" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.position =</span> <span class="fu">c</span>(<span class="fl">0.95</span>,<span class="fl">0.05</span>), <span class="at">legend.justification =</span> <span class="fu">c</span>(<span class="st">&quot;right&quot;</span>, <span class="st">&quot;bottom&quot;</span>),</span>
-<span id="cb57-65"><a href="#cb57-65" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.background =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb57-66"><a href="#cb57-66" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.box.background =</span> <span class="fu">element_rect</span>(<span class="at">colour =</span> <span class="st">&quot;black&quot;</span>),</span>
-<span id="cb57-67"><a href="#cb57-67" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>))</span>
-<span id="cb57-68"><a href="#cb57-68" aria-hidden="true" tabindex="-1"></a>zp6</span></code></pre></div>
+<div class="sourceCode" id="cb58"><pre
+class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">6</span></span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>T <span class="ot">&lt;-</span> <span class="dv">4</span></span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a><span class="do">### Models</span></span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Total line for plot</span></span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>lm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(happiness <span class="sc">~</span> age, <span class="at">data =</span> df)</span>
+<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>lm2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(happiness <span class="sc">~</span> age <span class="sc">+</span> cohort, <span class="at">data =</span> df)</span>
+<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a>lm3 <span class="ot">&lt;-</span> <span class="fu">lm</span>(happiness <span class="sc">~</span> age <span class="sc">+</span> idname, <span class="at">data =</span> df)</span>
+<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a>lm4 <span class="ot">&lt;-</span> <span class="fu">lm</span>(m_happiness <span class="sc">~</span> m_age, <span class="at">data =</span> df)</span>
+<span id="cb58-9"><a href="#cb58-9" aria-hidden="true" tabindex="-1"></a>re <span class="ot">&lt;-</span> <span class="fu">plm</span>(happiness <span class="sc">~</span> age, df, <span class="at">model =</span> <span class="st">&quot;random&quot;</span>, <span class="at">effect =</span> <span class="st">&quot;individual&quot;</span>)</span>
+<span id="cb58-10"><a href="#cb58-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-11"><a href="#cb58-11" aria-hidden="true" tabindex="-1"></a><span class="do">### Compare POLS, BE, FE, and RE</span></span>
+<span id="cb58-12"><a href="#cb58-12" aria-hidden="true" tabindex="-1"></a>estimates <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">ncol =</span> <span class="dv">3</span>, <span class="at">nrow =</span> <span class="dv">4</span>))</span>
+<span id="cb58-13"><a href="#cb58-13" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(estimates) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Model&quot;</span>, <span class="st">&quot;Intercept&quot;</span>, <span class="st">&quot;slope&quot;</span>)</span>
+<span id="cb58-14"><a href="#cb58-14" aria-hidden="true" tabindex="-1"></a>estimates[<span class="dv">1</span>,] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;POLS&quot;</span>,</span>
+<span id="cb58-15"><a href="#cb58-15" aria-hidden="true" tabindex="-1"></a>                   lm1<span class="sc">$</span>coefficients[<span class="dv">1</span>],</span>
+<span id="cb58-16"><a href="#cb58-16" aria-hidden="true" tabindex="-1"></a>                   lm1<span class="sc">$</span>coefficients[<span class="dv">2</span>])</span>
+<span id="cb58-17"><a href="#cb58-17" aria-hidden="true" tabindex="-1"></a>estimates[<span class="dv">2</span>,] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;BE&quot;</span>,</span>
+<span id="cb58-18"><a href="#cb58-18" aria-hidden="true" tabindex="-1"></a>                   lm4<span class="sc">$</span>coefficients[<span class="dv">1</span>], </span>
+<span id="cb58-19"><a href="#cb58-19" aria-hidden="true" tabindex="-1"></a>                   lm4<span class="sc">$</span>coefficients[<span class="dv">2</span>])</span>
+<span id="cb58-20"><a href="#cb58-20" aria-hidden="true" tabindex="-1"></a>estimates[<span class="dv">3</span>,] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;FE&quot;</span>,</span>
+<span id="cb58-21"><a href="#cb58-21" aria-hidden="true" tabindex="-1"></a>                   lm3<span class="sc">$</span>coefficients[<span class="dv">1</span>] <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> lm3<span class="sc">$</span>coefficients[<span class="dv">3</span>]  <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> lm3<span class="sc">$</span>coefficients[<span class="dv">4</span>] </span>
+<span id="cb58-22"><a href="#cb58-22" aria-hidden="true" tabindex="-1"></a>                   <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> lm3<span class="sc">$</span>coefficients[<span class="dv">5</span>]  <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> lm3<span class="sc">$</span>coefficients[<span class="dv">6</span>]  <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> lm3<span class="sc">$</span>coefficients[<span class="dv">7</span>], </span>
+<span id="cb58-23"><a href="#cb58-23" aria-hidden="true" tabindex="-1"></a>                   lm3<span class="sc">$</span>coefficients[<span class="dv">2</span>])</span>
+<span id="cb58-24"><a href="#cb58-24" aria-hidden="true" tabindex="-1"></a>estimates[<span class="dv">4</span>,] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;RE&quot;</span>,</span>
+<span id="cb58-25"><a href="#cb58-25" aria-hidden="true" tabindex="-1"></a>                   re<span class="sc">$</span>coefficients[<span class="dv">1</span>], </span>
+<span id="cb58-26"><a href="#cb58-26" aria-hidden="true" tabindex="-1"></a>                   re<span class="sc">$</span>coefficients[<span class="dv">2</span>])</span>
+<span id="cb58-27"><a href="#cb58-27" aria-hidden="true" tabindex="-1"></a>estimates[, <span class="sc">-</span><span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fu">apply</span>(estimates[, <span class="sc">-</span><span class="dv">1</span>], <span class="dv">2</span>, <span class="at">FUN =</span> <span class="cf">function</span>(x) <span class="fu">as.numeric</span>(x))</span>
+<span id="cb58-28"><a href="#cb58-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-29"><a href="#cb58-29" aria-hidden="true" tabindex="-1"></a>newdf <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">ncol =</span> <span class="dv">2</span>, <span class="at">nrow =</span> <span class="dv">2</span>))</span>
+<span id="cb58-30"><a href="#cb58-30" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(newdf) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>)</span>
+<span id="cb58-31"><a href="#cb58-31" aria-hidden="true" tabindex="-1"></a>newdf<span class="sc">$</span>x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">min</span>(df<span class="sc">$</span>age), <span class="fu">max</span>(df<span class="sc">$</span>age))</span>
+<span id="cb58-32"><a href="#cb58-32" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(estimates)){</span>
+<span id="cb58-33"><a href="#cb58-33" aria-hidden="true" tabindex="-1"></a>  newdf<span class="sc">$</span>y <span class="ot">&lt;-</span> estimates[i, <span class="st">&quot;Intercept&quot;</span>] <span class="sc">+</span> estimates[i, <span class="st">&quot;slope&quot;</span>]<span class="sc">*</span>newdf<span class="sc">$</span>x</span>
+<span id="cb58-34"><a href="#cb58-34" aria-hidden="true" tabindex="-1"></a>  newdf<span class="sc">$</span>Model <span class="ot">&lt;-</span> estimates[i, <span class="st">&quot;Model&quot;</span>]</span>
+<span id="cb58-35"><a href="#cb58-35" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(i <span class="sc">==</span> <span class="dv">1</span>){</span>
+<span id="cb58-36"><a href="#cb58-36" aria-hidden="true" tabindex="-1"></a>    pred <span class="ot">&lt;-</span> newdf</span>
+<span id="cb58-37"><a href="#cb58-37" aria-hidden="true" tabindex="-1"></a>  }<span class="cf">else</span>{pred <span class="ot">&lt;-</span> <span class="fu">rbind</span>(pred, newdf)}</span>
+<span id="cb58-38"><a href="#cb58-38" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb58-39"><a href="#cb58-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-40"><a href="#cb58-40" aria-hidden="true" tabindex="-1"></a>estimates<span class="sc">$</span>Model <span class="ot">&lt;-</span> <span class="fu">factor</span>(estimates<span class="sc">$</span>Model, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;POLS&quot;</span>, <span class="st">&quot;BE&quot;</span>, <span class="st">&quot;FE&quot;</span>, <span class="st">&quot;RE&quot;</span>))</span>
+<span id="cb58-41"><a href="#cb58-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-42"><a href="#cb58-42" aria-hidden="true" tabindex="-1"></a>gg_color_hue <span class="ot">&lt;-</span> <span class="cf">function</span>(n) {</span>
+<span id="cb58-43"><a href="#cb58-43" aria-hidden="true" tabindex="-1"></a>  hues <span class="ot">=</span> <span class="fu">seq</span>(<span class="dv">15</span>, <span class="dv">375</span>, <span class="at">length =</span> n <span class="sc">+</span> <span class="dv">1</span>)</span>
+<span id="cb58-44"><a href="#cb58-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hcl</span>(<span class="at">h =</span> hues, <span class="at">l =</span> <span class="dv">65</span>, <span class="at">c =</span> <span class="dv">100</span>)[<span class="dv">1</span><span class="sc">:</span>n]</span>
+<span id="cb58-45"><a href="#cb58-45" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb58-46"><a href="#cb58-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-47"><a href="#cb58-47" aria-hidden="true" tabindex="-1"></a>zp6 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df, <span class="fu">aes</span>(age, happiness)) <span class="sc">+</span></span>
+<span id="cb58-48"><a href="#cb58-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> happiness, <span class="at">shape =</span> idname),</span>
+<span id="cb58-49"><a href="#cb58-49" aria-hidden="true" tabindex="-1"></a>             <span class="at">colour =</span> <span class="fu">rep</span>(<span class="fu">gg_color_hue</span>(<span class="dv">6</span>), <span class="at">each =</span> T),</span>
+<span id="cb58-50"><a href="#cb58-50" aria-hidden="true" tabindex="-1"></a>              <span class="at">size =</span> <span class="dv">2</span>, <span class="at">stroke =</span> <span class="dv">1</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb58-51"><a href="#cb58-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">&#39;lm&#39;</span>, <span class="at">formula =</span> y <span class="sc">~</span> x, <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb58-52"><a href="#cb58-52" aria-hidden="true" tabindex="-1"></a>              <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>, <span class="fu">aes</span>(<span class="at">group =</span> idname), <span class="at">colour =</span> <span class="fu">alpha</span>(<span class="st">&quot;gray&quot;</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb58-53"><a href="#cb58-53" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">data =</span> estimates, <span class="at">lwd =</span> <span class="fl">1.2</span>,</span>
+<span id="cb58-54"><a href="#cb58-54" aria-hidden="true" tabindex="-1"></a>              <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">intercept =</span> Intercept, <span class="at">slope =</span> slope, </span>
+<span id="cb58-55"><a href="#cb58-55" aria-hidden="true" tabindex="-1"></a>                            <span class="at">colour =</span> Model, <span class="at">linetype =</span> Model)) <span class="sc">+</span></span>
+<span id="cb58-56"><a href="#cb58-56" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> <span class="fu">unique</span>(df[, <span class="fu">c</span>(<span class="st">&quot;m_age&quot;</span>, <span class="st">&quot;m_happiness&quot;</span>, <span class="st">&quot;idname&quot;</span>)]),</span>
+<span id="cb58-57"><a href="#cb58-57" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">x =</span> m_age, <span class="at">y =</span> m_happiness, <span class="at">shape =</span> idname),</span>
+<span id="cb58-58"><a href="#cb58-58" aria-hidden="true" tabindex="-1"></a>             <span class="at">colour =</span> <span class="fu">gg_color_hue</span>(<span class="dv">6</span>), <span class="at">alpha =</span> <span class="fl">0.5</span>,</span>
+<span id="cb58-59"><a href="#cb58-59" aria-hidden="true" tabindex="-1"></a>              <span class="at">size =</span> <span class="dv">3</span>, <span class="at">stroke =</span> <span class="dv">2</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb58-60"><a href="#cb58-60" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_linetype_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;solid&quot;</span>, <span class="st">&quot;twodash&quot;</span>, <span class="st">&quot;longdash&quot;</span>, <span class="st">&quot;dotdash&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb58-61"><a href="#cb58-61" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="fl">3.3</span>, <span class="fl">9.2</span>) <span class="sc">+</span> <span class="fu">expand_limits</span>(<span class="at">y =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>)) <span class="sc">+</span> </span>
+<span id="cb58-62"><a href="#cb58-62" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb58-63"><a href="#cb58-63" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.key =</span> <span class="fu">element_blank</span>(), <span class="at">legend.title =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb58-64"><a href="#cb58-64" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.position =</span> <span class="fu">c</span>(<span class="fl">0.95</span>,<span class="fl">0.05</span>), <span class="at">legend.justification =</span> <span class="fu">c</span>(<span class="st">&quot;right&quot;</span>, <span class="st">&quot;bottom&quot;</span>),</span>
+<span id="cb58-65"><a href="#cb58-65" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.background =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb58-66"><a href="#cb58-66" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.box.background =</span> <span class="fu">element_rect</span>(<span class="at">colour =</span> <span class="st">&quot;black&quot;</span>),</span>
+<span id="cb58-67"><a href="#cb58-67" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>))</span>
+<span id="cb58-68"><a href="#cb58-68" aria-hidden="true" tabindex="-1"></a>zp6</span></code></pre></div>
 <p><img src="Panel_part1_files/figure-html/unnamed-chunk-36-1.png" width="672" /></p>
 <p>Both - within and between estimator - get a similar weight for the RE
 estimator in our example. The reason is that we have nearly identical
 errors / noise in the in the between model and the within model.</p>
 <p>However, this obviously can vary strongly across empirical settings.
 Lets see what happens when we increase T in our example:</p>
-<div class="sourceCode" id="cb58"><pre
-class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">6</span></span>
-<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>T <span class="ot">&lt;-</span> <span class="dv">8</span></span>
-<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">simdata</span>(<span class="at">N =</span> N, <span class="at">T =</span> T, <span class="at">uw_sd =</span> <span class="dv">0</span>, <span class="at">age_range =</span> <span class="fu">c</span>(<span class="dv">20</span><span class="sc">:</span><span class="dv">60</span>))</span>
-<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a><span class="do">### Models</span></span>
-<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Total line for plot</span></span>
-<span id="cb58-9"><a href="#cb58-9" aria-hidden="true" tabindex="-1"></a>lm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(happiness <span class="sc">~</span> age, <span class="at">data =</span> df)</span>
-<span id="cb58-10"><a href="#cb58-10" aria-hidden="true" tabindex="-1"></a>lm2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(happiness <span class="sc">~</span> age <span class="sc">+</span> cohort, <span class="at">data =</span> df)</span>
-<span id="cb58-11"><a href="#cb58-11" aria-hidden="true" tabindex="-1"></a>lm3 <span class="ot">&lt;-</span> <span class="fu">lm</span>(happiness <span class="sc">~</span> age <span class="sc">+</span> idname, <span class="at">data =</span> df)</span>
-<span id="cb58-12"><a href="#cb58-12" aria-hidden="true" tabindex="-1"></a>lm4 <span class="ot">&lt;-</span> <span class="fu">lm</span>(m_happiness <span class="sc">~</span> m_age, <span class="at">data =</span> df)</span>
-<span id="cb58-13"><a href="#cb58-13" aria-hidden="true" tabindex="-1"></a>re <span class="ot">&lt;-</span> <span class="fu">plm</span>(happiness <span class="sc">~</span> age, df, <span class="at">model =</span> <span class="st">&quot;random&quot;</span>, <span class="at">effect =</span> <span class="st">&quot;individual&quot;</span>)</span>
-<span id="cb58-14"><a href="#cb58-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb58-15"><a href="#cb58-15" aria-hidden="true" tabindex="-1"></a><span class="do">### Compare POLS, BE, FE, and RE</span></span>
-<span id="cb58-16"><a href="#cb58-16" aria-hidden="true" tabindex="-1"></a>estimates <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">ncol =</span> <span class="dv">3</span>, <span class="at">nrow =</span> <span class="dv">4</span>))</span>
-<span id="cb58-17"><a href="#cb58-17" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(estimates) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Model&quot;</span>, <span class="st">&quot;Intercept&quot;</span>, <span class="st">&quot;slope&quot;</span>)</span>
-<span id="cb58-18"><a href="#cb58-18" aria-hidden="true" tabindex="-1"></a>estimates[<span class="dv">1</span>,] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;POLS&quot;</span>,</span>
-<span id="cb58-19"><a href="#cb58-19" aria-hidden="true" tabindex="-1"></a>                   lm1<span class="sc">$</span>coefficients[<span class="dv">1</span>],</span>
-<span id="cb58-20"><a href="#cb58-20" aria-hidden="true" tabindex="-1"></a>                   lm1<span class="sc">$</span>coefficients[<span class="dv">2</span>])</span>
-<span id="cb58-21"><a href="#cb58-21" aria-hidden="true" tabindex="-1"></a>estimates[<span class="dv">2</span>,] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;BE&quot;</span>,</span>
-<span id="cb58-22"><a href="#cb58-22" aria-hidden="true" tabindex="-1"></a>                   lm4<span class="sc">$</span>coefficients[<span class="dv">1</span>], </span>
-<span id="cb58-23"><a href="#cb58-23" aria-hidden="true" tabindex="-1"></a>                   lm4<span class="sc">$</span>coefficients[<span class="dv">2</span>])</span>
-<span id="cb58-24"><a href="#cb58-24" aria-hidden="true" tabindex="-1"></a>estimates[<span class="dv">3</span>,] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;FE&quot;</span>,</span>
-<span id="cb58-25"><a href="#cb58-25" aria-hidden="true" tabindex="-1"></a>                   lm3<span class="sc">$</span>coefficients[<span class="dv">1</span>] <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> lm3<span class="sc">$</span>coefficients[<span class="dv">3</span>]  <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> lm3<span class="sc">$</span>coefficients[<span class="dv">4</span>] </span>
-<span id="cb58-26"><a href="#cb58-26" aria-hidden="true" tabindex="-1"></a>                   <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> lm3<span class="sc">$</span>coefficients[<span class="dv">5</span>]  <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> lm3<span class="sc">$</span>coefficients[<span class="dv">6</span>]  <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> lm3<span class="sc">$</span>coefficients[<span class="dv">7</span>], </span>
-<span id="cb58-27"><a href="#cb58-27" aria-hidden="true" tabindex="-1"></a>                   lm3<span class="sc">$</span>coefficients[<span class="dv">2</span>])</span>
-<span id="cb58-28"><a href="#cb58-28" aria-hidden="true" tabindex="-1"></a>estimates[<span class="dv">4</span>,] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;RE&quot;</span>,</span>
-<span id="cb58-29"><a href="#cb58-29" aria-hidden="true" tabindex="-1"></a>                   re<span class="sc">$</span>coefficients[<span class="dv">1</span>], </span>
-<span id="cb58-30"><a href="#cb58-30" aria-hidden="true" tabindex="-1"></a>                   re<span class="sc">$</span>coefficients[<span class="dv">2</span>])</span>
-<span id="cb58-31"><a href="#cb58-31" aria-hidden="true" tabindex="-1"></a>estimates[, <span class="sc">-</span><span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fu">apply</span>(estimates[, <span class="sc">-</span><span class="dv">1</span>], <span class="dv">2</span>, <span class="at">FUN =</span> <span class="cf">function</span>(x) <span class="fu">as.numeric</span>(x))</span>
-<span id="cb58-32"><a href="#cb58-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb58-33"><a href="#cb58-33" aria-hidden="true" tabindex="-1"></a>newdf <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">ncol =</span> <span class="dv">2</span>, <span class="at">nrow =</span> <span class="dv">2</span>))</span>
-<span id="cb58-34"><a href="#cb58-34" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(newdf) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>)</span>
-<span id="cb58-35"><a href="#cb58-35" aria-hidden="true" tabindex="-1"></a>newdf<span class="sc">$</span>x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">min</span>(df<span class="sc">$</span>age), <span class="fu">max</span>(df<span class="sc">$</span>age))</span>
-<span id="cb58-36"><a href="#cb58-36" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(estimates)){</span>
-<span id="cb58-37"><a href="#cb58-37" aria-hidden="true" tabindex="-1"></a>  newdf<span class="sc">$</span>y <span class="ot">&lt;-</span> estimates[i, <span class="st">&quot;Intercept&quot;</span>] <span class="sc">+</span> estimates[i, <span class="st">&quot;slope&quot;</span>]<span class="sc">*</span>newdf<span class="sc">$</span>x</span>
-<span id="cb58-38"><a href="#cb58-38" aria-hidden="true" tabindex="-1"></a>  newdf<span class="sc">$</span>Model <span class="ot">&lt;-</span> estimates[i, <span class="st">&quot;Model&quot;</span>]</span>
-<span id="cb58-39"><a href="#cb58-39" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(i <span class="sc">==</span> <span class="dv">1</span>){</span>
-<span id="cb58-40"><a href="#cb58-40" aria-hidden="true" tabindex="-1"></a>    pred <span class="ot">&lt;-</span> newdf</span>
-<span id="cb58-41"><a href="#cb58-41" aria-hidden="true" tabindex="-1"></a>  }<span class="cf">else</span>{pred <span class="ot">&lt;-</span> <span class="fu">rbind</span>(pred, newdf)}</span>
-<span id="cb58-42"><a href="#cb58-42" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb58-43"><a href="#cb58-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb58-44"><a href="#cb58-44" aria-hidden="true" tabindex="-1"></a>estimates<span class="sc">$</span>Model <span class="ot">&lt;-</span> <span class="fu">factor</span>(estimates<span class="sc">$</span>Model, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;POLS&quot;</span>, <span class="st">&quot;BE&quot;</span>, <span class="st">&quot;FE&quot;</span>, <span class="st">&quot;RE&quot;</span>))</span>
-<span id="cb58-45"><a href="#cb58-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb58-46"><a href="#cb58-46" aria-hidden="true" tabindex="-1"></a>gg_color_hue <span class="ot">&lt;-</span> <span class="cf">function</span>(n) {</span>
-<span id="cb58-47"><a href="#cb58-47" aria-hidden="true" tabindex="-1"></a>  hues <span class="ot">=</span> <span class="fu">seq</span>(<span class="dv">15</span>, <span class="dv">375</span>, <span class="at">length =</span> n <span class="sc">+</span> <span class="dv">1</span>)</span>
-<span id="cb58-48"><a href="#cb58-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hcl</span>(<span class="at">h =</span> hues, <span class="at">l =</span> <span class="dv">65</span>, <span class="at">c =</span> <span class="dv">100</span>)[<span class="dv">1</span><span class="sc">:</span>n]</span>
-<span id="cb58-49"><a href="#cb58-49" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb58-50"><a href="#cb58-50" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb58-51"><a href="#cb58-51" aria-hidden="true" tabindex="-1"></a>zp7 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df, <span class="fu">aes</span>(age, happiness)) <span class="sc">+</span></span>
-<span id="cb58-52"><a href="#cb58-52" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> happiness, <span class="at">shape =</span> idname),</span>
-<span id="cb58-53"><a href="#cb58-53" aria-hidden="true" tabindex="-1"></a>             <span class="at">colour =</span> <span class="fu">rep</span>(<span class="fu">gg_color_hue</span>(<span class="dv">6</span>), <span class="at">each =</span> T),</span>
-<span id="cb58-54"><a href="#cb58-54" aria-hidden="true" tabindex="-1"></a>              <span class="at">size =</span> <span class="dv">2</span>, <span class="at">stroke =</span> <span class="dv">1</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
-<span id="cb58-55"><a href="#cb58-55" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">&#39;lm&#39;</span>, <span class="at">formula =</span> y <span class="sc">~</span> x, <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb58-56"><a href="#cb58-56" aria-hidden="true" tabindex="-1"></a>              <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>, <span class="fu">aes</span>(<span class="at">group =</span> idname), <span class="at">colour =</span> <span class="fu">alpha</span>(<span class="st">&quot;gray&quot;</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
-<span id="cb58-57"><a href="#cb58-57" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">data =</span> estimates, <span class="at">lwd =</span> <span class="fl">1.2</span>,</span>
-<span id="cb58-58"><a href="#cb58-58" aria-hidden="true" tabindex="-1"></a>              <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">intercept =</span> Intercept, <span class="at">slope =</span> slope, </span>
-<span id="cb58-59"><a href="#cb58-59" aria-hidden="true" tabindex="-1"></a>                            <span class="at">colour =</span> Model, <span class="at">linetype =</span> Model)) <span class="sc">+</span></span>
-<span id="cb58-60"><a href="#cb58-60" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> <span class="fu">unique</span>(df[, <span class="fu">c</span>(<span class="st">&quot;m_age&quot;</span>, <span class="st">&quot;m_happiness&quot;</span>, <span class="st">&quot;idname&quot;</span>)]),</span>
-<span id="cb58-61"><a href="#cb58-61" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">x =</span> m_age, <span class="at">y =</span> m_happiness, <span class="at">shape =</span> idname),</span>
-<span id="cb58-62"><a href="#cb58-62" aria-hidden="true" tabindex="-1"></a>             <span class="at">colour =</span> <span class="fu">gg_color_hue</span>(<span class="dv">6</span>), <span class="at">alpha =</span> <span class="fl">0.5</span>,</span>
-<span id="cb58-63"><a href="#cb58-63" aria-hidden="true" tabindex="-1"></a>              <span class="at">size =</span> <span class="dv">3</span>, <span class="at">stroke =</span> <span class="dv">2</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
-<span id="cb58-64"><a href="#cb58-64" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_linetype_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;solid&quot;</span>, <span class="st">&quot;twodash&quot;</span>, <span class="st">&quot;longdash&quot;</span>, <span class="st">&quot;dotdash&quot;</span>)) <span class="sc">+</span></span>
-<span id="cb58-65"><a href="#cb58-65" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="fl">3.3</span>, <span class="fl">9.2</span>) <span class="sc">+</span> <span class="fu">expand_limits</span>(<span class="at">y =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>)) <span class="sc">+</span> </span>
-<span id="cb58-66"><a href="#cb58-66" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb58-67"><a href="#cb58-67" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.key =</span> <span class="fu">element_blank</span>(), <span class="at">legend.title =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb58-68"><a href="#cb58-68" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.position =</span> <span class="fu">c</span>(<span class="fl">0.95</span>,<span class="fl">0.05</span>), <span class="at">legend.justification =</span> <span class="fu">c</span>(<span class="st">&quot;right&quot;</span>, <span class="st">&quot;bottom&quot;</span>),</span>
-<span id="cb58-69"><a href="#cb58-69" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.background =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb58-70"><a href="#cb58-70" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.box.background =</span> <span class="fu">element_rect</span>(<span class="at">colour =</span> <span class="st">&quot;black&quot;</span>),</span>
-<span id="cb58-71"><a href="#cb58-71" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>))</span>
-<span id="cb58-72"><a href="#cb58-72" aria-hidden="true" tabindex="-1"></a>zp7</span></code></pre></div>
-<p><img src="Panel_part1_files/figure-html/unnamed-chunk-37-1.png" width="672" /></p>
-<p>The POLS goes very slightly towards the within estimator. This is
-because we have increased the within variance in age, but there is still
-much more variance in age between individuals.</p>
-<p>The RE goes strongly towards FE. This is because - by increasing T -
-the between model now makes a larger error: there are more data points
-far away from the green BE line. The error or the within model, in
-contrast, remain unchanged. So RE gives more weight to the within
-estimator.</p>
-<p>However, if we increase the noise in the within estimator (bringing
-the data points further away from each id-specific regression line), RE
-would move back towards the between estimator:</p>
 <div class="sourceCode" id="cb59"><pre
 class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">6</span></span>
 <span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>T <span class="ot">&lt;-</span> <span class="dv">8</span></span>
 <span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">simdata</span>(<span class="at">N =</span> N, <span class="at">T =</span> T, <span class="at">uw_sd =</span> <span class="fl">0.5</span>, <span class="at">age_range =</span> <span class="fu">c</span>(<span class="dv">20</span><span class="sc">:</span><span class="dv">60</span>))</span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">simdata</span>(<span class="at">N =</span> N, <span class="at">T =</span> T, <span class="at">uw_sd =</span> <span class="dv">0</span>, <span class="at">age_range =</span> <span class="fu">c</span>(<span class="dv">20</span><span class="sc">:</span><span class="dv">60</span>))</span>
 <span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a><span class="do">### Models</span></span>
 <span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Total line for plot</span></span>
@@ -2099,6 +2016,91 @@ class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb59-1"><a h
 <span id="cb59-70"><a href="#cb59-70" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.box.background =</span> <span class="fu">element_rect</span>(<span class="at">colour =</span> <span class="st">&quot;black&quot;</span>),</span>
 <span id="cb59-71"><a href="#cb59-71" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>))</span>
 <span id="cb59-72"><a href="#cb59-72" aria-hidden="true" tabindex="-1"></a>zp7</span></code></pre></div>
+<p><img src="Panel_part1_files/figure-html/unnamed-chunk-37-1.png" width="672" /></p>
+<p>The POLS goes very slightly towards the within estimator. This is
+because we have increased the within variance in age, but there is still
+much more variance in age between individuals.</p>
+<p>The RE goes strongly towards FE. This is because - by increasing T -
+the between model now makes a larger error: there are more data points
+far away from the green BE line. The error or the within model, in
+contrast, remain unchanged. So RE gives more weight to the within
+estimator.</p>
+<p>However, if we increase the noise in the within estimator (bringing
+the data points further away from each id-specific regression line), RE
+would move back towards the between estimator:</p>
+<div class="sourceCode" id="cb60"><pre
+class="sourceCode r fold-hide"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">6</span></span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>T <span class="ot">&lt;-</span> <span class="dv">8</span></span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">simdata</span>(<span class="at">N =</span> N, <span class="at">T =</span> T, <span class="at">uw_sd =</span> <span class="fl">0.5</span>, <span class="at">age_range =</span> <span class="fu">c</span>(<span class="dv">20</span><span class="sc">:</span><span class="dv">60</span>))</span>
+<span id="cb60-6"><a href="#cb60-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-7"><a href="#cb60-7" aria-hidden="true" tabindex="-1"></a><span class="do">### Models</span></span>
+<span id="cb60-8"><a href="#cb60-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Total line for plot</span></span>
+<span id="cb60-9"><a href="#cb60-9" aria-hidden="true" tabindex="-1"></a>lm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(happiness <span class="sc">~</span> age, <span class="at">data =</span> df)</span>
+<span id="cb60-10"><a href="#cb60-10" aria-hidden="true" tabindex="-1"></a>lm2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(happiness <span class="sc">~</span> age <span class="sc">+</span> cohort, <span class="at">data =</span> df)</span>
+<span id="cb60-11"><a href="#cb60-11" aria-hidden="true" tabindex="-1"></a>lm3 <span class="ot">&lt;-</span> <span class="fu">lm</span>(happiness <span class="sc">~</span> age <span class="sc">+</span> idname, <span class="at">data =</span> df)</span>
+<span id="cb60-12"><a href="#cb60-12" aria-hidden="true" tabindex="-1"></a>lm4 <span class="ot">&lt;-</span> <span class="fu">lm</span>(m_happiness <span class="sc">~</span> m_age, <span class="at">data =</span> df)</span>
+<span id="cb60-13"><a href="#cb60-13" aria-hidden="true" tabindex="-1"></a>re <span class="ot">&lt;-</span> <span class="fu">plm</span>(happiness <span class="sc">~</span> age, df, <span class="at">model =</span> <span class="st">&quot;random&quot;</span>, <span class="at">effect =</span> <span class="st">&quot;individual&quot;</span>)</span>
+<span id="cb60-14"><a href="#cb60-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-15"><a href="#cb60-15" aria-hidden="true" tabindex="-1"></a><span class="do">### Compare POLS, BE, FE, and RE</span></span>
+<span id="cb60-16"><a href="#cb60-16" aria-hidden="true" tabindex="-1"></a>estimates <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">ncol =</span> <span class="dv">3</span>, <span class="at">nrow =</span> <span class="dv">4</span>))</span>
+<span id="cb60-17"><a href="#cb60-17" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(estimates) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Model&quot;</span>, <span class="st">&quot;Intercept&quot;</span>, <span class="st">&quot;slope&quot;</span>)</span>
+<span id="cb60-18"><a href="#cb60-18" aria-hidden="true" tabindex="-1"></a>estimates[<span class="dv">1</span>,] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;POLS&quot;</span>,</span>
+<span id="cb60-19"><a href="#cb60-19" aria-hidden="true" tabindex="-1"></a>                   lm1<span class="sc">$</span>coefficients[<span class="dv">1</span>],</span>
+<span id="cb60-20"><a href="#cb60-20" aria-hidden="true" tabindex="-1"></a>                   lm1<span class="sc">$</span>coefficients[<span class="dv">2</span>])</span>
+<span id="cb60-21"><a href="#cb60-21" aria-hidden="true" tabindex="-1"></a>estimates[<span class="dv">2</span>,] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;BE&quot;</span>,</span>
+<span id="cb60-22"><a href="#cb60-22" aria-hidden="true" tabindex="-1"></a>                   lm4<span class="sc">$</span>coefficients[<span class="dv">1</span>], </span>
+<span id="cb60-23"><a href="#cb60-23" aria-hidden="true" tabindex="-1"></a>                   lm4<span class="sc">$</span>coefficients[<span class="dv">2</span>])</span>
+<span id="cb60-24"><a href="#cb60-24" aria-hidden="true" tabindex="-1"></a>estimates[<span class="dv">3</span>,] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;FE&quot;</span>,</span>
+<span id="cb60-25"><a href="#cb60-25" aria-hidden="true" tabindex="-1"></a>                   lm3<span class="sc">$</span>coefficients[<span class="dv">1</span>] <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> lm3<span class="sc">$</span>coefficients[<span class="dv">3</span>]  <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> lm3<span class="sc">$</span>coefficients[<span class="dv">4</span>] </span>
+<span id="cb60-26"><a href="#cb60-26" aria-hidden="true" tabindex="-1"></a>                   <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> lm3<span class="sc">$</span>coefficients[<span class="dv">5</span>]  <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> lm3<span class="sc">$</span>coefficients[<span class="dv">6</span>]  <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> lm3<span class="sc">$</span>coefficients[<span class="dv">7</span>], </span>
+<span id="cb60-27"><a href="#cb60-27" aria-hidden="true" tabindex="-1"></a>                   lm3<span class="sc">$</span>coefficients[<span class="dv">2</span>])</span>
+<span id="cb60-28"><a href="#cb60-28" aria-hidden="true" tabindex="-1"></a>estimates[<span class="dv">4</span>,] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;RE&quot;</span>,</span>
+<span id="cb60-29"><a href="#cb60-29" aria-hidden="true" tabindex="-1"></a>                   re<span class="sc">$</span>coefficients[<span class="dv">1</span>], </span>
+<span id="cb60-30"><a href="#cb60-30" aria-hidden="true" tabindex="-1"></a>                   re<span class="sc">$</span>coefficients[<span class="dv">2</span>])</span>
+<span id="cb60-31"><a href="#cb60-31" aria-hidden="true" tabindex="-1"></a>estimates[, <span class="sc">-</span><span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fu">apply</span>(estimates[, <span class="sc">-</span><span class="dv">1</span>], <span class="dv">2</span>, <span class="at">FUN =</span> <span class="cf">function</span>(x) <span class="fu">as.numeric</span>(x))</span>
+<span id="cb60-32"><a href="#cb60-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-33"><a href="#cb60-33" aria-hidden="true" tabindex="-1"></a>newdf <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">ncol =</span> <span class="dv">2</span>, <span class="at">nrow =</span> <span class="dv">2</span>))</span>
+<span id="cb60-34"><a href="#cb60-34" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(newdf) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>)</span>
+<span id="cb60-35"><a href="#cb60-35" aria-hidden="true" tabindex="-1"></a>newdf<span class="sc">$</span>x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">min</span>(df<span class="sc">$</span>age), <span class="fu">max</span>(df<span class="sc">$</span>age))</span>
+<span id="cb60-36"><a href="#cb60-36" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(estimates)){</span>
+<span id="cb60-37"><a href="#cb60-37" aria-hidden="true" tabindex="-1"></a>  newdf<span class="sc">$</span>y <span class="ot">&lt;-</span> estimates[i, <span class="st">&quot;Intercept&quot;</span>] <span class="sc">+</span> estimates[i, <span class="st">&quot;slope&quot;</span>]<span class="sc">*</span>newdf<span class="sc">$</span>x</span>
+<span id="cb60-38"><a href="#cb60-38" aria-hidden="true" tabindex="-1"></a>  newdf<span class="sc">$</span>Model <span class="ot">&lt;-</span> estimates[i, <span class="st">&quot;Model&quot;</span>]</span>
+<span id="cb60-39"><a href="#cb60-39" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(i <span class="sc">==</span> <span class="dv">1</span>){</span>
+<span id="cb60-40"><a href="#cb60-40" aria-hidden="true" tabindex="-1"></a>    pred <span class="ot">&lt;-</span> newdf</span>
+<span id="cb60-41"><a href="#cb60-41" aria-hidden="true" tabindex="-1"></a>  }<span class="cf">else</span>{pred <span class="ot">&lt;-</span> <span class="fu">rbind</span>(pred, newdf)}</span>
+<span id="cb60-42"><a href="#cb60-42" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb60-43"><a href="#cb60-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-44"><a href="#cb60-44" aria-hidden="true" tabindex="-1"></a>estimates<span class="sc">$</span>Model <span class="ot">&lt;-</span> <span class="fu">factor</span>(estimates<span class="sc">$</span>Model, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;POLS&quot;</span>, <span class="st">&quot;BE&quot;</span>, <span class="st">&quot;FE&quot;</span>, <span class="st">&quot;RE&quot;</span>))</span>
+<span id="cb60-45"><a href="#cb60-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-46"><a href="#cb60-46" aria-hidden="true" tabindex="-1"></a>gg_color_hue <span class="ot">&lt;-</span> <span class="cf">function</span>(n) {</span>
+<span id="cb60-47"><a href="#cb60-47" aria-hidden="true" tabindex="-1"></a>  hues <span class="ot">=</span> <span class="fu">seq</span>(<span class="dv">15</span>, <span class="dv">375</span>, <span class="at">length =</span> n <span class="sc">+</span> <span class="dv">1</span>)</span>
+<span id="cb60-48"><a href="#cb60-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hcl</span>(<span class="at">h =</span> hues, <span class="at">l =</span> <span class="dv">65</span>, <span class="at">c =</span> <span class="dv">100</span>)[<span class="dv">1</span><span class="sc">:</span>n]</span>
+<span id="cb60-49"><a href="#cb60-49" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb60-50"><a href="#cb60-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-51"><a href="#cb60-51" aria-hidden="true" tabindex="-1"></a>zp7 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df, <span class="fu">aes</span>(age, happiness)) <span class="sc">+</span></span>
+<span id="cb60-52"><a href="#cb60-52" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> happiness, <span class="at">shape =</span> idname),</span>
+<span id="cb60-53"><a href="#cb60-53" aria-hidden="true" tabindex="-1"></a>             <span class="at">colour =</span> <span class="fu">rep</span>(<span class="fu">gg_color_hue</span>(<span class="dv">6</span>), <span class="at">each =</span> T),</span>
+<span id="cb60-54"><a href="#cb60-54" aria-hidden="true" tabindex="-1"></a>              <span class="at">size =</span> <span class="dv">2</span>, <span class="at">stroke =</span> <span class="dv">1</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb60-55"><a href="#cb60-55" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">&#39;lm&#39;</span>, <span class="at">formula =</span> y <span class="sc">~</span> x, <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb60-56"><a href="#cb60-56" aria-hidden="true" tabindex="-1"></a>              <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>, <span class="fu">aes</span>(<span class="at">group =</span> idname), <span class="at">colour =</span> <span class="fu">alpha</span>(<span class="st">&quot;gray&quot;</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb60-57"><a href="#cb60-57" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">data =</span> estimates, <span class="at">lwd =</span> <span class="fl">1.2</span>,</span>
+<span id="cb60-58"><a href="#cb60-58" aria-hidden="true" tabindex="-1"></a>              <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">intercept =</span> Intercept, <span class="at">slope =</span> slope, </span>
+<span id="cb60-59"><a href="#cb60-59" aria-hidden="true" tabindex="-1"></a>                            <span class="at">colour =</span> Model, <span class="at">linetype =</span> Model)) <span class="sc">+</span></span>
+<span id="cb60-60"><a href="#cb60-60" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> <span class="fu">unique</span>(df[, <span class="fu">c</span>(<span class="st">&quot;m_age&quot;</span>, <span class="st">&quot;m_happiness&quot;</span>, <span class="st">&quot;idname&quot;</span>)]),</span>
+<span id="cb60-61"><a href="#cb60-61" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">x =</span> m_age, <span class="at">y =</span> m_happiness, <span class="at">shape =</span> idname),</span>
+<span id="cb60-62"><a href="#cb60-62" aria-hidden="true" tabindex="-1"></a>             <span class="at">colour =</span> <span class="fu">gg_color_hue</span>(<span class="dv">6</span>), <span class="at">alpha =</span> <span class="fl">0.5</span>,</span>
+<span id="cb60-63"><a href="#cb60-63" aria-hidden="true" tabindex="-1"></a>              <span class="at">size =</span> <span class="dv">3</span>, <span class="at">stroke =</span> <span class="dv">2</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb60-64"><a href="#cb60-64" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_linetype_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;solid&quot;</span>, <span class="st">&quot;twodash&quot;</span>, <span class="st">&quot;longdash&quot;</span>, <span class="st">&quot;dotdash&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb60-65"><a href="#cb60-65" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="fl">3.3</span>, <span class="fl">9.2</span>) <span class="sc">+</span> <span class="fu">expand_limits</span>(<span class="at">y =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>)) <span class="sc">+</span> </span>
+<span id="cb60-66"><a href="#cb60-66" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb60-67"><a href="#cb60-67" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.key =</span> <span class="fu">element_blank</span>(), <span class="at">legend.title =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb60-68"><a href="#cb60-68" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.position =</span> <span class="fu">c</span>(<span class="fl">0.95</span>,<span class="fl">0.05</span>), <span class="at">legend.justification =</span> <span class="fu">c</span>(<span class="st">&quot;right&quot;</span>, <span class="st">&quot;bottom&quot;</span>),</span>
+<span id="cb60-69"><a href="#cb60-69" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.background =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb60-70"><a href="#cb60-70" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.box.background =</span> <span class="fu">element_rect</span>(<span class="at">colour =</span> <span class="st">&quot;black&quot;</span>),</span>
+<span id="cb60-71"><a href="#cb60-71" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>))</span>
+<span id="cb60-72"><a href="#cb60-72" aria-hidden="true" tabindex="-1"></a>zp7</span></code></pre></div>
 <p><img src="Panel_part1_files/figure-html/unnamed-chunk-38-1.png" width="672" /></p>
 <p>Do you have an idea what happens if we reduce the range of the
 starting age of the individuals (bringing them closer together)?</p>
@@ -2150,7 +2152,7 @@ shows us if the two estimates differ significantly.</p>
 <p><strong>Use FE if Hausman test significant, and H<span
 class="math inline">\(_0\)</span> rejected.</strong></p>
 <p>Let’s check in our example:</p>
-<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">phtest</span>(fe1, re1)</span></code></pre></div>
+<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="fu">phtest</span>(fe1, re1)</span></code></pre></div>
 <pre><code>## 
 ##  Hausman Test
 ## 
@@ -2188,33 +2190,33 @@ class="math inline">\(\bar{x}_{i}\)</span>.</p>
 <p><strong><span class="math inline">\(\hat{\beta}\)</span> gives us the
 within estimate for <span class="math inline">\(x\)</span></strong></p>
 <p>See our happiness example</p>
-<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Person specific means</span></span>
-<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>m_age <span class="ot">&lt;-</span> <span class="fu">ave</span>(df<span class="sc">$</span>age,</span>
-<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>                df<span class="sc">$</span>id,</span>
-<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">FUN =</span> mean)</span>
-<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-6"><a href="#cb62-6" aria-hidden="true" tabindex="-1"></a>cre <span class="ot">&lt;-</span> <span class="fu">plm</span>(happiness <span class="sc">~</span> age <span class="sc">+</span> m_age, <span class="at">data =</span> df,</span>
-<span id="cb62-7"><a href="#cb62-7" aria-hidden="true" tabindex="-1"></a>           <span class="at">index =</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;wave&quot;</span>),</span>
-<span id="cb62-8"><a href="#cb62-8" aria-hidden="true" tabindex="-1"></a>           <span class="at">effect =</span> <span class="st">&quot;individual&quot;</span>, <span class="at">model =</span> <span class="st">&quot;random&quot;</span>)</span>
-<span id="cb62-9"><a href="#cb62-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-10"><a href="#cb62-10" aria-hidden="true" tabindex="-1"></a><span class="fu">screenreg</span>(<span class="fu">list</span>(fe1, btw2, re, cre), <span class="at">digits =</span> <span class="dv">3</span>,</span>
-<span id="cb62-11"><a href="#cb62-11" aria-hidden="true" tabindex="-1"></a>          <span class="at">custom.model.names =</span> <span class="fu">c</span>(<span class="st">&quot;FE&quot;</span>, <span class="st">&quot;BTW&quot;</span>, <span class="st">&quot;RE&quot;</span>, <span class="st">&quot;CRE&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Person specific means</span></span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>m_age <span class="ot">&lt;-</span> <span class="fu">ave</span>(df<span class="sc">$</span>age,</span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>                df<span class="sc">$</span>id,</span>
+<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">FUN =</span> mean)</span>
+<span id="cb63-5"><a href="#cb63-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-6"><a href="#cb63-6" aria-hidden="true" tabindex="-1"></a>cre <span class="ot">&lt;-</span> <span class="fu">plm</span>(happiness <span class="sc">~</span> age <span class="sc">+</span> m_age, <span class="at">data =</span> df_orig,</span>
+<span id="cb63-7"><a href="#cb63-7" aria-hidden="true" tabindex="-1"></a>           <span class="at">index =</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;wave&quot;</span>),</span>
+<span id="cb63-8"><a href="#cb63-8" aria-hidden="true" tabindex="-1"></a>           <span class="at">effect =</span> <span class="st">&quot;individual&quot;</span>, <span class="at">model =</span> <span class="st">&quot;random&quot;</span>)</span>
+<span id="cb63-9"><a href="#cb63-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-10"><a href="#cb63-10" aria-hidden="true" tabindex="-1"></a><span class="fu">screenreg</span>(<span class="fu">list</span>(fe1, btw2, re, cre), <span class="at">digits =</span> <span class="dv">3</span>,</span>
+<span id="cb63-11"><a href="#cb63-11" aria-hidden="true" tabindex="-1"></a>          <span class="at">custom.model.names =</span> <span class="fu">c</span>(<span class="st">&quot;FE&quot;</span>, <span class="st">&quot;BTW&quot;</span>, <span class="st">&quot;RE&quot;</span>, <span class="st">&quot;CRE&quot;</span>))</span></code></pre></div>
 <pre><code>## 
 ## ==========================================================
 ##              FE          BTW        RE          CRE       
 ## ----------------------------------------------------------
-## age          -0.148 ***   0.122 **  -0.061 **   -0.153 ***
-##              (0.017)     (0.018)    (0.022)     (0.014)   
-## (Intercept)               0.733      9.488 ***   0.852    
-##                          (0.835)    (1.197)     (1.011)   
-## m_age                                            0.269 ***
+## age          -0.148 ***   0.122 **  -0.061 **   -0.148 ***
+##              (0.017)     (0.018)    (0.022)     (0.017)   
+## (Intercept)               0.733      9.488 ***   0.733    
+##                          (0.835)    (1.197)     (0.835)   
+## m_age                                            0.270 ***
 ##                                                 (0.025)   
 ## ----------------------------------------------------------
-## R^2           0.810       0.922      0.141       0.766    
-## Adj. R^2      0.743       0.903      0.123       0.755    
-## Num. obs.    24           6         48          48        
-## s_idios                              0.457       0.457    
-## s_id                                 0.645       0.645    
+## R^2           0.810       0.922      0.141       0.851    
+## Adj. R^2      0.743       0.903      0.123       0.837    
+## Num. obs.    24           6         48          24        
+## s_idios                              0.457       0.191    
+## s_id                                 0.645       0.586    
 ## ==========================================================
 ## *** p &lt; 0.001; ** p &lt; 0.01; * p &lt; 0.05</code></pre>
 <p>The estimate for <span class="math inline">\(\beta_{CRE}\)</span>
@@ -2293,7 +2295,7 @@ transformed data.</p>
 information on the various types and options in the command see <span
 class="citation">Millo (<a href="#ref-Millo.2017"
 role="doc-biblioref">2017</a>)</span>.</p>
-<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fe1)</span></code></pre></div>
+<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fe1)</span></code></pre></div>
 <pre><code>## Oneway (individual) effect Within Model
 ## 
 ## Call:
@@ -2317,11 +2319,11 @@ role="doc-biblioref">2017</a>)</span>.</p>
 ## R-Squared:      0.80992
 ## Adj. R-Squared: 0.74283
 ## F-statistic: 72.4345 on 1 and 17 DF, p-value: 1.5556e-07</code></pre>
-<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get variance covariance matrix directly</span></span>
-<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a>vcovx <span class="ot">&lt;-</span> <span class="fu">vcovHC</span>(fe1, <span class="at">cluster =</span> <span class="st">&quot;group&quot;</span>, <span class="at">method =</span> <span class="st">&quot;arellano&quot;</span>, <span class="at">type =</span> <span class="st">&quot;HC3&quot;</span>)</span>
-<span id="cb66-3"><a href="#cb66-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb66-4"><a href="#cb66-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Get model output with the robust SEs</span></span>
-<span id="cb66-5"><a href="#cb66-5" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(fe1, <span class="at">vcov =</span> <span class="cf">function</span>(x) <span class="fu">vcovHC</span>(x, <span class="at">method =</span> <span class="st">&quot;arellano&quot;</span>, <span class="at">type =</span> <span class="st">&quot;HC3&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get variance covariance matrix directly</span></span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>vcovx <span class="ot">&lt;-</span> <span class="fu">vcovHC</span>(fe1, <span class="at">cluster =</span> <span class="st">&quot;group&quot;</span>, <span class="at">method =</span> <span class="st">&quot;arellano&quot;</span>, <span class="at">type =</span> <span class="st">&quot;HC3&quot;</span>)</span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-4"><a href="#cb67-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Get model output with the robust SEs</span></span>
+<span id="cb67-5"><a href="#cb67-5" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(fe1, <span class="at">vcov =</span> <span class="cf">function</span>(x) <span class="fu">vcovHC</span>(x, <span class="at">method =</span> <span class="st">&quot;arellano&quot;</span>, <span class="at">type =</span> <span class="st">&quot;HC3&quot;</span>))</span></code></pre></div>
 <pre><code>## 
 ## t test of coefficients:
 ## 
@@ -2346,9 +2348,9 @@ part formula of the form
 “x” are ordinary covariates, “f” are the fixed effects, the third part
 allows to instrument covariates, and “clu” are clusters for robust
 standard errors:</p>
-<div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>fe1_2 <span class="ot">&lt;-</span> <span class="fu">felm</span>(happiness <span class="sc">~</span> age <span class="sc">|</span> id <span class="sc">|</span> <span class="dv">0</span> <span class="sc">|</span> id,</span>
-<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>               <span class="at">data =</span> df, <span class="at">cmethod =</span> <span class="st">&#39;cgm2&#39;</span>)</span>
-<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fe1_2)</span></code></pre></div>
+<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>fe1_2 <span class="ot">&lt;-</span> <span class="fu">felm</span>(happiness <span class="sc">~</span> age <span class="sc">|</span> id <span class="sc">|</span> <span class="dv">0</span> <span class="sc">|</span> id,</span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>               <span class="at">data =</span> df, <span class="at">cmethod =</span> <span class="st">&#39;cgm2&#39;</span>)</span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fe1_2)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ##    felm(formula = happiness ~ age | id | 0 | id, data = df, cmethod = &quot;cgm2&quot;) 
