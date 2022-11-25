@@ -2199,24 +2199,24 @@ within estimate for <span class="math inline">\(x\)</span></strong></p>
 <span id="cb63-7"><a href="#cb63-7" aria-hidden="true" tabindex="-1"></a>           <span class="at">index =</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;wave&quot;</span>),</span>
 <span id="cb63-8"><a href="#cb63-8" aria-hidden="true" tabindex="-1"></a>           <span class="at">effect =</span> <span class="st">&quot;individual&quot;</span>, <span class="at">model =</span> <span class="st">&quot;random&quot;</span>)</span>
 <span id="cb63-9"><a href="#cb63-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb63-10"><a href="#cb63-10" aria-hidden="true" tabindex="-1"></a><span class="fu">screenreg</span>(<span class="fu">list</span>(fe1, btw2, re1, cre), <span class="at">digits =</span> <span class="dv">3</span>,</span>
+<span id="cb63-10"><a href="#cb63-10" aria-hidden="true" tabindex="-1"></a><span class="fu">screenreg</span>(<span class="fu">list</span>(fe1, btw2, re, cre), <span class="at">digits =</span> <span class="dv">3</span>,</span>
 <span id="cb63-11"><a href="#cb63-11" aria-hidden="true" tabindex="-1"></a>          <span class="at">custom.model.names =</span> <span class="fu">c</span>(<span class="st">&quot;FE&quot;</span>, <span class="st">&quot;BTW&quot;</span>, <span class="st">&quot;RE&quot;</span>, <span class="st">&quot;CRE&quot;</span>))</span></code></pre></div>
 <pre><code>## 
 ## ==========================================================
 ##              FE          BTW        RE          CRE       
 ## ----------------------------------------------------------
-## age          -0.148 ***   0.122 **  -0.016      -0.148 ***
-##              (0.017)     (0.018)    (0.031)     (0.017)   
-## (Intercept)               0.733      6.934 ***   0.733    
-##                          (0.835)    (1.534)     (0.835)   
+## age          -0.148 ***   0.122 **  -0.061 **   -0.148 ***
+##              (0.017)     (0.018)    (0.022)     (0.017)   
+## (Intercept)               0.733      9.488 ***   0.733    
+##                          (0.835)    (1.197)     (0.835)   
 ## m_age                                            0.270 ***
 ##                                                 (0.025)   
 ## ----------------------------------------------------------
-## R^2           0.810       0.922      0.011       0.851    
-## Adj. R^2      0.743       0.903     -0.034       0.837    
-## Num. obs.    24           6         24          24        
-## s_idios                              0.191       0.191    
-## s_id                                 0.586       0.586    
+## R^2           0.810       0.922      0.141       0.851    
+## Adj. R^2      0.743       0.903      0.123       0.837    
+## Num. obs.    24           6         48          24        
+## s_idios                              0.457       0.191    
+## s_id                                 0.645       0.586    
 ## ==========================================================
 ## *** p &lt; 0.001; ** p &lt; 0.01; * p &lt; 0.05</code></pre>
 <p>The estimate for <span class="math inline">\(\beta_{CRE}\)</span>

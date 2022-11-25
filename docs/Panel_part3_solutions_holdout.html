@@ -13,7 +13,7 @@
 
 <meta name="date" content="2022-11-24" />
 
-<title>Exercise</title>
+<title>Exercise: solutions</title>
 
 <script src="site_libs/header-attrs-2.17/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -157,28 +157,6 @@ code span.wa { color: #008000; font-weight: bold; } /* Warning */
 
 
 
-<style type="text/css">
-/* for pandoc --citeproc since 2.11 */
-div.csl-bib-body { }
-div.csl-entry {
-  clear: both;
-}
-.hanging div.csl-entry {
-  margin-left:2em;
-  text-indent:-2em;
-}
-div.csl-left-margin {
-  min-width:2em;
-  float:left;
-}
-div.csl-right-inline {
-  margin-left:2em;
-  padding-left:1em;
-}
-div.csl-indent {
-  margin-left: 2em;
-}
-</style>
 
 
 
@@ -481,7 +459,7 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Exercise</h1>
+<h1 class="title toc-ignore">Exercise: solutions</h1>
 <h4 class="author">Tobias Rüttenauer</h4>
 <h4 class="date">November 24, 2022</h4>
 
@@ -490,7 +468,7 @@ div.tocify {
 
 <div id="required-packages" class="section level3">
 <h3>Required packages</h3>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pkgs <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;plm&quot;</span>, <span class="st">&quot;feisr&quot;</span>, <span class="st">&quot;sandwich&quot;</span>, <span class="st">&quot;texreg&quot;</span>, <span class="st">&quot;tidyr&quot;</span>, <span class="st">&quot;haven&quot;</span>, <span class="st">&quot;dplyr&quot;</span>, <span class="st">&quot;ggplot2&quot;</span>, <span class="st">&quot;ggforce&quot;</span>) </span>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pkgs <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;plm&quot;</span>, <span class="st">&quot;feisr&quot;</span>, <span class="st">&quot;sandwich&quot;</span>, <span class="st">&quot;did&quot;</span>, <span class="st">&quot;texreg&quot;</span>, <span class="st">&quot;tidyr&quot;</span>, <span class="st">&quot;haven&quot;</span>, <span class="st">&quot;dplyr&quot;</span>, <span class="st">&quot;ggplot2&quot;</span>, <span class="st">&quot;ggforce&quot;</span>) </span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(pkgs, require, <span class="at">character.only =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 </div>
 <div id="session-info" class="section level3">
@@ -527,254 +505,34 @@ div.tocify {
 ## [13] colorspace_2.0-3    withr_2.5.0         gridExtra_2.3      
 ## [16] tidyselect_1.2.0    curl_4.3.3          compiler_4.2.1     
 ## [19] cli_3.4.1           labeling_0.4.2      sass_0.4.2         
-## [22] scales_1.2.1        rgenoud_5.9-0.3     fixest_0.10.4      
-## [25] stringr_1.4.1       digest_0.6.29       rmarkdown_2.17     
-## [28] pkgconfig_2.0.3     htmltools_0.5.3     parallelly_1.32.1  
-## [31] fastmap_1.1.0       collapse_1.8.9      highr_0.9          
-## [34] rlang_1.0.6         rstudioapi_0.14     jquerylib_0.1.4    
-## [37] farver_2.1.1        generics_0.1.3      jsonlite_1.8.2     
-## [40] car_3.1-0           magrittr_2.0.3      Formula_1.2-4      
-## [43] Rcpp_1.0.9          munsell_0.5.0       fansi_1.0.3        
-## [46] abind_1.4-5         furrr_0.3.1         lifecycle_1.0.3    
-## [49] stringi_1.7.8       yaml_2.3.5          carData_3.0-5      
-## [52] MASS_7.3-57         DRDID_1.0.4         grid_4.2.1         
-## [55] listenv_0.8.0       parallel_4.2.1      forcats_0.5.2      
-## [58] bdsmatrix_1.3-6     lattice_0.20-45     splines_4.2.1      
-## [61] hms_1.1.2           knitr_1.40          pillar_1.8.1       
-## [64] ggpubr_0.4.0        ggsignif_0.6.4      codetools_0.2-18   
-## [67] glue_1.6.2          evaluate_0.17       trust_0.1-8        
-## [70] V8_4.2.1            LowRankQP_1.0.5     data.table_1.14.2  
-## [73] vctrs_0.4.2         tweenr_2.0.2        Rdpack_2.4         
-## [76] miscTools_0.6-26    gtable_0.3.1        purrr_0.3.5        
-## [79] polyclip_1.10-4     kernlab_0.9-31      assertthat_0.2.1   
-## [82] cachem_1.0.6        xfun_0.33           rbibutils_2.2.9    
-## [85] xtable_1.8-4        broom_1.0.1         rstatix_0.7.0      
-## [88] tibble_3.1.8        optimx_2022-4.30    maxLik_1.5-2       
-## [91] globals_0.16.1      concaveman_1.1.0    ellipsis_0.3.2</code></pre>
+## [22] scales_1.2.1        rgenoud_5.9-0.3     readr_2.1.3        
+## [25] fixest_0.10.4       stringr_1.4.1       digest_0.6.29      
+## [28] rmarkdown_2.17      pkgconfig_2.0.3     htmltools_0.5.3    
+## [31] parallelly_1.32.1   fastmap_1.1.0       collapse_1.8.9     
+## [34] highr_0.9           rlang_1.0.6         rstudioapi_0.14    
+## [37] jquerylib_0.1.4     farver_2.1.1        generics_0.1.3     
+## [40] jsonlite_1.8.2      car_3.1-0           magrittr_2.0.3     
+## [43] Formula_1.2-4       Rcpp_1.0.9          munsell_0.5.0      
+## [46] fansi_1.0.3         abind_1.4-5         furrr_0.3.1        
+## [49] lifecycle_1.0.3     stringi_1.7.8       yaml_2.3.5         
+## [52] carData_3.0-5       MASS_7.3-57         DRDID_1.0.4        
+## [55] grid_4.2.1          listenv_0.8.0       parallel_4.2.1     
+## [58] forcats_0.5.2       bdsmatrix_1.3-6     lattice_0.20-45    
+## [61] splines_4.2.1       hms_1.1.2           knitr_1.40         
+## [64] pillar_1.8.1        ggpubr_0.4.0        ggsignif_0.6.4     
+## [67] codetools_0.2-18    glue_1.6.2          evaluate_0.17      
+## [70] trust_0.1-8         V8_4.2.1            LowRankQP_1.0.5    
+## [73] data.table_1.14.2   tzdb_0.3.0          vctrs_0.4.2        
+## [76] tweenr_2.0.2        Rdpack_2.4          miscTools_0.6-26   
+## [79] gtable_0.3.1        purrr_0.3.5         polyclip_1.10-4    
+## [82] kernlab_0.9-31      assertthat_0.2.1    cachem_1.0.6       
+## [85] xfun_0.33           rbibutils_2.2.9     xtable_1.8-4       
+## [88] broom_1.0.1         rstatix_0.7.0       tibble_3.1.8       
+## [91] optimx_2022-4.30    maxLik_1.5-2        globals_0.16.1     
+## [94] concaveman_1.1.0    ellipsis_0.3.2</code></pre>
 </div>
-<div id="load-data" class="section level3">
-<h3>Load data</h3>
-<p>For the purpose of this exercise, we will use a real-world data set.
-However, instead of constructing our own data, we use a shortcut and use
-data from the replication package of <span class="citation">Hospido (<a
-href="#ref-Hospido.2012" role="doc-biblioref">2012</a>)</span>. The
-replication package can be found <a
-href="http://qed.econ.queensu.ca/jae/datasets/hospido001/">here</a>.</p>
-<p>This is an unbalanced panel with 32,066 observations and 2066
-individuals for the period 1968–1993 of the PSID. It consists of male
-heads aged 25–55 with at least 9 years of usable wages data.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load stata file</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>data.df <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">&quot;_data/h-data.dta&quot;</span>)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Lets order this</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>names <span class="ot">&lt;-</span> <span class="fu">names</span>(data.df)</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>names <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;pid&quot;</span>, <span class="st">&quot;year&quot;</span>, names[<span class="sc">-</span><span class="fu">which</span>(names <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;pid&quot;</span>, <span class="st">&quot;year&quot;</span>))])</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>data.df <span class="ot">&lt;-</span> data.df[, names]</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>data.df <span class="ot">&lt;-</span> data.df[<span class="fu">order</span>(data.df<span class="sc">$</span>pid, data.df<span class="sc">$</span>year), ]</span></code></pre></div>
-<table>
-<colgroup>
-<col width="23%" />
-<col width="76%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th>variable name</th>
-<th>description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>pid</td>
-<td>INDIVIDUAL IDENTIFIER</td>
-</tr>
-<tr class="even">
-<td>year</td>
-<td>YEAR OF INTERVIEW</td>
-</tr>
-<tr class="odd">
-<td>age</td>
-<td>AGE OF INDIVIDUAL</td>
-</tr>
-<tr class="even">
-<td>white</td>
-<td>WHITE DUMMY</td>
-</tr>
-<tr class="odd">
-<td>dropout</td>
-<td>DROPOUT DUMMY</td>
-</tr>
-<tr class="even">
-<td>grad</td>
-<td>GRADUATE DUMMY</td>
-</tr>
-<tr class="odd">
-<td>college</td>
-<td>COLLEGE DUMMY</td>
-</tr>
-<tr class="even">
-<td>married</td>
-<td>MARRIED DUMMY</td>
-</tr>
-<tr class="odd">
-<td>child</td>
-<td>NUMBER OF CHILDREN</td>
-</tr>
-<tr class="even">
-<td>fsize</td>
-<td>FAMILY SIZE</td>
-</tr>
-<tr class="odd">
-<td>hours</td>
-<td>YEARLY HOURS OF WORK</td>
-</tr>
-<tr class="even">
-<td>logwages</td>
-<td>LOG OF REAL ANNUAL WAGES</td>
-</tr>
-<tr class="odd">
-<td>changejob</td>
-<td>JOB CHANGE DUMMY</td>
-</tr>
-<tr class="even">
-<td>ten1</td>
-<td>TENURE DUMMY less than a year</td>
-</tr>
-<tr class="odd">
-<td>ten2</td>
-<td>TENURE DUMMY a year</td>
-</tr>
-<tr class="even">
-<td>ten3</td>
-<td>TENURE DUMMY 2-3 years</td>
-</tr>
-<tr class="odd">
-<td>ten4</td>
-<td>TENURE DUMMY 4 through 9 years</td>
-</tr>
-<tr class="even">
-<td>ten5</td>
-<td>TENURE DUMMY 10 through 19 years</td>
-</tr>
-<tr class="odd">
-<td>ten6</td>
-<td>TENURE DUMMY 20 years or more</td>
-</tr>
-<tr class="even">
-<td>profes</td>
-<td>PROFESSIONAL, TECHNICAL, AND KINDRED WORKERS DUMMY</td>
-</tr>
-<tr class="odd">
-<td>admin</td>
-<td>MANAGERS AND ADMINISTRATORS DUMMY</td>
-</tr>
-<tr class="even">
-<td>sales</td>
-<td>CLERICAL AND SALES WORKERS DUMMY</td>
-</tr>
-<tr class="odd">
-<td>crafts</td>
-<td>CRAFTSMAN AND KINDRED WORKERS DUMMY</td>
-</tr>
-<tr class="even">
-<td>operat</td>
-<td>OPERATIVES WORKERS DUMMY</td>
-</tr>
-<tr class="odd">
-<td>servic</td>
-<td>LABORERS AND SERVICES WORKERS DUMMY</td>
-</tr>
-<tr class="even">
-<td>smsa</td>
-<td>SMSA (Standard Metropolitan Statistical Area) DUMMY</td>
-</tr>
-<tr class="odd">
-<td>neast</td>
-<td>NORTH-EAST DUMMY</td>
-</tr>
-<tr class="even">
-<td>ncentr</td>
-<td>NORTH-CENTRAL DUMMY</td>
-</tr>
-<tr class="odd">
-<td>south</td>
-<td>SOUTH DUMMY</td>
-</tr>
-<tr class="even">
-<td>west</td>
-<td>WEST DUMMY</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div id="exercise-1" class="section level1">
-<h1>Exercise 1</h1>
-<p>Download and load the data.</p>
-<p>Can we use this dataset to replicate our earlier analysis on the
-marital wage premium? What might be a problem here?</p>
-</div>
-<div id="exercise-2" class="section level1">
-<h1>Exercise 2</h1>
-<p>However, we do something similar: We want to investigate if there is
-a fatherhood wage premium? In other words, do men experience an increase
-in wages when they become fathers?</p>
-<pre><code>* Restrict the age at the start (first wage) to people aged 25-35
-
-
-
-* Use number of children to construct a binary indicator of wether there is a child in the household or not
-
-
-
-* Make sure we start only with men who are not yet fathers in the first period.</code></pre>
-<p><strong>Note: this feels like dropping a lot of information! However,
-it makes sense if we want to correctly identify the effect of
-interest.</strong></p>
-<pre><code>* Do we need to drop observations where people go from child to no child?
-
-
-
-* Calculate the effect of having a child on the wage of men (including controls if reasonable). 
-
-
-
-* Calculate effects for POLS, RE, and FE (if you have some extra time, also FEIS). (#Hint: feis needs a class `data.frame` as input data)
-
-
-
-* Compare using cluster robust standard errors (and screenreg).
-
-
-
-* Interpret the results </code></pre>
-<ul>
-<li>Try to perform a placebo test: what happens if you use the “lead” of
-becoming father. Why is this an interesting test?</li>
-</ul>
-</div>
-<div id="exercise-3" class="section level1">
-<h1>Exercise 3</h1>
-<p>Can we use one of the new event-study approaches, such as the
-Callaway and SantAnna estimator?</p>
-<pre><code>* Preprocess data (treatment group and timing indicator)
-
-* Estimate the model using `att_gt`
-
-* Show the group-time specific estimates (use `method=ipw` and only restricted set of controls)
-
-* Interpret the results </code></pre>
-</div>
-<div id="references" class="section level1 unnumbered">
-<h1 class="unnumbered">References</h1>
-<div id="refs" class="references csl-bib-body hanging-indent">
-<div id="ref-Hospido.2012" class="csl-entry">
-Hospido, L. 2012. <span>“<span class="nocase">Modelling heterogeneity
-and dynamics in the volatility of individual wages</span>.”</span>
-<em><span>Journal of Applied Econometrics</span></em> 27 (3): 386–414.
-<a
-href="https://doi.org/10.1002/jae.1204">https://doi.org/10.1002/jae.1204</a>.
-</div>
-</div>
+<div id="tba" class="section level3">
+<h3>TBA</h3>
 </div>
 
 
