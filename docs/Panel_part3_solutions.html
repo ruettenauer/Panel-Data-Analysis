@@ -513,36 +513,45 @@ div.tocify {
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-##  [1] ggforce_0.4.1  ggplot2_3.3.6  dplyr_1.0.10   haven_2.5.1    tidyr_1.2.1   
-##  [6] texreg_1.38.6  did_2.1.2      sandwich_3.0-2 feisr_1.3.0    plm_2.6-2     
+##  [1] haven_2.5.1      panelView_1.1.11 SCtools_0.3.2.1  future_1.28.0   
+##  [5] Synth_1.1-6      did_2.1.2        feisr_1.3.0      ggforce_0.4.1   
+##  [9] ggplot2_3.3.6    sandwich_3.0-2   lmtest_0.9-40    zoo_1.8-11      
+## [13] dplyr_1.0.10     tidyr_1.2.1      texreg_1.38.6    lfe_2.8-8       
+## [17] Matrix_1.5-1     plm_2.6-2       
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] httr_1.4.4          sass_0.4.2          jsonlite_1.8.2     
-##  [4] carData_3.0-5       bslib_0.4.0         Formula_1.2-4      
-##  [7] Rdpack_2.4          assertthat_0.2.1    yaml_2.3.5         
-## [10] numDeriv_2016.8-1.1 pillar_1.8.1        backports_1.4.1    
-## [13] lattice_0.20-45     glue_1.6.2          digest_0.6.29      
-## [16] polyclip_1.10-4     ggsignif_0.6.4      rbibutils_2.2.9    
-## [19] BMisc_1.4.5         colorspace_2.0-3    htmltools_0.5.3    
-## [22] Matrix_1.5-1        pkgconfig_2.0.3     broom_1.0.1        
-## [25] purrr_0.3.5         xtable_1.8-4        scales_1.2.1       
-## [28] tweenr_2.0.2        collapse_1.8.9      tibble_3.1.8       
-## [31] farver_2.1.1        generics_0.1.3      car_3.1-0          
-## [34] ellipsis_0.3.2      ggpubr_0.4.0        withr_2.5.0        
-## [37] cachem_1.0.6        maxLik_1.5-2        cli_3.4.1          
-## [40] magrittr_2.0.3      evaluate_0.17       fansi_1.0.3        
-## [43] nlme_3.1-157        MASS_7.3-57         forcats_0.5.2      
-## [46] rstatix_0.7.0       dreamerr_1.2.3      fixest_0.10.4      
-## [49] tools_4.2.1         data.table_1.14.2   hms_1.1.2          
-## [52] lifecycle_1.0.3     stringr_1.4.1       munsell_0.5.0      
-## [55] compiler_4.2.1      jquerylib_0.1.4     lfe_2.8-8          
-## [58] rlang_1.0.6         grid_4.2.1          rstudioapi_0.14    
-## [61] miscTools_0.6-26    rmarkdown_2.17      gtable_0.3.1       
-## [64] abind_1.4-5         DBI_1.1.3           R6_2.5.1           
-## [67] zoo_1.8-11          knitr_1.40          bdsmatrix_1.3-6    
-## [70] fastmap_1.1.0       utf8_1.2.2          stringi_1.7.8      
-## [73] parallel_4.2.1      Rcpp_1.0.9          vctrs_0.4.2        
-## [76] tidyselect_1.2.0    xfun_0.33           lmtest_0.9-40</code></pre>
+##  [1] nlme_3.1-157        httr_1.4.4          dreamerr_1.2.3     
+##  [4] numDeriv_2016.8-1.1 tools_4.2.1         BMisc_1.4.5        
+##  [7] backports_1.4.1     bslib_0.4.0         utf8_1.2.2         
+## [10] R6_2.5.1            DBI_1.1.3           mgcv_1.8-40        
+## [13] colorspace_2.0-3    withr_2.5.0         gridExtra_2.3      
+## [16] tidyselect_1.2.0    curl_4.3.3          compiler_4.2.1     
+## [19] cli_3.4.1           labeling_0.4.2      sass_0.4.2         
+## [22] scales_1.2.1        rgenoud_5.9-0.3     readr_2.1.3        
+## [25] fixest_0.10.4       stringr_1.4.1       digest_0.6.29      
+## [28] rmarkdown_2.17      pkgconfig_2.0.3     htmltools_0.5.3    
+## [31] parallelly_1.32.1   fastmap_1.1.0       collapse_1.8.9     
+## [34] highr_0.9           rlang_1.0.6         rstudioapi_0.14    
+## [37] jquerylib_0.1.4     farver_2.1.1        generics_0.1.3     
+## [40] jsonlite_1.8.2      car_3.1-0           magrittr_2.0.3     
+## [43] Formula_1.2-4       Rcpp_1.0.9          munsell_0.5.0      
+## [46] fansi_1.0.3         abind_1.4-5         furrr_0.3.1        
+## [49] lifecycle_1.0.3     stringi_1.7.8       yaml_2.3.5         
+## [52] carData_3.0-5       MASS_7.3-57         DRDID_1.0.4        
+## [55] grid_4.2.1          listenv_0.8.0       parallel_4.2.1     
+## [58] forcats_0.5.2       bdsmatrix_1.3-6     lattice_0.20-45    
+## [61] splines_4.2.1       hms_1.1.2           knitr_1.40         
+## [64] pillar_1.8.1        ggpubr_0.4.0        ggsignif_0.6.4     
+## [67] codetools_0.2-18    glue_1.6.2          evaluate_0.17      
+## [70] trust_0.1-8         V8_4.2.1            LowRankQP_1.0.5    
+## [73] data.table_1.14.2   tzdb_0.3.0          vctrs_0.4.2        
+## [76] tweenr_2.0.2        Rdpack_2.4          miscTools_0.6-26   
+## [79] gtable_0.3.1        purrr_0.3.5         polyclip_1.10-4    
+## [82] kernlab_0.9-31      assertthat_0.2.1    cachem_1.0.6       
+## [85] xfun_0.33           rbibutils_2.2.9     xtable_1.8-4       
+## [88] broom_1.0.1         rstatix_0.7.0       tibble_3.1.8       
+## [91] optimx_2022-4.30    maxLik_1.5-2        globals_0.16.1     
+## [94] concaveman_1.1.0    ellipsis_0.3.2</code></pre>
 </div>
 <div id="load-data" class="section level3">
 <h3>Load data</h3>
@@ -1157,21 +1166,21 @@ Callaway and SantAnna estimator?</p>
 ## 
 ## Overall summary of ATT&#39;s based on event-study/dynamic aggregation:  
 ##     ATT    Std. Error     [ 95%  Conf. Int.]  
-##  0.1035        0.0275     0.0497      0.1573 *
+##  0.1035        0.0268     0.0509       0.156 *
 ## 
 ## 
 ## Dynamic Effects:
 ##  Event time Estimate Std. Error [95% Simult.  Conf. Band]  
-##          -3   0.0589     0.0371       -0.0415      0.1592  
-##          -2   0.0292     0.0285       -0.0478      0.1061  
-##          -1  -0.0566     0.0214       -0.1144      0.0012  
-##           0   0.0424     0.0180       -0.0064      0.0911  
-##           1   0.0573     0.0264       -0.0140      0.1286  
-##           2   0.0843     0.0302        0.0027      0.1659 *
-##           3   0.1103     0.0310        0.0264      0.1942 *
-##           4   0.1462     0.0372        0.0458      0.2466 *
-##           5   0.1487     0.0398        0.0412      0.2562 *
-##           6   0.1353     0.0438        0.0170      0.2537 *
+##          -3   0.0589     0.0367       -0.0383      0.1561  
+##          -2   0.0292     0.0260       -0.0396      0.0980  
+##          -1  -0.0566     0.0206       -0.1112     -0.0020 *
+##           0   0.0424     0.0182       -0.0058      0.0905  
+##           1   0.0573     0.0254       -0.0100      0.1246  
+##           2   0.0843     0.0267        0.0134      0.1551 *
+##           3   0.1103     0.0323        0.0248      0.1958 *
+##           4   0.1462     0.0342        0.0556      0.2368 *
+##           5   0.1487     0.0383        0.0471      0.2502 *
+##           6   0.1353     0.0449        0.0162      0.2544 *
 ## ---
 ## Signif. codes: `*&#39; confidence band does not cover 0
 ## 
