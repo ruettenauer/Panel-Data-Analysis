@@ -62,7 +62,7 @@ Remeber that we have to make the parallel trends assumption in twoways FE models
 
 However, we can relax this assumption by giving each individual their own intercept __and__ their own slope.
 
-The fixed effects individual slope (FEIS) estimator is a more general version of the well-known fixed effects estimator (FE), which allows to control for heterogeneous slopes in addition to time-constant heterogeneity [e.g. @Bruderl.2015.387; @Polachek.1994.0; @Ruttenauer.2020; @Wooldridge.2010.384]. Formally, the FEIS estimator can be expressed as 
+The fixed effects individual slope (FEIS) estimator is a more general version of the well-known fixed effects estimator (FE), which allows to control for heterogeneous slopes in addition to time-constant heterogeneity [e.g. @Bruderl.2015; @Polachek.1994; @Ruttenauer.2020; @Wooldridge.2010]. Formally, the FEIS estimator can be expressed as 
 
 $$
 \begin{align} 
@@ -89,7 +89,7 @@ __Intuitively__, we
 
 3. run an OLS model on the residual ('detrended') data. 
 
-Similarly, we can estimate a correlated random effects (CRE) model [@Chamberlain.1982; @Mundlak.1978.0; @Wooldridge.2010.384] including the individual specific predictions $\hat{\bm X}_{i}$ to obtain the FEIS estimator:
+Similarly, we can estimate a correlated random effects (CRE) model [@Chamberlain.1982; @Mundlak.1978; @Wooldridge.2010] including the individual specific predictions $\hat{\bm X}_{i}$ to obtain the FEIS estimator:
 $$
 \begin{align} 
 \bm y_{i} =& \bm X_{i}\bm\beta + \hat{\bm X}_{i}\bm\rho + \bm \epsilon_{i}.
@@ -100,7 +100,7 @@ Although we are here mainly interested in controlling for individual time, FEIS 
 
 ### Example
 
-As an example, we use the `mwp` panel data, containing information on wages and family status of 268 men. This is a random sample drawn from the National Longitudinal Survey of Youth [@NLSY79.2012], and more details on the selection of observations and variable construction can be found in @Ludwig.2018.0. 
+As an example, we use the `mwp` panel data, containing information on wages and family status of 268 men. This is a random sample drawn from the National Longitudinal Survey of Youth [@NLSY79.2001], and more details on the selection of observations and variable construction can be found in @Ludwig.2018. 
 
 ```{r}
 data("mwp", package = "feisr")
@@ -141,7 +141,7 @@ Replacing the vcov in the model output has the advantage that we now use the clu
 summary(wages.fe)
 ```
 
-And finally, we allow for individual specific trends. To replicate the analysis of @Ludwig.2018.0, we use work experience (`exp`) and squared work experience as the slope variables.
+And finally, we allow for individual specific trends. To replicate the analysis of @Ludwig.2018, we use work experience (`exp`) and squared work experience as the slope variables.
 
 __One mayor advantage of using work experience as slope is that we can still control for (grouped) time fixed effects__
 
@@ -220,7 +220,7 @@ There are various ways of calculating how a treatment effect develops over time:
 
 Usually, it is best to not impose a structural form, but rather to use dummy impact functions. However, even with this, there is an ongoing debate on what is the best choice of specification [@Ludwig.2021], or see for instance [blog post by Pedro H. C. Sant’Anna and Brantly Callaway](https://pedrohcgs.github.io/posts/twfe).
 
-__Note that these settings usually require a staggered treatment adoption: individuals are treated once, and afterwards reamin treated__
+__Note that these settings usually require a staggered treatment adoption: individuals are treated once, and afterwards remain treated__
 
 There are many cases where this does not apply. However, one can think about potential ways of artificially creating such designs:
 
@@ -467,13 +467,13 @@ However, it is more complicated when we go beyond the 2 $\times$ 2 setting. Ther
 
 Assume we can divide our setting into treatment groups (treated vs. control) and into timing groups (every observation treated in the same period form a timing group).
 
-@GoodmanBacon.2021 shows that the two-ways FE is a weighted average of all possible two-group/two-period DD estimators. The weights determine how much each of these single combinations contributes to the two-ways FE are determined by the group size (e.g. how long do we observe each combination before and after treatment) and the variance in the treatment.
+@Goodman-Bacon.2021 shows that the two-ways FE is a weighted average of all possible two-group/two-period DD estimators. The weights determine how much each of these single combinations contributes to the two-ways FE are determined by the group size (e.g. how long do we observe each combination before and after treatment) and the variance in the treatment.
 
-![Two-ways FE and DD with varying treatment timing [@GoodmanBacon.2021].](fig/goodman.jpg)
+![Two-ways FE and DD with varying treatment timing [@Goodman-Bacon.2021].](fig/goodman.jpg)
 
 In the example above we have three groups: 1) control / never treated ($C$), 2) early treated (at period $k$), and 3) late treated (at period $l$). Those who are treated in later time periods are not only compared to those who are never treated but also to those who have already been treated in earlier periods.
 
-@GoodmanBacon.2021 shows that this setting with three treatment groups consists of 4 possible 2 $\times$ 2 Diff-in-Diff settings.
+@Goodman-Bacon.2021 shows that this setting with three treatment groups consists of 4 possible 2 $\times$ 2 Diff-in-Diff settings.
 
 Panels A) and B) compare $j = k,l$ against control group $C$, and can be written as:
 $$
@@ -498,10 +498,10 @@ a) __the number of periods each subsample uses__, and
 
 b) __the amount of treatment variance within each subsample__.
 
-Define $\bar{D}_{kl}$ as the variance of $D_{it}$ in the subsample that compares groups $k$ and $l$, and the relative size of each group in the pair $n_{kl} = \frac{n_k}{n_k + n_l}$. Then, the weights are given by:
+Define $\bar{D}_{kl}$ as the mean of $D_{it}$ in the subsample that compares groups $k$ and $l$ - denoting the share of time the group spends treated -, and the relative size of each group in the pair $n_{kl} = \frac{n_k}{n_k + n_l}$. Further $\hat{V}_D$ equals the overal variance in $D_{it}$, and $\hat{V}_D^{jC}$ denotes the amount of identifying variation for comparison of groups $j$ and $C$. Then, the weights are given by:
 
 $$
-W_{jC} = \frac{(n_j + n_C)^2 \hat{V}_D^{jU}}{\hat{V}_D}, ~\text{with}~ \hat{V}_D^{jU} = n_{jU}(1-n_{jU}) \bar{D}_j(1-\bar{D}_j), ~for~ j = k,l. 
+W_{jC} = \frac{(n_j + n_C)^2 \hat{V}_D^{jC}}{\hat{V}_D}, ~\text{with}~ \hat{V}_D^{jC} = n_{jC}(1-n_{jC}) \bar{D}_j(1-\bar{D}_j), ~for~ j = k,l. 
 $$
 
 $$
@@ -522,17 +522,273 @@ QUESTION: Do you know which of the above groups A), B), C), D) get the highest w
 
 So why (or when) could this lead to problems with the twoways FE estimator? @deChaisemartin.2020 and @Sun.2021 criticize the TWFE on the grounds of negative weights of some subgroups / sub-effects, arguing that this may induce substantial bias in the case of heterogeneous treatment effects.
 
-@GoodmanBacon.2021 also explains the observation of these "negative" weights:
+@Goodman-Bacon.2021 also explains the observation of these "negative" weights:
 
 > "Negative weights only arise when average treatment effects vary over time. The DD decomposition shows why: when already-treated units act as controls, changes in their outcomes are subtracted and these changes may include time-varying treatment effects. This does not imply a failure of the design in the sense of non-parallel trends in counterfactual outcomes, but it does suggest caution when using TWFE estimators to summarize treatment effects."
 
 Basically, if the treatment effect varies over time (e.g. treatment effect grows over time) TWFE might be biased because early treated groups (with an increasing treatment effect) are used as control groups for late treated groups, thereby masking the treatment effect of these late treated groups (which might however receive a high weight for the overall treatment effect).
 
-Especially for "trend-breaking" treatment effects like in the following figure, this will lead to biased estimates of the average treatment effect [@GoodmanBacon.2021; @Meer.2016].
+Especially for "trend-breaking" treatment effects like in the following figure, this will lead to biased estimates of the average treatment effect [@Goodman-Bacon.2021; @Meer.2016].
 
-![Bias of two-ways FE with trend-breaking treatment [@GoodmanBacon.2021].](fig/goodman2.jpg)
+![Bias of two-ways FE with trend-breaking treatment [@Goodman-Bacon.2021].](fig/goodman2.jpg)
 
 In the middle period, we compare the trend in the early treated with the not-yet treated periods of the late treatment group, and we see the divergence between those two groups (a positive treatment effect). However, for the late treated (right art of the figure), the earlier treated are the control cases (which already includes a trend-breaking treatment effect). For the late treatment group, and we do not observe a positive, but actually a negative treatment effect as we erroneously have the treatment effect in the control group!!!
+
+The trend-breaking treatment case is obviously an exception (this would be a really strong treatment effect). However, a similar problem arises with less strong dynamic treatment effects. Below, we set up panel data with three groups and and 12 periods. There is a never-treated group, and early-treated group and a late-treated group. As shown in Figure @fig:forbidden, we could either have A) a statistic treatment effect that changes the outcome level from one period to the other, or B) assume that the treatment effect unfolds dynamically over six periods before it stabilises.
+
+```{r did-combinations, class.source = 'fold-hide', results='hide', message = FALSE, warning = FALSE}
+#############################
+### Example: Callaway DID ###
+#############################
+
+library(ggplot2)
+library(gridExtra)
+library(ggpubr)
+library(dplyr)
+
+### Set up six individuals with age and happiness
+N <- 3
+T <- 12
+
+# id and time
+df2 <- data.frame(matrix(NA, ncol = 2, nrow = N*T))
+names(df2) <- c("id", "time")
+
+df2$id <- rep(1:N, each = T)
+df2$time <- rep(1:T, times = N)
+df2$idname <- factor(df2$id, levels = c(1:N), labels = paste("Person", c(1:N)))
+
+# Treatment group
+df2$D <- 0 
+df2$D[(1*T + 1):(2*T)] <- 1
+df2$D[(2*T + 1):(3*T)] <- 2
+
+df2$Treatment <- ifelse(df2$time >= 4 & df2$D == 1, 1, 0)
+oo <- which(df2$time >= 8 & df2$D == 2)
+df2$Treatment[oo] <- 1
+
+# Starting wage
+stw <- c(2300, 3000, 4000)
+
+# Dynamic treatment
+df2$DT <- as.numeric(as.character(df2$Treatment))
+df2$DT_time <- ave(df2$DT,
+                   df2$id,
+                   FUN = function(x) cumsum(x))
+
+for(i in 1:max(df2$DT_time)){
+  X <- ifelse(df2$DT_time == i, 1, 0)
+  if(i == 1){
+    Treatmat <- X
+  }else{
+    Treatmat <- cbind(Treatmat, X)
+  }
+}
+
+beta <- c(100, 300, 500, 400, 300, 200, 100, 100, 100)
+
+
+# wage equation
+df2$wage <- unname(rep(stw, each = T)) + (df2$time - 1)*50 + Treatmat %*% beta
+
+# alternative wage equation
+df2$alt_wage <- unname(rep(stw, each = T)) + (df2$time - 1)*50 + df2$Treatment * 500
+
+# counterfactual
+df2$wage0 <- unname(rep(stw, each = T)) + (df2$time - 1)*50
+
+df2$Treatment <- as.factor(df2$Treatment)
+
+# Add comparison groups
+df2$wage2 <- ave(df2$wage,
+                 df2$id,
+                 FUN = function(x) dplyr::lag(x))
+df2$time2 <- ave(df2$time,
+                 df2$id,
+                 FUN = function(x) dplyr::lag(x))
+oo <- which(df2$Treatment == 1)
+df2$wage2[oo] <- ave(df2$wage2[oo],
+                 df2$id[oo],
+                 FUN = function(x) x[1])
+df2$time2[oo] <- ave(df2$time2[oo],
+                 df2$id[oo],
+                 FUN = function(x) x[1])
+
+# for alpha
+df2$D2 <- df2$D
+df2$D3 <- df2$D
+df2$D2[which(df2$id == 2 & df2$time >= 8)] <- 0
+df2$D3[which(df2$id == 2 & df2$time >= 7)] <- 0
+
+
+### Plot the Callaway Sant Anna Comparisons ###
+
+
+zp1 <- ggplot(df2, aes(time, wage)) +
+  geom_line(aes(x = time, y = wage, group = id, alpha = as.factor(D)), lty = "solid", 
+            colour = "black", lwd = 1, show.legend = FALSE) + 
+  geom_point( aes(x = time, y = wage, fill = Treatment, shape = Treatment, alpha = as.factor(D)), 
+              size = 4, stroke = 1.5, color = "white") +
+  scale_alpha_manual(values = c(1, 1, 0.2), guide = "none") +
+  theme_classic() +
+  scale_x_continuous( breaks = seq(1, 12, 2))  +
+  scale_fill_manual(values = c("#85144b", "#0074D9")) +
+  scale_color_manual(values = c("#85144b", "#0074D9")) +
+  scale_shape_manual(values = c(21, 24)) +
+  ggtitle("Group 1: 11 2x2 DID estimates vs. never-treated") +
+  theme(legend.position = c(0.05,0.95), legend.justification = c("left", "top"),
+        legend.background = element_blank(),
+        text = element_text(size = 14),
+        legend.box.background = element_rect(colour = "black")) +
+  geom_curve(aes(x = time2, y = wage2, xend = time, yend = wage, color = Treatment), 
+             curvature = 0.3, data = df2[df2$D == 1 & !is.na(df2$wage2), ])
+
+
+zp2 <- ggplot(df2, aes(time, wage)) +
+  geom_line(aes(x = time, y = wage, group = id, alpha = as.factor(D3)), lty = "solid", 
+            colour = "black", lwd = 1, show.legend = FALSE) + 
+  geom_point( aes(x = time, y = wage,  fill = Treatment, shape = Treatment, alpha = as.factor(D2)), 
+              size = 4, stroke = 1.5,  color = "white") +
+  scale_shape_manual(values = c(21, 24)) +
+  scale_alpha_manual(values = c(0.2, 1, 0.2), guide = "none") +
+  scale_fill_manual(values = c("#85144b", "#0074D9")) +
+  scale_color_manual(values = c("#85144b", "#0074D9")) +
+  geom_line(aes(x = time, y = wage, group = id, ), lty = "solid", colour = "black", lwd = 1,
+            data = df2[df2$D2 == 2 & df2$time <= 7, ]) + 
+  geom_point( aes(x = time, y = wage, fill = Treatment, shape = Treatment),
+              data = df2[df2$D == 2 & df2$time <= 7, ],
+              size = 4, stroke = 1.5,  color = "white") +
+  scale_shape_manual(values = c(21, 24)) +
+  theme_classic() +
+  scale_x_continuous( breaks = seq(1, 12, 2))  +
+  ggtitle("Group 1: 6 2x2 DID estimates vs. not-yet-treated") +
+  theme(legend.position = c(0.05,0.95), legend.justification = c("left", "top"),
+        legend.background = element_blank(),
+        text = element_text(size = 14),
+        legend.box.background = element_rect(colour = "black")) +
+  geom_curve(aes(x = time2, y = wage2, xend = time, yend = wage, color = Treatment), 
+             curvature = 0.3, data = df2[df2$D == 1 & !is.na(df2$wage2) & df2$time <= 7, ])
+
+
+zp3 <- ggplot(df2, aes(time, wage)) +
+  geom_line(aes(x = time, y = wage, group = id, alpha = as.factor(D)), lty = "solid", 
+            colour = "black", lwd = 1, show.legend = FALSE) + 
+  geom_point(aes(x = time, y = wage, fill = Treatment, shape = Treatment, alpha = as.factor(D)), 
+              size = 4, stroke =1.5, color = "white") +
+  scale_color_manual(values = c("#85144b", "#0074D9")) +
+  scale_fill_manual(values = c("#85144b", "#0074D9")) +
+  scale_shape_manual(values = c(21, 24)) +
+  scale_alpha_manual(values = c(1, 0.2, 1), guide = "none") +
+  theme_classic() +
+  scale_x_continuous( breaks = seq(1, 12, 2))  +
+  ggtitle("Group 2: 11 2x2 DID estimates vs. never-treated") +
+  theme(legend.position = c(0.05,0.95), legend.justification = c("left", "top"),
+        text = element_text(size = 14),
+        legend.background = element_blank(),
+        legend.box.background = element_rect(colour = "black")) +
+  geom_curve(aes(x = time2, y = wage2, xend = time, yend = wage, color = Treatment), 
+             curvature = 0.3, data = df2[df2$D == 2 & !is.na(df2$wage2), ])
+
+
+text <- paste("DOES NOT compare\n",
+                             "group 2 (late treatment) vs.\n",
+                             "the already treated periods of group 1")
+zp4 <- ggplot() + 
+  annotate("text", x = 4, y = 25, size=8, label = text, color = "red") + 
+  theme_void()
+
+
+
+
+### Plot the Forbidden Comparisons Comparisons ###
+
+df2$D4 <- df2$D
+df2$D4[df2$time <= 3] <- 0
+
+# Feed forward
+df2$l_Treatment <- ave(df2$Treatment,
+                       df2$id,
+                       FUN = function(x) dplyr::lead(x))
+
+fp1 <- ggplot(df2, aes(time, wage)) +
+  geom_line(aes(x = time, y = wage, group = id, alpha = as.factor(D4)), lty = "solid", 
+            colour = "black", lwd = 1, show.legend = FALSE) + 
+  geom_point(aes(x = time, y = wage, fill = Treatment, shape = Treatment, alpha = as.factor(D4)), 
+              size = 4, stroke =1.5, color = "white") +
+  geom_line(aes(x = time, y = wage0, group = id), 
+            data = df2[df2$l_Treatment == 1 | df2$Treatment == 1, ],
+            lty = "dashed", alpha = 0.2,
+            colour = "black", lwd = 1, show.legend = FALSE) + 
+  geom_point(aes(x = time, y = wage0), 
+             data = df2[df2$Treatment == 1, ],
+             size = 3, stroke = 1, alpha = 0.2, shape = 21) +
+  geom_blank(aes(x = time, y = alt_wage, fill = Treatment, shape = Treatment, alpha = as.factor(D4)), 
+              size = 4, stroke =1.5, color = "white") +
+  scale_color_manual(values = c("#85144b", "#0074D9")) +
+  scale_fill_manual(values = c("#85144b", "#0074D9")) +
+  scale_shape_manual(values = c(21, 24)) +
+  scale_alpha_manual(values = c(0.2, 1, 1), guide = "none") +
+  theme_classic() +
+  scale_x_continuous( breaks = seq(1, 12, 2))  +
+  ggtitle("B) Dynamic treatment effect \n    Late-treated vs. already-treated") +
+  theme(legend.position = c(0.05,0.95), legend.justification = c("left", "top"),
+        text = element_text(size = 14),
+        legend.background = element_blank(),
+        legend.box.background = element_rect(colour = "black")) 
+
+
+
+fp2 <- ggplot(df2, aes(time, alt_wage)) +
+  geom_line(aes(x = time, y = alt_wage, group = id, alpha = as.factor(D4)), lty = "solid", 
+            colour = "black", lwd = 1, show.legend = FALSE) + 
+  geom_point(aes(x = time, y = alt_wage, fill = Treatment, shape = Treatment, alpha = as.factor(D4)), 
+              size = 4, stroke =1.5, color = "white") +
+  geom_line(aes(x = time, y = wage0, group = id), 
+            data = df2[df2$l_Treatment == 1 | df2$Treatment == 1, ],
+            lty = "dashed", alpha = 0.2,
+            colour = "black", lwd = 1, show.legend = FALSE) + 
+  geom_point(aes(x = time, y = wage0), 
+             data = df2[df2$Treatment == 1, ],
+             size = 3, stroke = 1, alpha = 0.2, shape = 21) +
+  scale_color_manual(values = c("#85144b", "#0074D9")) +
+  scale_fill_manual(values = c("#85144b", "#0074D9")) +
+  scale_shape_manual(values = c(21, 24)) +
+  scale_alpha_manual(values = c(0.2, 1, 1), guide = "none") +
+  theme_classic() +
+  scale_x_continuous( breaks = seq(1, 12, 2))  +
+  ggtitle("A) Static treatment effect \n    Late-treated vs. already-treated") +
+  ylab("wage") +
+  theme(legend.position = c(0.05,0.95), legend.justification = c("left", "top"),
+        text = element_text(size = 14),
+        legend.background = element_blank(),
+        legend.box.background = element_rect(colour = "black")) 
+
+```
+
+
+```{r forbidden-plot, class.source = 'fold-hide', results='hide', message = FALSE, warning = FALSE}
+zp <- ggarrange(fp2, fp1  + rremove("legend"), 
+                ncol = 2, nrow = 1)
+
+cairo_ps(file = paste("fig/", "Forbidden.eps", sep=""), width = 11, height = 4.5, 
+          bg = "white", family = "Times New Roman")
+par(mar = c(0, 0, 0, 0))
+par(mfrow = c(1, 1), oma = c(0, 0, 0, 0))
+zp
+dev.off()
+
+jpeg(file = paste("fig/", "Forbidden.jpeg", sep=""), width = 11, height = 4.5, 
+    units = "in", res = 300, type = "cairo",
+          bg = "white", family = "Times New Roman")
+par(mar = c(0, 0, 0, 0))
+par(mfrow = c(1, 1), oma = c(0, 0, 0, 0))
+zp
+dev.off()
+```
+
+![Forbidden comparison of late-treated vs already-treated](fig/Forbidden.jpeg) {#fig:forbidden}
+
+The problem now arises when FE compares the late treated as treatment group vs. the already treated as control group. In the static treatment case (@fig-forbidden A), everything is fine as the already-treated run parallel to counterfactual of the late-treated. We can thus use them as control. However, in the dynamic treatment case (@fig-forbidden B), the "control" group of already-treated experience still an ongoing dynamic treatment effect when the late-treated are treated. They are thus not running parallel to the counterfactual of the late-treated group. This comparison is thus also called the forbidden comparison [@Roth.2023].
 
 One way of counteracting this problem is to use event study / impact function designs (see above) to explicitly model time varying treatment effects.
 
@@ -545,7 +801,7 @@ Let's start again with the $2 \times 2$ Diff-in-Diff estimator as
 $$
 \delta = \E(\Delta y_{T}) - \E(\Delta y_{C}) = (\E(y_{T}^{post}) - \E(y_{T}^{pre})) - (\E(y_{C}^{post}) - \E(y_{C}^{pre})),
 $$
-where $\delta$ is the average tretment effect on the treated (ATT).
+where $\delta$ is the average treatment effect on the treated (ATT).
 
 @Callaway.2020 show that we can generalize this $2 \times 2$ Diff-in-Diff to a mutlti-group and multi-timing setting by computing group-time average treatment effects. We group all treatment units which receive treatment at the same period into a common group $g$, and for each treatment-group $g$ and time period $t$ we estimate group-specific and time-specific ATTs: 
 
@@ -553,9 +809,7 @@ $$
 \delta_{g,t} = \E(\Delta y_{g}) - \E(\Delta y_{C}) = (\E(y_{g}^{t}) - \E(y_{g}^{g-1})) - (\E(y_{C}^{t}) - \E(y_{C}^{g-1})),
 $$
 
-where the control group can either be the never-treated or the not-yet-treated.
-
-Intuitively, this means, we estimate an individual treatment effect for each combination of treatment-timing-group and control group.
+where the control group can either be the never-treated or the not-yet-treated. As shown in @fig-callaway by the convex lines, this means, we estimate an individual treatment effect for each combination of treatment-timing-group and control group.
 
 Obviously, this gives us a large number of different treatment effects. So, in a second step, we re-aggregate these individual combinations back to group or time averaged treatment effect. In an event study design, @Callaway.2020 propose the following dynamic treatment effect for each period $e$ after the treatment:
 
@@ -564,125 +818,32 @@ $$
 $$
 where $e$ specifies for how long a unit has been exposed to the treatment. It's basically the average effects across all treatment-timing groups at the period $e$ after treatment. From here, one can easily calculate the cumulative effect or the overall aggregated effect.
 
-Let's consider a setting equal to the situation above [@GoodmanBacon.2021] where we have a control group of never-treated units, one treatment group that is treated early (group 1) and one treatment group that is treated late (group 2). As shown below, with $T=12$ we can estimate 11 2 $\times$ 2 Diff-in-Diff estimates of group 1 against the never treated, we can estimate 6 2 $\times$ 2 Diff-in-Diff estimates of group 1 against the not-yet treated (late treatment group), and we can estimate 11 2 $\times$ 2 Diff-in-Diff estimates of group 2 against the never treated.
+Consider the situation in @fig-callaway, where we have a control group of never-treated units, one treatment group that is treated early (group 1) and one treatment group that is treated late (group 2). As shown below, with $T=12$ we can estimate 11 2 $\times$ 2 Diff-in-Diff estimates of group 1 against the never treated, we can estimate 6 2 $\times$ 2 Diff-in-Diff estimates of group 1 against the not-yet treated (late treatment group), and we can estimate 11 2 $\times$ 2 Diff-in-Diff estimates of group 2 against the never treated.
 
 Note that the control period for all treated periods by default is set to the period before the treatment happened in each group. For group 1 this is period 3, and for group 2 this is period 7. This makes only sense if there is __no treatment anticipation__. Obviously, we can also use other (earlier) periods if we assume treatment anticipation.
 
-```{r, class.source = 'fold-hide'}
-################################
-### Example: Marriage Income ###
-################################
+```{r did-plot, class.source = 'fold-hide', results='hide', message = FALSE, warning = FALSE}
+zp <- ggarrange(zp1, zp2  + rremove("legend"), 
+                zp3  + rremove("legend"), zp4,
+                ncol = 2, nrow = 2)
 
-### Set up six individuals with age and happiness
-N <- 3
-T <- 12
+cairo_ps(file = paste("fig/", "DiD.eps", sep=""), width = 11, height = 8, 
+          bg = "white", family = "Times New Roman")
+par(mar = c(0, 0, 0, 0))
+par(mfrow = c(1, 1), oma = c(0, 0, 0, 0))
+zp
+dev.off()
 
-# id and wave
-df2 <- data.frame(matrix(NA, ncol = 2, nrow = N*T))
-names(df2) <- c("id", "wave")
-
-df2$id <- rep(1:N, each = T)
-df2$wave <- rep(1:T, times = N)
-df2$idname <- factor(df2$id, levels = c(1:N), labels = paste("Person", c(1:N)))
-
-# Treatment group
-df2$D <- 0 
-df2$D[(1*T + 1):(2*T)] <- 1
-df2$D[(2*T + 1):(3*T)] <- 2
-
-df2$Treatment <- ifelse(df2$wave >= 4 & df2$D == 1, 1, 0)
-oo <- which(df2$wave >= 8 & df2$D == 2)
-df2$Treatment[oo] <- 1
-
-# Starting wage
-stw <- c(2000, 3000, 4000)
-
-# wage equation
-df2$wage <- unname(rep(stw, each = T)) + (df2$wave - 1)*50 + df2$Treatment * 500
-df2$Treatment <- as.factor(df2$Treatment)
-
-# Add comparison groups
-df2$wage2 <- ave(df2$wage,
-                 df2$id,
-                 FUN = function(x) lag(x))
-df2$wave2 <- ave(df2$wave,
-                 df2$id,
-                 FUN = function(x) lag(x))
-oo <- which(df2$Treatment == 1)
-df2$wage2[oo] <- ave(df2$wage2[oo],
-                 df2$id[oo],
-                 FUN = function(x) x[1])
-df2$wave2[oo] <- ave(df2$wave2[oo],
-                 df2$id[oo],
-                 FUN = function(x) x[1])
-
-
-### Plot 
-zp1 <- ggplot(df2, aes(wave, wage)) +
-  geom_line(aes(x = wave, y = wage, group = id, alpha = as.factor(D)), lty = "solid", colour = "black", lwd = 1) + 
-  geom_point( aes(x = wave, y = wage, shape = Treatment, color = Treatment, alpha = as.factor(D)), 
-              size = 2, stroke = 2) +
-  scale_alpha_manual(values = c(1, 1, 0.2), guide = "none") +
-  theme_bw() +
-  scale_x_continuous( breaks = seq(1, 12, 2))  +
-  ggtitle("Group 1: 11 2x2 DID estimates against never-treated") +
-  theme(legend.position = c(0.05,0.95), legend.justification = c("left", "top"),
-        legend.background = element_blank(),
-        legend.box.background = element_rect(colour = "black")) +
-  geom_curve(aes(x = wave2, y = wage2, xend = wave, yend = wage, color = Treatment), 
-             curvature = 0.3, data = df2[df2$D == 1 & !is.na(df2$wage2), ])
-
-
-zp2 <- ggplot(df2, aes(wave, wage)) +
-  geom_line(aes(x = wave, y = wage, group = id, alpha = as.factor(D)), lty = "solid", colour = "black", lwd = 1) + 
-  geom_point( aes(x = wave, y = wage, shape = Treatment, color = Treatment, alpha = as.factor(D)), 
-              size = 2, stroke = 2) +
-  scale_alpha_manual(values = c(0.2, 1, 0.2), guide = "none") +
-  geom_line(aes(x = wave, y = wage, group = id, ), lty = "solid", colour = "black", lwd = 1,
-            data = df2[df2$D == 2 & df2$wave <= 7, ]) + 
-  geom_point( aes(x = wave, y = wage, shape = Treatment, color = Treatment), 
-              size = 2, stroke = 2,
-              data = df2[df2$D == 2 & df2$wave <= 7, ]) +
-  theme_bw() +
-  scale_x_continuous( breaks = seq(1, 12, 2))  +
-  ggtitle("Group 1: 6 2x2 DID estimates against not-yet-treated") +
-  theme(legend.position = c(0.05,0.95), legend.justification = c("left", "top"),
-        legend.background = element_blank(),
-        legend.box.background = element_rect(colour = "black")) +
-  geom_curve(aes(x = wave2, y = wage2, xend = wave, yend = wage, color = Treatment), 
-             curvature = 0.3, data = df2[df2$D == 1 & !is.na(df2$wage2) & df2$wave <= 7, ])
-
-
-zp3 <- ggplot(df2, aes(wave, wage)) +
-  geom_line(aes(x = wave, y = wage, group = id, alpha = as.factor(D)), lty = "solid", colour = "black", lwd = 1) + 
-  geom_point( aes(x = wave, y = wage, shape = Treatment, color = Treatment, alpha = as.factor(D)), 
-              size = 2, stroke = 2) +
-  scale_alpha_manual(values = c(1, 0.2, 1), guide = "none") +
-  theme_bw() +
-  scale_x_continuous( breaks = seq(1, 12, 2))  +
-  ggtitle("Group 2: 11 2x2 DID estimates against never-treated") +
-  theme(legend.position = c(0.05,0.95), legend.justification = c("left", "top"),
-        legend.background = element_blank(),
-        legend.box.background = element_rect(colour = "black")) +
-  geom_curve(aes(x = wave2, y = wage2, xend = wave, yend = wage, color = Treatment), 
-             curvature = 0.3, data = df2[df2$D == 2 & !is.na(df2$wage2), ])
-
-
+jpeg(file = paste("fig/", "DiD.jpeg", sep=""), width = 11, height = 8, 
+    units = "in", res = 300, type = "cairo",
+          bg = "white", family = "Times New Roman")
+par(mar = c(0, 0, 0, 0))
+par(mfrow = c(1, 1), oma = c(0, 0, 0, 0))
+zp
+dev.off()
 ```
 
-```{r, class.source = 'fold-hide', figures-side, fig.show="hold", out.width="50%"}
-par(mar = c(4, 4, .1, .1))
-zp1
-zp2
-zp3
-text <- paste("We DO NOT compare\n",
-                             "group 2 (late treatment) against\n",
-                             "the already treated periods of group 1")
-ggplot() + 
-  annotate("text", x = 4, y = 25, size=8, label = text, color = "red") + 
-  theme_void()
-
-```
+![Multiple 2x2 DiD comparisons with dynamic DiD estimators](fig/DiD.jpeg){#fig-callaway}
 
 
 For a more detailled introdution see @Callaway.2020 or the respective [package introcution](https://cran.r-project.org/web/packages/did/vignettes/multi-period-did.html).
@@ -700,6 +861,7 @@ __Assumptions__:
   + based on not-yet-treated: If there is treatment anticipation, our control group will be confounded by the treatment effect. A violation of the assumption can lead to stronger bias if we use the not-yet-treated as control group.
   
 __Trade-off__: If assumption 2) is likely to hold, we can use only the never-treated as controls to relax assumption 3). If assumption 3) is likely to hold, we can include the not-yet-treated as control to relax assumption 2).
+
 
 
 ### Example
@@ -886,6 +1048,10 @@ In R, we can use the package `Synth` to produce Synthetic Control estimates. For
 Here, we use the example of @Abadie.2003, analyzing the influence of the terrorist conflict in Basque on economic outcomes.
 
 ```{r}
+library(Synth)
+# devtools::install_github("bcastanho/SCtools")
+library(SCtools)
+
 data("basque")
 basque <- basque[-which(basque$regionno == 1), ]
 head(basque[basque$year > 1963, ])
@@ -1014,7 +1180,7 @@ The function `generate.placebos()` of the `SCtools` package does all of this aut
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 placebo <- generate.placebos(dataprep.out = data_prep.out,
                              synth.out = synth.out, 
-                             strategy = "multiprocess")
+                             strategy = "multisession")
 ```
 
 Also creating the respective plot.
@@ -1028,15 +1194,108 @@ The real treatment region seems quite special. For some control regions, we obse
 
 # Generalized Synthetic Control
 
-__tbd__
+Generalized Synthetic Control [@Xu.2017] is a way of generalising the "qualitative" approach with one single treated unit to a setting with multiple treated units based on Interactive Fixed Effects or Factor Models:
 
-@Xu.2017
+$$
+Y_{it} = \sum_{r=1}^R \gamma_{ir} \delta_{tr} + \epsilon_{it} \quad \text{or} \quad,
+\mathbf{Y} = \mathbf U \mathbf V^\mathrm T + \mathbf{\varepsilon}.
+$$
+
+- with with $\mathbf U$ being an $N \times r$ matrix of unknown factor loadings (unit-specific intercepts),
+- and $\mathbf V$ an $T \times r$  matrix of unobserved common factors (time-varying coefficients).
+
+Estimate $\\delta$ and $\\gamma$ by least squares and use to impute missing values.
+
+$$
+\hat Y _{NT} = \sum_{r=1}^R \hat \delta_{Nr} \hat \gamma_{rT}.
+$$
+
+In a matrix form, the $Y_{N \times T}$ can be rewritten as:
+
+$$
+Y_{N\times T}= \mathbf U \mathbf V^\mathrm T + \epsilon_{N \times T} =  \mathbf L_{N \times T} + \epsilon_{N \times T} = \\ \left(
+\begin{array}{ccccccc}
+ \delta_{11} & \dots & \delta_{R1}  \\
+\vdots & \dots & \vdots   \\
+\vdots & \dots & \vdots   \\
+\vdots & \dots & \vdots   \\
+\delta_{1N} & \dots & \delta_{RN}  \\
+\end{array}\right)
+\left(
+\begin{array}{ccccccc}
+\gamma_{11}  & \dots \dots \dots & \gamma_{1T}  \\
+\vdots & \dots \dots \dots & \vdots   \\
+\gamma_{R1}  & \dots \dots \dots & \gamma_{RT}  \\
+\end{array}
+\right) + \epsilon_{N \times T}
+$$
 
 # Matrix Completion
 
-__tbd__
+Matrix Completion [@Athey.2021] uses a very similar approach. Instead of estimating the factors, we estimate the matrix $\mathbf L_{N \times T}$ directly. It is supposed to generalise the horizontal and vertical approach.
 
-@Athey.2021
+$$
+Y_{N\times T}=\left(
+\begin{array}{cccccccccc}
+ {\color{red} ?} & {\color{red} ?} & {\color{red} ?} & {\color{red} ?} & {\color{red} ?}& \checkmark  & \dots  & {\color{red} ?}\\
+\checkmark & {\color{red} ?} & {\color{red} ?} & {\color{red} ?} & \checkmark & {\color{red} ?}   & \dots & \checkmark  \\
+{\color{red} ?}  & \checkmark & {\color{red} ?}  & {\color{red} ?} & {\color{red} ?} & {\color{red} ?} & \dots & {\color{red} ?}  \\
+ {\color{red} ?} & {\color{red} ?} & {\color{red} ?} & {\color{red} ?} & {\color{red} ?}& \checkmark  & \dots  & {\color{red} ?}\\
+\checkmark & {\color{red} ?} & {\color{red} ?} & {\color{red} ?} & {\color{red} ?} & {\color{red} ?}   & \dots & \checkmark  \\
+{\color{red} ?}  & \checkmark & {\color{red} ?}  & {\color{red} ?} & {\color{red} ?} & {\color{red} ?} & \dots & {\color{red} ?}  \\
+\vdots   &  \vdots & \vdots &\vdots   &  \vdots & \vdots &\ddots &\vdots \\
+{\color{red} ?}  & {\color{red} ?} & {\color{red} ?} & {\color{red} ?}& \checkmark & {\color{red} ?}   & \dots & {\color{red} ?}\\
+\end{array}
+\right)
+$$
+
+
+This can be done via Nuclear Norm Minimization:
+
+$$
+\min_{L}\frac{1}{|\cal{O}|}
+\sum_{(i,t) \in \cal{o}} \left(Y_{it} -
+L_{it} \right)^2+\lambda_L \|L\|_*
+$$
+
+- where $\cal{O}$ denote the set of pairs of indices corresponding to the observed entries (the entries with $W_{it} = 0$).
+
+Given any $N\times T$ matrix $A$, define the two $N\times T$ matrices  $P_\cal{O}(A)$
+and  $P_\cal{O}^\perp(A)$
+with typical elements:
+$$
+P_\cal{O}(A)_{it}=
+\left\{
+\begin{array}{ll}
+A_{it}\hskip1cm & {\rm if}\ (i,t)\in\cal{O}\,,\\
+0&{\rm if}\ (i,t)\notin\cal{O}\,,
+\end{array}\right.
+$$
+and
+$$
+P_\cal{O}^\perp(A)_{it}=
+\left\{
+\begin{array}{ll}
+0\hskip1cm & {\rm if}\ (i,t)\in\cal{O}\,,\\
+A_{it}&{\rm if}\ (i,t)\notin\cal{O}\,.
+\end{array}\right.
+$$
+
+Let $A=S\Sigma R^\top$ be the Singular Value Decomposition for $A$, with  $\sigma_1(A),\ldots,\sigma_{\min(N,T)}(A)$, denoting the singular values. Then define the matrix shrinkage operator
+$$
+\ shrink_\lambda(A)=S \tilde\Sigma R^\top\,,
+$$
+where $\tilde\Sigma$ is equal to $\Sigma$ with the $i$-th  singular value $\sigma_i(A)$ replaced by $\max(\sigma_i(A)-\lambda,0)$.
+
+### The algorithm 
+
+(1) Start with the initial choice $L_1(\lambda)=P_\cal{O}(Y)$, with zeros for the missing values.
+(2) Then for $k=1,2,\ldots,$ define,
+$$
+L_{k+1}(\lambda)=shrink_\lambda\Biggl\{P_\cal{O}(Y)+P_\cal{O}^\perp\Big(L_k(\lambda)\Big)\Biggr\}\,
+$$
+until the sequence $\left\{L_k(\lambda)\right\}_{k\ge 1}$ converges.
+(3) The limiting matrix $L^*$ is our estimator for the regularization parameter $\lambda$, denoted by $\hat{L}(\lambda,\cal{O})$.
 
 ![](fig/correlation.png)
 

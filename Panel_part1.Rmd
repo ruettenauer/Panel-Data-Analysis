@@ -187,16 +187,16 @@ simdata <- function(N = 6, T = 4,
   
   # id and wave
   df <- data.frame(matrix(NA, ncol = 2, nrow = N*T))
-  names(df) <- c("id", "wave")
+  names(df) <- c("id", "time")
   
   df$id <- rep(1:N, each = T)
-  df$wave <- rep(1:T, times = N)
+  df$time <- rep(1:T, times = N)
   df$idname <- factor(df$id, levels = c(1:N), labels = paste("Person", c(1:N)))
   
   # age
   startingage <- age_range
   startingage <- round(quantile(startingage, probs = seq(0, 1, 1/(N-1))), 0)
-  df$age <- unname(rep(startingage, each = T)) + df$wave*2
+  df$age <- unname(rep(startingage, each = T)) + df$time*2
   
   # cohort 
   df$cohort <- 0
@@ -259,11 +259,28 @@ summary(lm1)
 This indicates a positive relation between age and happiness. Graphically, this would look like:
 
 ```{r class.source = 'fold-hide', message = FALSE, warning = FALSE}
+
+# The palette with black:
+cbp2 <- c("#000000", 
+          "#E69F00", 
+          "#56B4E9", 
+          "#009E73",
+          "#F0E442", 
+          "#0072B2", 
+          "#D55E00", 
+          "#CC79A7")
+
+# Save the residual values
+df$predicted <- predict(lm1)
+df$residuals <- residuals(lm1)
+
 zp1 <- ggplot(df, aes(age, happiness)) +
   geom_point( aes(x = age, y = happiness), size = 2, stroke = 1) +
-  geom_smooth(method = 'lm', formula = y ~ x, se = FALSE) +
+  geom_smooth(method = 'lm', formula = y ~ x, se = FALSE, color  = "deeppink") +
+  geom_segment(data = df, aes(xend = age, yend = predicted), 
+               alpha = .3, color = "purple") +
   ylim(3.3, 9.2) + expand_limits(y = c(0, 0)) + 
-  theme_bw() +
+  theme_classic() +
   theme(legend.key = element_blank(), legend.title = element_blank(),
         legend.position = c(0.95,0.05), legend.justification = c("right", "bottom"),
         legend.background = element_blank(),
@@ -286,15 +303,30 @@ summary(lm2)
 As a result, the effect of age becomes weaker. Graphically, this would look like:
 
 ```{r class.source = 'fold-hide', message = FALSE, warning = FALSE}
+
+# Save the residual values
+for(i in unique(df$cohort)){
+  oo <- which(df$cohort == i)
+  lmt <- lm(happiness ~ age, data = df[oo, ])
+  df$predicted[oo] <- predict(lmt)
+  df$residuals[oo] <- residuals(lmt)
+}
+
+
 zp2 <- ggplot(df, aes(age, happiness)) +
   geom_point(aes(x = age, y = happiness, shape = cohort, colour = cohort), 
               size = 2, stroke = 1) +
   geom_smooth(method = 'lm', formula = y ~ x, se = FALSE, show.legend = FALSE,
               mapping = aes(colour = cohort, linetype = cohort)) +  
+  geom_segment(data = df, aes(xend = age, yend = predicted), 
+               alpha = .3, color = "purple") +
   geom_abline(intercept = lm2$coefficients[1] + 0.5 * lm2$coefficients[3], 
-                               slope = lm2$coefficients[2], col = "blue") +  
+                               slope = lm2$coefficients[2], color  = "deeppink") +  
   ylim(3.3, 9.2) + expand_limits(y = c(0, 0)) + 
-  theme_bw() +
+  scale_colour_manual(values = cbp2[-c(1, 2)]) + 
+  scale_fill_manual(values = cbp2[-c(1, 2)]) + 
+  scale_shape_manual(values = c(15:18, 25, 20)) +
+  theme_classic() +
   theme(legend.key = element_blank(), legend.title = element_blank(),
         legend.position = c(0.95,0.05), legend.justification = c("right", "bottom"),
         legend.background = element_blank(),
@@ -304,7 +336,7 @@ zp2
 
 So, what we basically receive here is the (weighted) average effect within each birth cohort. We use only similar observations (in terms of cohort) to estimate our effect of interest - the correlation between age and happiness. If we add any controls, we always decompose the variance which contributes to our estimator, and we eliminate the variance that is attributed to the confounder / control variable.
 
-![Illustration by @HuntingtonKlein.2021: Introducing a binary control variable](fig/NHK_Control.gif)
+![Illustration by @Huntington-Klein.2021: Introducing a binary control variable](fig/NHK_Control.gif)
 
 ## Panel data setting
 
@@ -312,10 +344,13 @@ Now, with panel data, we can even go a step further. Assume we would not have ob
 
 ```{r class.source = 'fold-hide', message = FALSE, warning = FALSE}
 zp3 <- ggplot(df, aes(age, happiness)) +
-  geom_point( aes(x = age, y = happiness, shape = idname, colour = idname), 
+  geom_point( aes(x = age, y = happiness, shape = idname, colour = idname, fill = idname), 
               size = 2, stroke = 1) +
   ylim(3.3, 9.2) + expand_limits(y = c(0, 0)) + 
-  theme_bw() +
+  scale_colour_manual(values = cbp2[-c(1, 2)]) + 
+  scale_fill_manual(values = cbp2[-c(1, 2)]) + 
+  scale_shape_manual(values = c(15:18, 25, 20)) +
+  theme_classic() +
   theme(legend.key = element_blank(), legend.title = element_blank(),
         legend.position = c(0.95,0.05), legend.justification = c("right", "bottom"),
         legend.background = element_blank(),
@@ -350,17 +385,34 @@ summary(lm1)
 which graphically looks like:
 
 ```{r class.source = 'fold-hide', message = FALSE, warning = FALSE}
+# Save the residual values
+df$predicted <- predict(lm1)
+df$residuals <- residuals(lm1)
+
 zp3 <- ggplot(df, aes(age, happiness)) +
-  geom_point( aes(x = age, y = happiness, shape = idname, colour = idname), 
+  geom_point( aes(x = age, y = happiness, shape = idname, colour = idname, fill = idname), 
               size = 2, stroke = 1) +
-  geom_smooth(method = 'lm', formula = y ~ x, se = FALSE) +
+  geom_smooth(method = 'lm', formula = y ~ x, se = FALSE,
+              color  = "deeppink") +
+  geom_segment(aes(xend = age, yend = predicted), 
+               alpha = .3, color = "purple") +
+  annotate("text", x = 35, y = 8.0, 
+           label = paste0("beta[Pooled] ==", round(lm1$coefficients[2], 3)), 
+           parse = TRUE) +
   ylim(3.3, 9.2) + expand_limits(y = c(0, 0)) + 
-  theme_bw() +
-  theme(legend.key = element_blank(), legend.title = element_blank(),
-        legend.position = c(0.95,0.05), legend.justification = c("right", "bottom"),
+  scale_colour_manual(values = cbp2[-c(1, 2)]) + 
+  scale_fill_manual(values = cbp2[-c(1, 2)]) + 
+  scale_shape_manual(values = c(15:18, 25, 20)) +
+  ggtitle("A) Pooled Estimate") +
+  theme_classic() +
+  theme(legend.key = element_blank(), 
+        legend.title = element_blank(),
+        text = element_text(size = 14),
+        legend.position = c(0.95,0.05), 
+        legend.justification = c("right", "bottom"),
         legend.background = element_blank(),
         legend.box.background = element_rect(colour = "black"))
-zp3 
+zp3
 ```
 
 Interpretation: The higher the age of an observation, the higher their happiness.
@@ -387,7 +439,7 @@ or we use the `plm` package to do the job for us
 
 ```{r}
 btw2 <- plm(happiness ~ age, data = df,
-           index = c("id", "wave"),
+           index = c("id", "time"),
            effect = "individual", model = "between")
 summary(btw2)
 ```
@@ -397,19 +449,44 @@ NOTE the line "observations used in estimation" ! The manual approach with `lm` 
 Graphically this result looks like:
 
 ```{r class.source = 'fold-hide', message = FALSE, warning = FALSE}
+df2 <- df
+df2$happiness <- df2$m_happiness
+df2$age <- df2$m_age
+df2 <- df2[which(df2$time == 1), ]
+
+# Save the residual values
+lm4 <- lm(m_happiness ~ m_age, data = df2)
+df2$predicted <- predict(lm4)
+df2$residuals <- residuals(lm4)
+
 zp4 <- ggplot(df, aes(age, happiness)) +
   geom_point(aes(x = age, y = happiness, shape = idname), 
-              size = 2, stroke = 1, colour = alpha("black", .3)) +
-  geom_point(aes(x = m_age, y = m_happiness, shape = idname, colour = idname), 
+              size = 2, stroke = 1, colour = alpha("black", .3), fill = alpha("black", .3)) +
+  geom_point(aes(x = m_age, y = m_happiness, shape = idname, colour = idname,
+                 fill = idname), 
              size = 2, stroke = 1) +
-  geom_abline(intercept = lm4$coefficients[1], 
-              slope = lm4$coefficients[2], col = "blue") +
+  geom_smooth(data = df2, 
+              method = 'lm', formula = y ~ x, se = FALSE,
+              color  = "deeppink") +
+  geom_segment(data = df2, aes(xend = age, yend = predicted), 
+               alpha = .3, color = "purple") +
+  annotate("text", x = 35, y = 8.0, 
+           label = paste0("beta[Between] ==", round(lm4$coefficients[2], 3)), 
+           parse = TRUE) +
   ylim(3.3, 9.2) + expand_limits(y = c(0, 0)) + 
-  theme_bw() +
-  theme(legend.key = element_blank(), legend.title = element_blank(),
-        legend.position = c(0.95,0.05), legend.justification = c("right", "bottom"),
+  scale_colour_manual(values = cbp2[-c(1, 2)]) + 
+  scale_fill_manual(values = cbp2[-c(1, 2)]) + 
+  scale_shape_manual(values = c(15:18, 25, 20)) +
+  ggtitle("B) Between Estimate") +
+  theme_classic() +
+  theme(legend.key = element_blank(), 
+        legend.title = element_blank(),
+        text = element_text(size = 14),
+        legend.position = c(0.95,0.05), 
+        legend.justification = c("right", "bottom"),
         legend.background = element_blank(),
         legend.box.background = element_rect(colour = "black"))
+
 zp4  
 ```
 
@@ -434,7 +511,7 @@ or we use `plm`:
 
 ```{r}
 fe1 <- plm(happiness ~ age, data = df,
-           index = c("id", "wave"),
+           index = c("id", "time"),
            effect = "individual", model = "within")
 summary(fe1)
 ```
@@ -442,20 +519,46 @@ summary(fe1)
 Graphically, this would look like:
 
 ```{r class.source = 'fold-hide', message = FALSE, warning = FALSE}
+df2 <- df
+df2$happiness <- df2$happiness - df2$m_happiness + mean(df$happiness)
+df2$age <- df2$age - df2$m_age  + mean(df$age)
+
+# Save the residual values
+for(i in unique(df$id)){
+  oo <- which(df$id == i)
+  lmt <- lm(happiness ~ age, data = df[oo, ])
+  df$predicted[oo] <- predict(lmt)
+  df$residuals[oo] <- residuals(lmt)
+}
+
+
 zp5 <- ggplot(df, aes(age, happiness)) +
-  geom_point( aes(x = age, y = happiness, shape = idname, colour = idname), 
+  geom_point( aes(x = age, y = happiness, shape = idname, colour = idname, fill  = idname), 
               size = 2, stroke = 1) +
   geom_smooth(method = 'lm', formula = y ~ x, se = FALSE, show.legend = FALSE,
-              mapping = aes(colour = idname, linetype = idname)) +
-  geom_abline(intercept = lm3$coefficients[1] + 1/N * lm3$coefficients[3]  + 1/N * lm3$coefficients[4] 
-              + 1/N * lm3$coefficients[5]  + 1/N * lm3$coefficients[6]  + 1/N * lm3$coefficients[7], 
-              slope = lm3$coefficients[2], col = "blue") +
+              mapping = aes(group = idname),
+              color  = "deeppink", linetype = "dotted") +
+  geom_smooth(method = 'lm', formula = y ~ x, se = FALSE, show.legend = FALSE,
+              data = df2, color  = "deeppink", fullrange = TRUE) +
+  geom_segment(data = df, aes(xend = age, yend = predicted), 
+               alpha = .3, color = "purple") +
+  annotate("text", x = 35, y = 8.0, 
+           label = paste0("beta[Within] ==", round(lm3$coefficients[2], 3)), 
+           parse = TRUE) +
   ylim(3.3, 9.2) + expand_limits(y = c(0, 0)) + 
-  theme_bw() +
-  theme(legend.key = element_blank(), legend.title = element_blank(),
-        legend.position = c(0.95,0.05), legend.justification = c("right", "bottom"),
+  scale_fill_manual(values = cbp2[-c(1, 2)]) +
+  scale_colour_manual(values = cbp2[-c(1, 2)]) + 
+  scale_shape_manual(values = c(15:18, 25, 20)) +
+  ggtitle("C) Within Estimate / Fixed Effects") +
+  theme_classic() +
+  theme(legend.key = element_blank(), 
+        legend.title = element_blank(),
+        text = element_text(size = 14),
+        legend.position = c(0.95,0.05), 
+        legend.justification = c("right", "bottom"),
         legend.background = element_blank(),
         legend.box.background = element_rect(colour = "black"))
+
 zp5
 ```
 
@@ -465,7 +568,7 @@ Interpretation: The older a person gets, the lower this person's happiness (as c
 
 The principle is very similar to including a (binary) control variable. It's just that we include a lot of them to get rid of a lot of (potentially confounded) variance.
 
-![Illustration by @HuntingtonKlein.2021: Introducing fixed effects](fig/NHK_FE.gif)
+![Illustration by @Huntington-Klein.2021: Introducing fixed effects](fig/NHK_FE.gif)
 
 ### Comparison
 
@@ -492,7 +595,7 @@ The estimates for $\beta_{POLS}$ and $\beta_{BTW}$ are very similar here. We wil
 
 The estimator we used above to derive the within coefficient is the fixed effects (FE) estimator. This method is very widely used, especially with survey data.
 
-We use a second example here: assume we observe 4 individuals over 6 periods, and we want to estimate the effect of marriage on the wage for males. This is the so called "marriage wage premium" [@Ludwig.2018.0].
+We use a second example here: assume we observe 4 individuals over 6 periods, and we want to estimate the effect of marriage on the wage for males. This is the so called "marriage wage premium" [@Ludwig.2018].
 
 ```{r class.source = 'fold-hide', message = FALSE, warning = FALSE}
 ##################################
@@ -505,44 +608,44 @@ T <- 6
 
 # id and wave
 df2 <- data.frame(matrix(NA, ncol = 2, nrow = N*T))
-names(df2) <- c("id", "wave")
+names(df2) <- c("id", "time")
 
 df2$id <- rep(1:N, each = T)
-df2$wave <- rep(1:T, times = N)
+df2$time <- rep(1:T, times = N)
 df2$idname <- factor(df2$id, levels = c(1:N), labels = paste("Person", c(1:N)))
 
 # Marriage dummy
 df2$marriage_ever <- 0 
 df2$marriage_ever[(N*T/2 + 1):(N*T)] <- 1
 
-df2$marriage <- df2$marriage_ever * ifelse(df2$wave >= 4, 1, 0)
+df2$marriage <- df2$marriage_ever * ifelse(df2$time >= 4, 1, 0)
 
 # Starting wage
 stw <- c(2000, 5000)
 stw <- round(quantile(stw, probs = seq(0, 1, 1/(N-1))), 0)
 
 # wage equation
-df2$wage <- unname(rep(stw, each = T)) + (df2$wave - 1)*50 + 200 * ifelse(df2$wave >=4, 1, 0) + df2$marriage * 500
+df2$wage <- unname(rep(stw, each = T)) + (df2$time - 1)*50 + 200 * ifelse(df2$time >=4, 1, 0) + df2$marriage * 500
 
 # counterfactual parallel trend
-df2$pti <- unname(rep(stw, each = T)) + (df2$wave - 1)*50 
-df2$pt <- unname(rep(stw, each = T)) + (df2$wave - 1)*50 + 200 * ifelse(df2$wave >=4, 1, 0) 
-df2$pti[df2$marriage_ever == 0 | df2$wave < 3] <- NA
-df2$pt[df2$marriage_ever == 0 | df2$wave < 3] <- NA
+df2$pti <- unname(rep(stw, each = T)) + (df2$time - 1)*50 
+df2$pt <- unname(rep(stw, each = T)) + (df2$time - 1)*50 + 200 * ifelse(df2$time >=4, 1, 0) 
+df2$pti[df2$marriage_ever == 0 | df2$time < 3] <- NA
+df2$pt[df2$marriage_ever == 0 | df2$time < 3] <- NA
 
 
 ### Add individual slope / heterogeneous time trends
 
 # wage equation
-df2$wage2 <- unname(rep(stw, each = T)) + (df2$wave - 1)*50  + (df2$wave - 1)*150*df2$marriage_ever + 200 * ifelse(df2$wave >=4, 1, 0) + df2$marriage * 500
+df2$wage2 <- unname(rep(stw, each = T)) + (df2$time - 1)*50  + (df2$time - 1)*150*df2$marriage_ever + 200 * ifelse(df2$time >=4, 1, 0) + df2$marriage * 500
 
 # parallel trend
-df2$pt2 <- unname(rep(stw, each = T)) + (df2$wave - 1)*50 + 200 * ifelse(df2$wave >=4, 1, 0) + 2*150
-df2$pt2[df2$marriage_ever == 0 | df2$wave < 3] <- NA
+df2$pt2 <- unname(rep(stw, each = T)) + (df2$time - 1)*50 + 200 * ifelse(df2$time >=4, 1, 0) + 2*150
+df2$pt2[df2$marriage_ever == 0 | df2$time < 3] <- NA
 
 # actual trend
-df2$pt2_cr <- unname(rep(stw, each = T)) + (df2$wave - 1)*50 + (df2$wave - 1)*150*df2$marriage_ever + 200 * ifelse(df2$wave >=4, 1, 0)
-df2$pt2_cr[df2$marriage_ever == 0 | df2$wave < 3] <- NA
+df2$pt2_cr <- unname(rep(stw, each = T)) + (df2$time - 1)*50 + (df2$time - 1)*150*df2$marriage_ever + 200 * ifelse(df2$time >=4, 1, 0)
+df2$pt2_cr[df2$marriage_ever == 0 | df2$time < 3] <- NA
 
 # Marry to factor
 df2$marriage <- factor(df2$marriage, levels = c(0, 1), labels = c("not married", "married"))
@@ -550,11 +653,14 @@ df2$marriage_ever <- as.factor(df2$marriage_ever)
 
 
 ### Plot 
-zp1 <- ggplot(df2, aes(wave, wage)) +
-  geom_line(aes(x = wave, y = wage, group = id), lty = "solid", colour = "black", lwd = 1) + 
-  geom_point( aes(x = wave, y = wage, shape = marriage, colour = marriage), 
-              size = 2, stroke = 2) +
-  theme_bw() +
+zp1 <- ggplot(df2, aes(time, wage)) +
+  geom_line(aes(x = time, y = wage, group = id), lty = "solid", colour = "black", lwd = 1) + 
+  geom_point( aes(x = time, y = wage, shape = marriage, fill = marriage), 
+             size = 4, stroke = 1.5, color = "white") +
+  theme_classic() +
+  scale_shape_manual(values = c(21, 24)) +
+  scale_fill_manual(values = c("#85144b", "#0074D9")) +
+  scale_color_manual(values = c("#85144b", "#0074D9")) +
   theme(legend.key = element_blank(), legend.title = element_blank(),
         legend.position = c(0.05,0.95), legend.justification = c("left", "top"),
         legend.background = element_blank(),
@@ -588,12 +694,15 @@ We would estimate a marriage premium of more than 2,000. The true value is 500. 
 
 ```{r class.source = 'fold-hide', message = FALSE, warning = FALSE}
 ### Plot 
-zp2 <- ggplot(df2, aes(wave, wage)) +
-  geom_line(aes(x = wave, y = wage, group = id), lty = "solid", colour = "black", lwd = 1) + 
-  geom_point( aes(x = wave, y = wage, shape = marriage, colour = marriage), 
-              size = 2, stroke = 2) +
+zp2 <- ggplot(df2, aes(time, wage)) +
+  geom_line(aes(x = time, y = wage, group = id), lty = "solid", colour = "black", lwd = 1) + 
+  geom_point( aes(x = time, y = wage, shape = marriage, fill = marriage), 
+               size = 4, stroke = 1.5, color = "white") +
   geom_mark_hull(expand = 0.01, aes(fill = marriage), show.legend = FALSE, colour = NA) + 
-  theme_bw() +
+  theme_classic() +
+  scale_shape_manual(values = c(21, 24)) +
+  scale_fill_manual(values = c("#85144b", "#0074D9")) +
+  scale_color_manual(values = c("#85144b", "#0074D9")) +
   theme(legend.key = element_blank(), legend.title = element_blank(),
         legend.position = c(0.05,0.95), legend.justification = c("left", "top"),
         legend.background = element_blank(),
@@ -658,7 +767,7 @@ We can use the plm package with options `effect = "individual"` and `model = "wi
 
 ```{r}
 fe2 <- plm(wage ~ marriage, data = df2,
-           index = c("id", "wave"),
+           index = c("id", "time"),
            effect = "individual", model = "within")
 summary(fe2)
 ```
@@ -667,16 +776,19 @@ Hm, 850 is closer to 500, but still quite far off! Let's see why.
 
 ```{r class.source = 'fold-hide', message = FALSE, warning = FALSE}
 ### Plot 
-zp3 <- ggplot(df2, aes(wave, wage)) +
-  geom_line(aes(x = wave, y = wage, group = id, alpha = marriage_ever), lty = "solid", colour = "black", lwd = 1) + 
-  geom_point( aes(x = wave, y = wage, shape = marriage, colour = marriage, alpha = marriage_ever), 
-              size = 2, stroke = 2) +
-  geom_line(aes(x = wave, y = pti, group = id, linetype = "dashed"), colour = "blue", lwd = 1) +
+zp3 <- ggplot(df2, aes(time, wage)) +
+  geom_line(aes(x = time, y = wage, group = id, alpha = marriage_ever), lty = "solid", colour = "black", lwd = 1) + 
+  geom_point( aes(x = time, y = wage, shape = marriage, fill = marriage, alpha = marriage_ever), 
+              size = 4, stroke = 1.5, color = "white") +
+  geom_line(aes(x = time, y = pti, group = id, linetype = "dashed"), colour = "blue", lwd = 1) +
   scale_linetype_identity(labels = "Counterfactual", guide = "legend") +
   scale_alpha_manual(values = c(0.5, 1), guide = "none") +
-  # geom_mark_hull(data = df2[df2$marriage_ever == 1, ], aes(x = wave, y = wage, fill = marriage),
+  # geom_mark_hull(data = df2[df2$marriage_ever == 1, ], aes(x = time, y = wage, fill = marriage),
   #                expand = 0.01, show.legend = FALSE, colour = NA) + 
-  theme_bw() +
+  theme_classic() +
+  scale_shape_manual(values = c(21, 24)) +
+  scale_fill_manual(values = c("#85144b", "#0074D9")) +
+  scale_color_manual(values = c("#85144b", "#0074D9")) +
   theme(legend.key = element_blank(), legend.title = element_blank(),
         legend.position = c(0.05,0.95), legend.justification = c("left", "top"),
         legend.background = element_blank(),
@@ -713,7 +825,7 @@ We can just change the `effect` option in `plm` to "twoways" to achieve this:
 
 ```{r, message = FALSE, warning = FALSE}
 fe3 <- plm(wage ~ marriage, data = df2,
-           index = c("id", "wave"),
+           index = c("id", "time"),
            effect = "twoways", model = "within")
 summary(fe3)
 ```
@@ -722,13 +834,16 @@ And here we go with our 500 marriage wage premium. What we do graphically is
 
 ```{r class.source = 'fold-hide', message = FALSE, warning = FALSE}
 ### Plot 
-zp4 <- ggplot(df2, aes(wave, wage)) +
-  geom_line(aes(x = wave, y = wage, group = id), lty = "solid", colour = "black", lwd = 1) + 
-  geom_point( aes(x = wave, y = wage, shape = marriage, colour = marriage), 
-              size = 2, stroke = 2) +
-  geom_line(aes(x = wave, y = pt, group = id, linetype = "dashed"), colour = "blue", lwd = 1) +
+zp4 <- ggplot(df2, aes(time, wage)) +
+  geom_line(aes(x = time, y = wage, group = id), lty = "solid", colour = "black", lwd = 1) + 
+  geom_point( aes(x = time, y = wage, shape = marriage, fill = marriage), 
+              size = 4, stroke = 1.5, color = "white") +
+  geom_line(aes(x = time, y = pt, group = id, linetype = "dashed"), colour = "blue", lwd = 1) +
   scale_linetype_identity(labels = "Counterfactual", guide = "legend") +
-  theme_bw() +
+  theme_classic() +
+  scale_shape_manual(values = c(21, 24)) +
+  scale_fill_manual(values = c("#85144b", "#0074D9")) +
+  scale_color_manual(values = c("#85144b", "#0074D9")) +
   theme(legend.key = element_blank(), legend.title = element_blank(),
         legend.position = c(0.05,0.95), legend.justification = c("left", "top"),
         legend.background = element_blank(),
@@ -749,16 +864,19 @@ Comparing the 3 waves before the treatment above, this assumption here holds. Bo
 However, consider the following example. We still have a marriage premium of 500.
 
 ```{r class.source = 'fold-hide', message = FALSE, warning = FALSE}
-zp5 <- ggplot(df2, aes(wave, wage2)) +
-  geom_line(aes(x = wave, y = wage2, group = id), lty = "solid", colour = "black", lwd = 1) + 
-  geom_point( aes(x = wave, y = wage2, shape = marriage, colour = marriage), 
-              size = 2, stroke = 2) +
-  # geom_line(aes(x = wave, y = pt2, group = id, linetype = "dashed"), colour = "blue", lwd = 1) +
-  # geom_line(aes(x = wave, y = pt2_cr, group = id, linetype = "dashed"), colour = "grey", lwd = 1, show.legend = FALSE, alpha = 0.7) +
+zp5 <- ggplot(df2, aes(time, wage2)) +
+  geom_line(aes(x = time, y = wage2, group = id), lty = "solid", colour = "black", lwd = 1) + 
+  geom_point( aes(x = time, y = wage2, shape = marriage, fill = marriage), 
+              size = 4, stroke = 1.5, color = "white") +
+  # geom_line(aes(x = time, y = pt2, group = id, linetype = "dashed"), colour = "blue", lwd = 1) +
+  # geom_line(aes(x = time, y = pt2_cr, group = id, linetype = "dashed"), colour = "grey", lwd = 1, show.legend = FALSE, alpha = 0.7) +
   scale_linetype_identity(labels = "Counterfactual", guide = "legend") +
   # scale_alpha_manual(values = c(0.3, 1), guide = "none") +
   # ylim(3.3, 9.2) + expand_limits(y = c(0, 0)) + 
-  theme_bw() +
+  theme_classic() +
+  scale_shape_manual(values = c(21, 24)) +
+  scale_fill_manual(values = c("#85144b", "#0074D9")) +
+  scale_color_manual(values = c("#85144b", "#0074D9")) +
   ylab("wage") +
   theme(legend.key = element_blank(), legend.title = element_blank(),
         legend.position = c(0.05,0.95), legend.justification = c("left", "top"),
@@ -772,7 +890,7 @@ A two-ways FE will now give us:
 
 ```{r, message = FALSE, warning = FALSE}
 fe3 <- plm(wage2 ~ marriage, data = df2,
-           index = c("id", "wave"),
+           index = c("id", "time"),
            effect = "twoways", model = "within")
 summary(fe3)
 ```
@@ -780,16 +898,19 @@ summary(fe3)
 The problem: the model does not take into account that the treatment group already had a steeper wage trajectory than the control group. The parallel trends assumption fails.
 
 ```{r class.source = 'fold-hide', message = FALSE, warning = FALSE}
-zp5 <- ggplot(df2, aes(wave, wage2)) +
-  geom_line(aes(x = wave, y = wage2, group = id), lty = "solid", colour = "black", lwd = 1) + 
-  geom_point( aes(x = wave, y = wage2, shape = marriage, colour = marriage), 
-              size = 2, stroke = 2) +
-  geom_line(aes(x = wave, y = pt2, group = id, linetype = "dashed"), colour = "blue", lwd = 1) +
-  geom_line(aes(x = wave, y = pt2_cr, group = id, linetype = "dashed"), colour = "grey", lwd = 1, show.legend = FALSE, alpha = 0.7) +
+zp5 <- ggplot(df2, aes(time, wage2)) +
+  geom_line(aes(x = time, y = wage2, group = id), lty = "solid", colour = "black", lwd = 1) + 
+  geom_point( aes(x = time, y = wage2, shape = marriage, fill = marriage), 
+              size = 4, stroke = 1.5, color = "white") +
+  geom_line(aes(x = time, y = pt2, group = id, linetype = "dashed"), colour = "blue", lwd = 1) +
+  geom_line(aes(x = time, y = pt2_cr, group = id, linetype = "dashed"), colour = "grey", lwd = 1, show.legend = FALSE, alpha = 0.7) +
   scale_linetype_identity(labels = "Counterfactual", guide = "legend") +
   # scale_alpha_manual(values = c(0.3, 1), guide = "none") +
   # ylim(3.3, 9.2) + expand_limits(y = c(0, 0)) + 
-  theme_bw() +
+  theme_classic() +
+  scale_shape_manual(values = c(21, 24)) +
+  scale_fill_manual(values = c("#85144b", "#0074D9")) +
+  scale_color_manual(values = c("#85144b", "#0074D9")) +
   ylab("wage") +
   theme(legend.key = element_blank(), legend.title = element_blank(),
         legend.position = c(0.05,0.95), legend.justification = c("left", "top"),
@@ -827,7 +948,7 @@ In our marriage example:
 
 ```{r}
 df2$marry_post <- 0
-df2$marry_post[df2$wave >= 4] <- 1
+df2$marry_post[df2$time >= 4] <- 1
 
 y_t_post <- mean(df2$wage[df2$marry_post == 1 & df2$marriage_ever == 1])
 y_t_pre <- mean(df2$wage[df2$marry_post == 0 & df2$marriage_ever == 1])
@@ -840,7 +961,7 @@ y_c_pre <- mean(df2$wage[df2$marry_post == 0 & df2$marriage_ever == 0])
 
 ```
 
-In a setting where $T=2$ or in a setting where every observation is treated at the same time, the DD equals the two-ways FE. In general, DD and two-ways DD are often seen as equivalents. However, the situation becomes more complicated when treatment timing varies [@GoodmanBacon.2021].
+In a setting where $T=2$ or in a setting where every observation is treated at the same time, the DD equals the two-ways FE. In general, DD and two-ways DD are often seen as equivalents. However, the situation becomes more complicated when treatment timing varies [@Goodman-Bacon.2021].
 
 We can receive the same estimator in a simple regression. Lets assume $D \in {0, 1}$ is a binary indicator of the treatment group and $Post \in {0, 1}$ a binary indicator of pre- or post-treatment period. Then we can get the DD estimator with an interaction between those two two variables:
 
@@ -922,7 +1043,7 @@ Let's estimate the RE for the happiness - age example, again using the `plm` pac
 
 ```{r}
 re1 <- plm(happiness ~ age, data = df,
-           index = c("id", "wave"),
+           index = c("id", "time"),
            effect = "individual", model = "random")
 summary(re1)
 
@@ -933,6 +1054,8 @@ df_orig <- df
 This indicates that there is barely any relation between age and happiness. This is because the within and the between estimates cancel out each other. 
 
 ```{r class.source = 'fold-hide', message = FALSE, warning = FALSE}
+library(viridis)
+
 N <- 6
 T <- 4
 ### Models
@@ -985,16 +1108,20 @@ zp6 <- ggplot(df, aes(age, happiness)) +
               size = 2, stroke = 1, show.legend = FALSE) +
   geom_smooth(method = 'lm', formula = y ~ x, se = FALSE, show.legend = FALSE,
               linetype = "dashed", aes(group = idname), colour = alpha("gray", 1)) +
-  geom_abline(data = estimates, lwd = 1.2,
-              mapping = aes(intercept = Intercept, slope = slope, 
-                            colour = Model, linetype = Model)) +
   geom_point(data = unique(df[, c("m_age", "m_happiness", "idname")]),
              aes(x = m_age, y = m_happiness, shape = idname),
              colour = gg_color_hue(6), alpha = 0.5,
               size = 3, stroke = 2, show.legend = FALSE) +
+  scale_fill_manual(values = cbp2[-c(1, 2)]) +
+  scale_colour_manual(values = cbp2[-c(1, 2)]) + 
+  scale_shape_manual(values = c(15:18, 25, 20)) +
+  geom_abline(data = estimates, lwd = 1.2,
+              mapping = aes(intercept = Intercept, slope = slope, 
+                            colour = Model, linetype = Model)) +
   scale_linetype_manual(values = c("solid", "twodash", "longdash", "dotdash")) +
+  scale_color_viridis(discrete = TRUE, option = "D")+
   ylim(3.3, 9.2) + expand_limits(y = c(0, 0)) + 
-  theme_bw() +
+  theme_classic() +
   theme(legend.key = element_blank(), legend.title = element_blank(),
         legend.position = c(0.95,0.05), legend.justification = c("right", "bottom"),
         legend.background = element_blank(),
@@ -1064,16 +1191,21 @@ zp7 <- ggplot(df, aes(age, happiness)) +
               size = 2, stroke = 1, show.legend = FALSE) +
   geom_smooth(method = 'lm', formula = y ~ x, se = FALSE, show.legend = FALSE,
               linetype = "dashed", aes(group = idname), colour = alpha("gray", 1)) +
-  geom_abline(data = estimates, lwd = 1.2,
-              mapping = aes(intercept = Intercept, slope = slope, 
-                            colour = Model, linetype = Model)) +
   geom_point(data = unique(df[, c("m_age", "m_happiness", "idname")]),
              aes(x = m_age, y = m_happiness, shape = idname),
              colour = gg_color_hue(6), alpha = 0.5,
               size = 3, stroke = 2, show.legend = FALSE) +
+  scale_fill_manual(values = cbp2[-c(1, 2)]) +
+  scale_colour_manual(values = cbp2[-c(1, 2)]) + 
+  scale_shape_manual(values = c(15:18, 25, 20)) +
+  geom_abline(data = estimates, lwd = 1.2,
+              mapping = aes(intercept = Intercept, slope = slope, 
+                            colour = Model, linetype = Model)) +
+  scale_linetype_manual(values = c("solid", "twodash", "longdash", "dotdash")) +
+  scale_color_viridis(discrete = TRUE, option = "D")+
   scale_linetype_manual(values = c("solid", "twodash", "longdash", "dotdash")) +
   ylim(3.3, 9.2) + expand_limits(y = c(0, 0)) + 
-  theme_bw() +
+  theme_classic() +
   theme(legend.key = element_blank(), legend.title = element_blank(),
         legend.position = c(0.95,0.05), legend.justification = c("right", "bottom"),
         legend.background = element_blank(),
@@ -1145,16 +1277,20 @@ zp7 <- ggplot(df, aes(age, happiness)) +
               size = 2, stroke = 1, show.legend = FALSE) +
   geom_smooth(method = 'lm', formula = y ~ x, se = FALSE, show.legend = FALSE,
               linetype = "dashed", aes(group = idname), colour = alpha("gray", 1)) +
-  geom_abline(data = estimates, lwd = 1.2,
-              mapping = aes(intercept = Intercept, slope = slope, 
-                            colour = Model, linetype = Model)) +
   geom_point(data = unique(df[, c("m_age", "m_happiness", "idname")]),
              aes(x = m_age, y = m_happiness, shape = idname),
              colour = gg_color_hue(6), alpha = 0.5,
               size = 3, stroke = 2, show.legend = FALSE) +
+  scale_fill_manual(values = cbp2[-c(1, 2)]) +
+  scale_colour_manual(values = cbp2[-c(1, 2)]) + 
+  scale_shape_manual(values = c(15:18, 25, 20)) +
+  geom_abline(data = estimates, lwd = 1.2,
+              mapping = aes(intercept = Intercept, slope = slope, 
+                            colour = Model, linetype = Model)) +
   scale_linetype_manual(values = c("solid", "twodash", "longdash", "dotdash")) +
+  scale_color_viridis(discrete = TRUE, option = "D")+
   ylim(3.3, 9.2) + expand_limits(y = c(0, 0)) + 
-  theme_bw() +
+  theme_classic() +
   theme(legend.key = element_blank(), legend.title = element_blank(),
         legend.position = c(0.95,0.05), legend.justification = c("right", "bottom"),
         legend.background = element_blank(),
@@ -1175,7 +1311,7 @@ I personally would generally suggest against the use of RE. Rather, ask yourself
 
 ### Hausman test
 
-If one has a strong reason to use the RE, it is at least advisable to perform a specification test. The Hausman test [@Hausman.1978.0] is the most common specification test to test the consistency of the RE estimator.
+If one has a strong reason to use the RE, it is at least advisable to perform a specification test. The Hausman test [@Hausman.1978] is the most common specification test to test the consistency of the RE estimator.
 
 $$
 H = (\hat{\bm \beta}_1 - \hat{\bm \beta}_0)^\intercal (N^{-1} {\bm V}_{\hat{\bm \beta}_1 - \hat{\bm \beta}_0})^{-1} (\hat{\bm \beta}_1 - \hat{\bm \beta}_0),
@@ -1200,7 +1336,7 @@ Obviously, this test is not helpful if both estimates are biased.
 
 One of the stated advantages of the RE is that we can also estimate the effect for time-constant variables. However, there is an easy way of combining the benefits of both worlds: we can just estimate the within effects of time-varying variables in a RE model. 
 
-This is often called the correlated random effects (CRE) model [@Chamberlain.1982; @Mundlak.1978.0]. In sociology, the very similar hybrid model [@Allison.2009.128] is more common.
+This is often called the correlated random effects (CRE) model [@Chamberlain.1982; @Mundlak.1978]. In sociology, the very similar hybrid model [@Allison.2009.] is more common.
 
 In general, we just add the person specific means as additional covariates, and estimate a random effects model:
 
@@ -1221,14 +1357,14 @@ df$m_age <- ave(df$age,
                 FUN = mean)
 
 cre <- plm(happiness ~ age + m_age, data = df_orig,
-           index = c("id", "wave"),
+           index = c("id", "time"),
            effect = "individual", model = "random")
 
 screenreg(list(fe1, btw2, re, cre), digits = 3,
           custom.model.names = c("FE", "BTW", "RE", "CRE"))
 ```
 
-The estimate for $\beta_{CRE}$ equals the within effect. Note that the coefficient for the mean does not equal the between effect. It equals $\hat{\beta}_{BTW} -  \hat{\beta}_{FE}$. This differs from @Allison.2009.128 hybrid model.
+The estimate for $\beta_{CRE}$ equals the within effect. Note that the coefficient for the mean does not equal the between effect. It equals $\hat{\beta}_{BTW} -  \hat{\beta}_{FE}$. This differs from @Allison.2009. hybrid model.
 
 For consistency of $\hat{\beta}_x$ we only need $\E(\epsilon_{it} | x_{i}, \bar{x}_{i}) = 0$: equals the FE assumption for variables additionally included as person-specific means. Usually, one would include person-specific means for all time-varying $\bm x$ (except $\mu_t$ in case of a twoways specification). 
 
@@ -1258,17 +1394,17 @@ However, with panel data, the idiosyncratic errors are probably:
 
 __The conventional errors (as reported in `lm()` and `plm()`) are thus likely to be underestimated.__
 
-The easiest solution is to estimate panel-robust standard errors [@Millo.2017; @Wooldridge.2010.384].
+The easiest solution is to estimate panel-robust standard errors [@Millo.2017; @Wooldridge.2010].
 
 There are various ways for correcting heteroskedastic and autocorrelated standard errors. The most common version is based on work by Arellano and White and takes the form:
 
 $$
 \Var(\hat{\bm \beta}_{FE}) = (\tilde{\bm X}^\intercal \tilde{\bm X})^{-1} 
 (\sum_{i=1}^N \tilde{\bm X}^\intercal_i \hat{\tilde{\bm\epsilon}}_i \hat{\tilde{\bm\epsilon}}_i^\intercal \tilde{\bm X}_i) 
-\hat{\sigma}^2(\tilde{\bm X}^\intercal \tilde{\bm X})^{-1},
+(\tilde{\bm X}^\intercal \tilde{\bm X})^{-1},
 $$
 
-where $\hat{\tilde{\bm\epsilon}}_i$ is the vector of FE residuals for each person $i$, and $\tilde{\bm X}$ are the transformed data.
+where $\hat{\tilde{\boldsymbol{\mathbf{\varepsilon}}}}_i$ is the vector of FE residuals for each person $i$, and $\tilde{\boldsymbol{\mathbf{X}}}$ are the transformed data [@Millo.2017]. This basically clusters the standard within each cross-sectional unit. Obviously, one could cluster by other grouping variables such as time (e.g. with large $T$ and small $N$) or perform double clustering [@Millo.2017].
 
 to calculate those standard errors, we can use the `sandwich` and `coeftest` packages. For more information on the various types and options in the command see @Millo.2017.
 

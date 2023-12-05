@@ -70,7 +70,7 @@ Illustration by @HuntingtonKlein.2021: Introducing a binary control variable (le
 
 ![](fig/ccz.PNG){width=75%}
 
-### Extreme Weather Events Elevate Climate Change Belief but not Pro-Environmental Behaviour [@Ruttenauer.2021c]
+### Extreme Weather Events Elevate Climate Change Belief but not Pro-Environmental Behaviour [@Ruttenauer.2023a]
 
 ![](fig/Ruettenauer.png){width=75%}
 
@@ -79,18 +79,18 @@ Illustration by @HuntingtonKlein.2021: Introducing a binary control variable (le
 
 Extensive slides by Josef Brüderl and Volker Ludwig: [Slides](https://www.ls3.soziologie.uni-muenchen.de/studium-lehre/archiv/teaching-marterials/panel-analysis_april-2019.pdf)
 
-See also @Bruderl.2015.387.
+See also @Bruderl.2015.
 
 Books:
 
-* Intuitive: @Allison.2009.128
+* Intuitive: @Allison.2009
 
-* Comprehensive and formal: @Wooldridge.2010.384
+* Comprehensive and formal: @Wooldridge.2010
 
 * For R experts: @Croissant.2019
 
-* General introductions to causal estimation techniques: @Angrist.2015.0, @Cunningham.2021, @Firebaugh.2008, @HuntingtonKlein.2021
+* General introductions to causal estimation techniques: @Angrist.2015, @Cunningham.2021, @Firebaugh.2008, @Huntington-Klein.2021
 
-The books by @Cunningham.2021 ([Link](https://mixtape.scunning.com/)) and @HuntingtonKlein.2021 ([Link](https://theeffectbook.net/)) are freely available online!
+The books by @Cunningham.2021 ([Link](https://mixtape.scunning.com/)) and @Huntington-Klein.2021 ([Link](https://theeffectbook.net/)) are freely available online!
 
 # References

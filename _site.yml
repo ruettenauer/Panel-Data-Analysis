@@ -12,7 +12,7 @@ output:
       smooth_scroll: false
     toc_depth: 2
 theme: united
-bibliography: sicss-spatial.bib
+bibliography: Panel.bib
 link-citations: yes
 navbar:
   title: "Panel Data Analysis"
