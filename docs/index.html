@@ -1,62 +1,66 @@
 <!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
-<html>
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
 
-<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta charset="utf-8" />
-<meta name="generator" content="pandoc" />
-<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
-
-
-<meta name="author" content="Tobias Rüttenauer" />
-
-<meta name="date" content="2022-11-24" />
+<meta name="author" content="Tobias Rüttenauer">
 
 <title>Panel Data Analysis</title>
-
-<script src="site_libs/header-attrs-2.23/header-attrs.js"></script>
-<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
-<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
-<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
-<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
-<style>h1 {font-size: 34px;}
-       h1.title {font-size: 38px;}
-       h2 {font-size: 30px;}
-       h3 {font-size: 24px;}
-       h4 {font-size: 18px;}
-       h5 {font-size: 16px;}
-       h6 {font-size: 12px;}
-       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
-       pre:not([class]) { background-color: white }</style>
-<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
-<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
-<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
-<script src="site_libs/navigation-1.1/tabsets.js"></script>
-
-<style type="text/css">
-  code{white-space: pre-wrap;}
-  span.smallcaps{font-variant: small-caps;}
-  span.underline{text-decoration: underline;}
-  div.column{display: inline-block; vertical-align: top; width: 50%;}
-  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-  ul.task-list{list-style: none;}
-    </style>
-
-
-
-
-
-
-<style type="text/css">
-/* for pandoc --citeproc since 2.11 */
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
 div.csl-bib-body { }
 div.csl-entry {
   clear: both;
 }
-.hanging div.csl-entry {
+.hanging-indent div.csl-entry {
   margin-left:2em;
   text-indent:-2em;
 }
@@ -70,588 +74,679 @@ div.csl-right-inline {
 }
 div.csl-indent {
   margin-left: 2em;
-}
-</style>
+}</style>
 
 
-
-
-<style type = "text/css">
-.main-container {
-  max-width: 940px;
-  margin-left: auto;
-  margin-right: auto;
-}
-img {
-  max-width:100%;
-}
-.tabbed-pane {
-  padding-top: 12px;
-}
-.html-widget {
-  margin-bottom: 20px;
-}
-button.code-folding-btn:focus {
-  outline: none;
-}
-summary {
-  display: list-item;
-}
-details > summary > p:only-child {
-  display: inline;
-}
-pre code {
-  padding: 0;
-}
-</style>
-
-
-<style type="text/css">
-.dropdown-submenu {
-  position: relative;
-}
-.dropdown-submenu>.dropdown-menu {
-  top: 0;
-  left: 100%;
-  margin-top: -6px;
-  margin-left: -1px;
-  border-radius: 0 6px 6px 6px;
-}
-.dropdown-submenu:hover>.dropdown-menu {
-  display: block;
-}
-.dropdown-submenu>a:after {
-  display: block;
-  content: " ";
-  float: right;
-  width: 0;
-  height: 0;
-  border-color: transparent;
-  border-style: solid;
-  border-width: 5px 0 5px 5px;
-  border-left-color: #cccccc;
-  margin-top: 5px;
-  margin-right: -10px;
-}
-.dropdown-submenu:hover>a:after {
-  border-left-color: #adb5bd;
-}
-.dropdown-submenu.pull-left {
-  float: none;
-}
-.dropdown-submenu.pull-left>.dropdown-menu {
-  left: -100%;
-  margin-left: 10px;
-  border-radius: 6px 0 6px 6px;
-}
-</style>
-
-<script type="text/javascript">
-// manage active state of menu based on current page
-$(document).ready(function () {
-  // active menu anchor
-  href = window.location.pathname
-  href = href.substr(href.lastIndexOf('/') + 1)
-  if (href === "")
-    href = "index.html";
-  var menuAnchor = $('a[href="' + href + '"]');
-
-  // mark the anchor link active (and if it's in a dropdown, also mark that active)
-  var dropdown = menuAnchor.closest('li.dropdown');
-  if (window.bootstrap) { // Bootstrap 4+
-    menuAnchor.addClass('active');
-    dropdown.find('> .dropdown-toggle').addClass('active');
-  } else { // Bootstrap 3
-    menuAnchor.parent().addClass('active');
-    dropdown.addClass('active');
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
   }
-
-  // Navbar adjustments
-  var navHeight = $(".navbar").first().height() + 15;
-  var style = document.createElement('style');
-  var pt = "padding-top: " + navHeight + "px; ";
-  var mt = "margin-top: -" + navHeight + "px; ";
-  var css = "";
-  // offset scroll position for anchor links (for fixed navbar)
-  for (var i = 1; i <= 6; i++) {
-    css += ".section h" + i + "{ " + pt + mt + "}\n";
-  }
-  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
-  document.head.appendChild(style);
-});
-</script>
-
-<!-- tabsets -->
-
-<style type="text/css">
-.tabset-dropdown > .nav-tabs {
-  display: inline-table;
-  max-height: 500px;
-  min-height: 44px;
-  overflow-y: auto;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "\e259";
-  font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "\e258";
-  font-family: 'Glyphicons Halflings';
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs > li.active {
-  display: block;
-}
-
-.tabset-dropdown > .nav-tabs > li > a,
-.tabset-dropdown > .nav-tabs > li > a:focus,
-.tabset-dropdown > .nav-tabs > li > a:hover {
-  border: none;
-  display: inline-block;
-  border-radius: 4px;
-  background-color: transparent;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
-  display: block;
-  float: none;
-}
-
-.tabset-dropdown > .nav-tabs > li {
-  display: none;
-}
-</style>
-
-<!-- code folding -->
-
-
-
-<style type="text/css">
-
-#TOC {
-  margin: 25px 0px 20px 0px;
-}
-@media (max-width: 768px) {
-#TOC {
-  position: relative;
-  width: 100%;
-}
-}
-
-@media print {
-.toc-content {
-  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
-  float: right;
-}
-}
-
-.toc-content {
-  padding-left: 30px;
-  padding-right: 40px;
-}
-
-div.main-container {
-  max-width: 1200px;
-}
-
-div.tocify {
-  width: 20%;
-  max-width: 260px;
-  max-height: 85%;
-}
-
-@media (min-width: 768px) and (max-width: 991px) {
-  div.tocify {
-    width: 25%;
-  }
-}
-
-@media (max-width: 767px) {
-  div.tocify {
-    width: 100%;
-    max-width: none;
-  }
-}
-
-.tocify ul, .tocify li {
-  line-height: 20px;
-}
-
-.tocify-subheader .tocify-item {
-  font-size: 0.90em;
-}
-
-.tocify .list-group-item {
-  border-radius: 0px;
-}
-
-.tocify-subheader {
-  display: inline;
-}
-.tocify-subheader .tocify-item {
-  font-size: 0.95em;
-}
-
-</style>
-
+}</script>
 
 
 </head>
 
-<body>
+<body class="nav-fixed">
 
-
-<div class="container-fluid main-container">
-
-
-<!-- setup 3col/9col grid for toc_float and main content  -->
-<div class="row">
-<div class="col-xs-12 col-sm-4 col-md-3">
-<div id="TOC" class="tocify">
-</div>
-</div>
-
-<div class="toc-content col-xs-12 col-sm-8 col-md-9">
-
-
-
-
-<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
-  <div class="container">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="index.html">Panel Data Analysis</a>
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Panel Data Analysis</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="./index.html" rel="" target="" aria-current="page">
+ <span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./Panel_part1.html" rel="" target="">
+ <span class="menu-text">1) Panel data methods</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./Panel_part2.html" rel="" target="">
+ <span class="menu-text">2) Advanced Methods</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./Panel_part3.html" rel="" target="">
+ <span class="menu-text">3) Exercises</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./Panel_part3_solutions.html" rel="" target="">
+ <span class="menu-text">Solutions</span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools ms-auto">
+    <div class="dropdown">
+      <a href="" title="" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" aria-label=""><i class="bi bi-github"></i></a>
+      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="quarto-navigation-tool-dropdown-0">
+          <li>
+            <a class="dropdown-item quarto-navbar-tools ms-auto-item" href="https://ruettenauer.github.io/Panel-Data-Analysis/">
+            Source Code
+            </a>
+          </li>
+      </ul>
     </div>
-    <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav">
-        <li>
-  <a href="index.html">Home</a>
-</li>
-<li>
-  <a href="Panel_part1.html">1) Panel data methods</a>
-</li>
-<li>
-  <a href="Panel_part2.html">2) Extensions</a>
-</li>
-<li>
-  <a href="Panel_part3.html">3) Exercises</a>
-</li>
-<li>
-  <a href="Panel_part3_solutions.html">Solutions</a>
-</li>
-      </ul>
-      <ul class="nav navbar-nav navbar-right">
-        
-      </ul>
-    </div><!--/.nav-collapse -->
-  </div><!--/.container -->
-</div><!--/.navbar -->
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a>
+  <ul class="collapse">
+  <li><a href="#why-do-we-need-panel-data-analysis" id="toc-why-do-we-need-panel-data-analysis" class="nav-link" data-scroll-target="#why-do-we-need-panel-data-analysis">Why do we need panel data analysis?</a></li>
+  </ul></li>
+  <li><a href="#some-examples" id="toc-some-examples" class="nav-link" data-scroll-target="#some-examples">Some examples</a>
+  <ul class="collapse">
+  <li><a href="#plant-openings-and-housing-prices-currie.2015" id="toc-plant-openings-and-housing-prices-currie.2015" class="nav-link" data-scroll-target="#plant-openings-and-housing-prices-currie.2015">Plant openings and housing prices <span class="citation" data-cites="Currie.2015">(Currie et al. 2015)</span></a></li>
+  <li><a href="#life-course-events-and-happiness-clark.2013" id="toc-life-course-events-and-happiness-clark.2013" class="nav-link" data-scroll-target="#life-course-events-and-happiness-clark.2013">Life course events and happiness <span class="citation" data-cites="Clark.2013">(Clark and Georgellis 2013)</span></a></li>
+  <li><a href="#london-congestion-charge-and-school-attendance-contekeivabu.2022" id="toc-london-congestion-charge-and-school-attendance-contekeivabu.2022" class="nav-link" data-scroll-target="#london-congestion-charge-and-school-attendance-contekeivabu.2022">London Congestion Charge and School Attendance <span class="citation" data-cites="ConteKeivabu.2022">(Conte Keivabu and Rüttenauer 2022)</span></a></li>
+  <li><a href="#extreme-weather-events-elevate-climate-change-belief-but-not-pro-environmental-behaviour-ruttenauer.2023a" id="toc-extreme-weather-events-elevate-climate-change-belief-but-not-pro-environmental-behaviour-ruttenauer.2023a" class="nav-link" data-scroll-target="#extreme-weather-events-elevate-climate-change-belief-but-not-pro-environmental-behaviour-ruttenauer.2023a">Extreme Weather Events Elevate Climate Change Belief but not Pro-Environmental Behaviour <span class="citation" data-cites="Ruttenauer.2023a">(Rüttenauer 2023)</span></a></li>
+  </ul></li>
+  <li><a href="#further-materials" id="toc-further-materials" class="nav-link" data-scroll-target="#further-materials">Further materials</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
 
-<div id="header">
-
-
-
-<h1 class="title toc-ignore">Panel Data Analysis</h1>
-<h4 class="author">Tobias Rüttenauer</h4>
-<h4 class="date">November 24, 2022</h4>
-
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">Panel Data Analysis</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
 </div>
 
 
-<hr />
-<p><a href="https://github.com/ruettenauer/Panel-Data-Analysis">Course
-Material</a></p>
-<hr />
-<div id="introduction" class="section level1">
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Author</div>
+  <div class="quarto-title-meta-heading">Affiliation</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author"><a href="https://ruettenauer.github.io/">Tobias Rüttenauer</a> <a href="https://orcid.org/0000-0001-5747-9735" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a></p>
+  </div>
+    <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            UCL Social Research Institute
+          </p>
+      </div>
+    </div>
+
+<div class="quarto-title-meta">
+
+      
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="introduction" class="level1">
 <h1>Introduction</h1>
 <p>With usual cross-sectional data, we only observe each unit once.</p>
-<p>With panel data, we observe the same unit (person, region, or
-country) repeatedly over time.</p>
-<p>This allows applying statistical methods which identify relations
-based on the within-unit changes rather than the differences between
-units. We can then account for some statistical problems of
-non-experimental studies and increases the confidence in a causal
-interpretation of the results.</p>
-<p>This course provides a hands on introduction to the preparation of
-panel data and the application of panel data methods. The course focuses
-on the most common methods like Difference in Differences, Random
-Effects, and Fixed Effects. We will also briefly discuss some extensions
-like novel Diff-in-Diff estimators and Fixed Effects Individual Slopes.
-The empirical part will be based on R and RMarkdown.</p>
-<p>This course profited a lot from teaching materials by Josef Brüderl
-and Volker Ludwig: <a
-href="https://www.ls3.soziologie.uni-muenchen.de/studium-lehre/archiv/teaching-marterials/panel-analysis_april-2019.pdf">Slides</a></p>
-<div id="why-do-we-need-panel-data-analysis" class="section level3">
-<h3>Why do we need panel data analysis?</h3>
-<p>In empirical social sciences, we are often interested in the
-<strong>causal research questions</strong>: we want to investigate
-questions of cause and effect. Using purely cross-sectional data, we can
-compare two (or more) different units (e.g. people, states, companies)
-and test is there exist differences according to our treatment or
-variable of interest.</p>
-<p>However, these units may not only differ in the dimension of
-interest, but may also be different in many other aspects, and it is
-likely that we do not obverse all the relevant aspects. In the end, we
-might erroneously conclude that there is a causal effect, even though we
-only observe correlation (which is confounded by other differences).</p>
-<p><img src="fig/matrix.jpg" /></p>
-<p>Randomized controlled trials (RCT) provide a way to circumvent the
-problems of unobserved differences between treatment and control
-cases.</p>
-<p>By randomly selecting some individuals and exposing them to the
-treatment of interest, we make sure that no (unobserved) characteristics
-of these individual can be correlated with the treatment. In other
-words, units in the treatment group should - on average - be identical
-to units in the control group on all characteristics except the
-treatment.</p>
-<p>However, randomly exposing some individuals to treatment and
-withholding treatment from others can be tricky in the social sciences.
-Think about the effects of education, the effects of marriage, or the
-effect of pregnancy (good luck with your ethics committee).</p>
-<p>A potential compromise between those two approaches: “compare alike
-with alike”. This is what we usually aim for by using panel data. We do
-not compare two different units to each other. Rather, we compare a unit
-in an earlier stage to the same unit in a later stage. Not as save as an
-RCT, but much more ethical for many research questions.</p>
-<p><img src="fig/NHK_Control.gif" style="width:48.0%" /> <img
-src="fig/NHK_FE.gif" style="width:48.0%" /></p>
-<p>Illustration by <span class="citation">(<a
-href="#ref-HuntingtonKlein.2021"><strong>HuntingtonKlein.2021?</strong></a>)</span>:
-Introducing a binary control variable (left) and introducing fixed
-effects (right)</p>
-</div>
-</div>
-<div id="some-examples" class="section level1">
+<p>With panel data, we observe the same unit (person, region, or country) repeatedly over time.</p>
+<p>This allows applying statistical methods which identify relations based on the within-unit changes rather than the differences between units. We can then account for some statistical problems of non-experimental studies and increases the confidence in a causal interpretation of the results.</p>
+<p>This course provides a hands on introduction to the preparation of panel data and the application of panel data methods. The course focuses on the most common methods like Difference in Differences, Random Effects, and Fixed Effects. We will also briefly discuss some extensions like novel Diff-in-Diff estimators and Fixed Effects Individual Slopes. The empirical part will be based on R and RMarkdown.</p>
+<p>This course profited a lot from teaching materials by Josef Brüderl and Volker Ludwig: <a href="https://www.ls3.soziologie.uni-muenchen.de/studium-lehre/archiv/teaching-marterials/panel-analysis_april-2019.pdf">Slides</a></p>
+<section id="why-do-we-need-panel-data-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="why-do-we-need-panel-data-analysis">Why do we need panel data analysis?</h3>
+<p>In empirical social sciences, we are often interested in the <strong>causal research questions</strong>: we want to investigate questions of cause and effect. Using purely cross-sectional data, we can compare two (or more) different units (e.g.&nbsp;people, states, companies) and test is there exist differences according to our treatment or variable of interest.</p>
+<p>However, these units may not only differ in the dimension of interest, but may also be different in many other aspects, and it is likely that we do not obverse all the relevant aspects. In the end, we might erroneously conclude that there is a causal effect, even though we only observe correlation (which is confounded by other differences).</p>
+<p><img src="fig/matrix.jpg" class="img-fluid"></p>
+<p>Randomized controlled trials (RCT) provide a way to circumvent the problems of unobserved differences between treatment and control cases.</p>
+<p>By randomly selecting some individuals and exposing them to the treatment of interest, we make sure that no (unobserved) characteristics of these individual can be correlated with the treatment. In other words, units in the treatment group should - on average - be identical to units in the control group on all characteristics except the treatment.</p>
+<p>However, randomly exposing some individuals to treatment and withholding treatment from others can be tricky in the social sciences. Think about the effects of education, the effects of marriage, or the effect of pregnancy (good luck with your ethics committee).</p>
+<p>A potential compromise between those two approaches: “compare alike with alike”. This is what we usually aim for by using panel data. We do not compare two different units to each other. Rather, we compare a unit in an earlier stage to the same unit in a later stage. Not as save as an RCT, but much more ethical for many research questions.</p>
+<p><img src="fig/NHK_Control.gif" class="img-fluid" style="width:48.0%"> <img src="fig/NHK_FE.gif" class="img-fluid" style="width:48.0%"></p>
+<p>Illustration by <span class="citation" data-cites="Huntington-Klein.2021">Huntington-Klein (<a href="#ref-Huntington-Klein.2021" role="doc-biblioref">2021</a>)</span>: Introducing a binary control variable (left) and introducing fixed effects (right)</p>
+</section>
+</section>
+<section id="some-examples" class="level1">
 <h1>Some examples</h1>
-<div id="plant-openings-and-housing-prices-currie.2015"
-class="section level3">
-<h3>Plant openings and housing prices <span class="citation">(<a
-href="#ref-Currie.2015">Currie et al. 2015</a>)</span></h3>
-<p><img src="fig/currie.PNG" style="width:75.0%" /></p>
-</div>
-<div id="life-course-events-and-happiness-clark.2013"
-class="section level3">
-<h3>Life course events and happiness <span class="citation">(<a
-href="#ref-Clark.2013">Clark and Georgellis 2013</a>)</span></h3>
-<p><img src="fig/lifecourse-events.PNG" style="width:75.0%" /></p>
-</div>
-<div
-id="london-congestion-charge-and-school-attendance-contekeivabu.2022"
-class="section level3">
-<h3>London Congestion Charge and School Attendance <span
-class="citation">(<a href="#ref-ConteKeivabu.2022">Conte Keivabu and
-Rüttenauer 2022</a>)</span></h3>
-<p><img src="fig/ccz.PNG" style="width:75.0%" /></p>
-</div>
-<div
-id="extreme-weather-events-elevate-climate-change-belief-but-not-pro-environmental-behaviour-ruttenauer.2023a"
-class="section level3">
-<h3>Extreme Weather Events Elevate Climate Change Belief but not
-Pro-Environmental Behaviour <span class="citation">(<a
-href="#ref-Ruttenauer.2023a">Rüttenauer 2023</a>)</span></h3>
-<p><img src="fig/Ruettenauer.png" style="width:75.0%" /></p>
-</div>
-</div>
-<div id="further-materials" class="section level1">
+<section id="plant-openings-and-housing-prices-currie.2015" class="level3">
+<h3 class="anchored" data-anchor-id="plant-openings-and-housing-prices-currie.2015">Plant openings and housing prices <span class="citation" data-cites="Currie.2015">(<a href="#ref-Currie.2015" role="doc-biblioref">Currie et al. 2015</a>)</span></h3>
+<p><img src="fig/currie.PNG" class="img-fluid" style="width:75.0%"></p>
+</section>
+<section id="life-course-events-and-happiness-clark.2013" class="level3">
+<h3 class="anchored" data-anchor-id="life-course-events-and-happiness-clark.2013">Life course events and happiness <span class="citation" data-cites="Clark.2013">(<a href="#ref-Clark.2013" role="doc-biblioref">Clark and Georgellis 2013</a>)</span></h3>
+<p><img src="fig/lifecourse-events.PNG" class="img-fluid" style="width:75.0%"></p>
+</section>
+<section id="london-congestion-charge-and-school-attendance-contekeivabu.2022" class="level3">
+<h3 class="anchored" data-anchor-id="london-congestion-charge-and-school-attendance-contekeivabu.2022">London Congestion Charge and School Attendance <span class="citation" data-cites="ConteKeivabu.2022">(<a href="#ref-ConteKeivabu.2022" role="doc-biblioref">Conte Keivabu and Rüttenauer 2022</a>)</span></h3>
+<p><img src="fig/ccz.PNG" class="img-fluid" style="width:75.0%"></p>
+</section>
+<section id="extreme-weather-events-elevate-climate-change-belief-but-not-pro-environmental-behaviour-ruttenauer.2023a" class="level3">
+<h3 class="anchored" data-anchor-id="extreme-weather-events-elevate-climate-change-belief-but-not-pro-environmental-behaviour-ruttenauer.2023a">Extreme Weather Events Elevate Climate Change Belief but not Pro-Environmental Behaviour <span class="citation" data-cites="Ruttenauer.2023a">(<a href="#ref-Ruttenauer.2023a" role="doc-biblioref">Rüttenauer 2023</a>)</span></h3>
+<p><img src="fig/Ruettenauer.png" class="img-fluid" style="width:75.0%"></p>
+<p>There are obviously plenty of other examples on various topics, such the determinants of life satisfaction <span class="citation" data-cites="Gattig.2021 Kapelle.2022">(<a href="#ref-Gattig.2021" role="doc-biblioref">Gattig and Minkus 2021</a>; <a href="#ref-Kapelle.2022" role="doc-biblioref">Kapelle et al. 2022</a>)</span>, family dynamics and the gender wage gap <span class="citation" data-cites="Schmitt.2022 VanWinkle.2020">Zoch (<a href="#ref-Zoch.2023" role="doc-biblioref">2023</a>)</span>, or drivers of volunteering and pro-social behaviour <span class="citation" data-cites="Aksoy.2023 Dederichs.2023">(<a href="#ref-Aksoy.2023" role="doc-biblioref">Aksoy and Wiertz 2023</a>; <a href="#ref-Dederichs.2023" role="doc-biblioref">Dederichs and Kruse 2023</a>)</span>. Moreover, panel data and Differences-in-Differences designs occupy a prominent position the evaluation of social policy impacts <span class="citation" data-cites="ConteKeivabu.2022a Franzen.2023 Goodair.2022 Mader.2022 Kneip.2009">(<a href="#ref-ConteKeivabu.2022a" role="doc-biblioref">Conte Keivabu 2022</a>; <a href="#ref-Franzen.2023" role="doc-biblioref">Franzen and Bahr 2023</a>; <a href="#ref-Goodair.2022" role="doc-biblioref">Goodair and Reeves 2022</a>; <a href="#ref-Mader.2022" role="doc-biblioref">Mader and Rüttenauer 2022</a>; <a href="#ref-Kneip.2009" role="doc-biblioref">Kneip and Bauer 2009</a>)</span>.</p>
+</section>
+</section>
+<section id="further-materials" class="level1">
 <h1>Further materials</h1>
-<p>Extensive slides by Josef Brüderl and Volker Ludwig: <a
-href="https://www.ls3.soziologie.uni-muenchen.de/studium-lehre/archiv/teaching-marterials/panel-analysis_april-2019.pdf">Slides</a></p>
-<p>See also <span class="citation">Brüderl and Ludwig (<a
-href="#ref-Bruderl.2015">2015</a>)</span>.</p>
+<p>Extensive slides by Josef Brüderl and Volker Ludwig: <a href="https://www.ls3.soziologie.uni-muenchen.de/studium-lehre/archiv/teaching-marterials/panel-analysis_april-2019.pdf">Slides</a></p>
+<p>See also <span class="citation" data-cites="Bruderl.2015">Brüderl and Ludwig (<a href="#ref-Bruderl.2015" role="doc-biblioref">2015</a>)</span>.</p>
 <p>Books:</p>
 <ul>
-<li><p>Intuitive: <span class="citation">Allison (<a
-href="#ref-Allison.2009">2009</a>)</span></p></li>
-<li><p>Comprehensive and formal: <span class="citation">Wooldridge (<a
-href="#ref-Wooldridge.2010">2010</a>)</span></p></li>
-<li><p>For R experts: <span class="citation">Croissant and Millo (<a
-href="#ref-Croissant.2019">2019</a>)</span></p></li>
-<li><p>General introductions to causal estimation techniques: <span
-class="citation">Angrist and Pischke (<a
-href="#ref-Angrist.2015">2015</a>)</span>, <span
-class="citation">Cunningham (<a
-href="#ref-Cunningham.2021">2021</a>)</span>, <span
-class="citation">Firebaugh (<a
-href="#ref-Firebaugh.2008">2008</a>)</span>, <span
-class="citation">Huntington-Klein (<a
-href="#ref-Huntington-Klein.2021">2021</a>)</span></p></li>
+<li><p>Intuitive: <span class="citation" data-cites="Allison.2009">Allison (<a href="#ref-Allison.2009" role="doc-biblioref">2009</a>)</span></p></li>
+<li><p>Comprehensive and formal: <span class="citation" data-cites="Wooldridge.2010">Wooldridge (<a href="#ref-Wooldridge.2010" role="doc-biblioref">2010</a>)</span></p></li>
+<li><p>For R experts: <span class="citation" data-cites="Croissant.2019">Croissant and Millo (<a href="#ref-Croissant.2019" role="doc-biblioref">2019</a>)</span></p></li>
+<li><p>General introductions to causal estimation techniques: <span class="citation" data-cites="Angrist.2015">Angrist and Pischke (<a href="#ref-Angrist.2015" role="doc-biblioref">2015</a>)</span>, <span class="citation" data-cites="Cunningham.2021">Cunningham (<a href="#ref-Cunningham.2021" role="doc-biblioref">2021</a>)</span>, <span class="citation" data-cites="Firebaugh.2008">Firebaugh (<a href="#ref-Firebaugh.2008" role="doc-biblioref">2008</a>)</span>, <span class="citation" data-cites="Huntington-Klein.2021">Huntington-Klein (<a href="#ref-Huntington-Klein.2021" role="doc-biblioref">2021</a>)</span></p></li>
 </ul>
-<p>The books by <span class="citation">Cunningham (<a
-href="#ref-Cunningham.2021">2021</a>)</span> (<a
-href="https://mixtape.scunning.com/">Link</a>) and <span
-class="citation">Huntington-Klein (<a
-href="#ref-Huntington-Klein.2021">2021</a>)</span> (<a
-href="https://theeffectbook.net/">Link</a>) are freely available
-online!</p>
-</div>
-<div id="references" class="section level1 unnumbered">
-<h1 class="unnumbered">References</h1>
-<div id="refs" class="references csl-bib-body hanging-indent">
-<div id="ref-Allison.2009" class="csl-entry">
-Allison, Paul David. 2009. <em>Fixed <span>Effects Regression
-Models</span></em>. Vol. 160. Quantitative <span>Applications</span> in
-the <span>Social Sciences</span>. <span>Los Angeles</span>:
-<span>Sage</span>.
-</div>
-<div id="ref-Angrist.2015" class="csl-entry">
-Angrist, Joshua David, and Jörn-Steffen Pischke. 2015. <em>Mastering
-’<span>Metrics</span>: <span>The Path</span> from <span>Cause</span> to
-<span>Effect</span></em>. <span>Princeton</span>: <span>Princeton Univ.
-Press</span>.
-</div>
-<div id="ref-Bruderl.2015" class="csl-entry">
-Brüderl, Josef, and Volker Ludwig. 2015. <span>“Fixed-<span>Effects
-Panel Regression</span>.”</span> In <em>The <span>Sage Handbook</span>
-of <span>Regression Analysis</span> and <span>Causal
-Inference</span></em>, edited by Henning Best and Christof Wolf, 327–57.
-<span>Los Angeles</span>: <span>Sage</span>.
-</div>
-<div id="ref-Clark.2013" class="csl-entry">
-Clark, Andrew E., and Yannis Georgellis. 2013. <span>“Back to
-<span>Baseline</span> in <span>Britain</span>: <span>Adaptation</span>
-in the <span>British Household Panel Survey</span>.”</span>
-<em>Economica</em> 80 (319): 496–512. <a
-href="https://doi.org/10.1111/ecca.12007">https://doi.org/10.1111/ecca.12007</a>.
-</div>
-<div id="ref-ConteKeivabu.2022" class="csl-entry">
-Conte Keivabu, Risto, and Tobias Rüttenauer. 2022. <span>“London
-<span>Congestion Charge</span>: <span>The Impact</span> on <span>Air
-Pollution</span> and <span>School Attendance</span> by
-<span>Socioeconomic Status</span>.”</span> <em>Population and
-Environment</em> 43 (4): 576–96. <a
-href="https://doi.org/10.1007/s11111-022-00401-4">https://doi.org/10.1007/s11111-022-00401-4</a>.
-</div>
-<div id="ref-Croissant.2019" class="csl-entry">
-Croissant, Yves, and Giovanni Millo. 2019. <em>Panel <span>Data
-Econometrics</span> with <span>R</span></em>. <span>Hoboken, NJ</span>:
-<span>John Wiley and Sons</span>.
-</div>
-<div id="ref-Cunningham.2021" class="csl-entry">
-Cunningham, Scott. 2021. <em>Causal <span>Inference</span>: <span>The
-Mixtape</span></em>. <span>New Haven and London</span>: <span>Yale
-University Press</span>.
-</div>
-<div id="ref-Currie.2015" class="csl-entry">
-Currie, Janet, Lucas Davis, Michael Greenstone, and Reed Walker. 2015.
-<span>“Environmental <span>Health Risks</span> and <span>Housing
-Values</span>: <span>Evidence</span> from 1,600 <span>Toxic Plant
-Openings</span> and <span>Closings</span>.”</span> <em>American Economic
-Review</em> 105 (2): 678–709. <a
-href="https://doi.org/10.1257/aer.20121656">https://doi.org/10.1257/aer.20121656</a>.
-</div>
-<div id="ref-Firebaugh.2008" class="csl-entry">
-Firebaugh, Glenn. 2008. <em>Seven <span>Rules</span> for <span>Social
-Research</span></em>. <span>Princeton, N.J. and Woodstock</span>:
-<span>Princeton University Press</span>.
-</div>
-<div id="ref-Huntington-Klein.2021" class="csl-entry">
-Huntington-Klein, Nick. 2021. <em>The <span>Effect</span>: <span>An
-Introduction</span> to <span>Research Design</span> and
-<span>Causality</span></em>. <span>Boca Raton</span>: <span>Chapman
-&amp; Hall/CRC</span>.
-</div>
-<div id="ref-Ruttenauer.2023a" class="csl-entry">
-Rüttenauer, Tobias. 2023. <span>“More Talk, No Action? <span>The</span>
-Link Between Exposure to Extreme Weather Events, Climate Change Belief
-and Pro-Environmental Behaviour.”</span> <em>European Societies</em>,
-November, 1–25. <a
-href="https://doi.org/10.1080/14616696.2023.2277281">https://doi.org/10.1080/14616696.2023.2277281</a>.
-</div>
-<div id="ref-Wooldridge.2010" class="csl-entry">
-Wooldridge, Jeffrey M. 2010. <em>Econometric <span>Analysis</span> of
-<span>Cross Section</span> and <span>Panel Data</span></em>.
-<span>Cambridge, Mass.</span>: <span>MIT Press</span>.
-</div>
-</div>
-</div>
+<p>The books by <span class="citation" data-cites="Cunningham.2021">Cunningham (<a href="#ref-Cunningham.2021" role="doc-biblioref">2021</a>)</span> (<a href="https://mixtape.scunning.com/">Link</a>) and <span class="citation" data-cites="Huntington-Klein.2021">Huntington-Klein (<a href="#ref-Huntington-Klein.2021" role="doc-biblioref">2021</a>)</span> (<a href="https://theeffectbook.net/">Link</a>) are freely available online!</p>
+</section>
+<section id="references" class="level1">
 
 
 
+<!-- -->
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-Aksoy.2023" class="csl-entry" role="listitem">
+Aksoy, Ozan, and Dingeman Wiertz. 2023. <span>“The Impact of Religious Involvement on Trust, Volunteering, and Perceived Cooperativeness: Evidence from Two <span>British</span> Panels.”</span> <em>European Sociological Review</em>, April, jcad024. <a href="https://doi.org/10.1093/esr/jcad024">https://doi.org/10.1093/esr/jcad024</a>.
 </div>
+<div id="ref-Allison.2009" class="csl-entry" role="listitem">
+Allison, Paul David. 2009. <em>Fixed <span>Effects Regression Models</span></em>. Vol. 160. Quantitative <span>Applications</span> in the <span>Social Sciences</span>. <span>Los Angeles</span>: <span>Sage</span>.
 </div>
-
+<div id="ref-Angrist.2015" class="csl-entry" role="listitem">
+Angrist, Joshua David, and Jörn-Steffen Pischke. 2015. <em>Mastering ’<span>Metrics</span>: <span>The Path</span> from <span>Cause</span> to <span>Effect</span></em>. <span>Princeton</span>: <span>Princeton Univ. Press</span>.
 </div>
-
-<script>
-
-// add bootstrap table styles to pandoc tables
-function bootstrapStylePandocTables() {
-  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
-}
-$(document).ready(function () {
-  bootstrapStylePandocTables();
-});
-
-
-</script>
-
-<!-- tabsets -->
-
-<script>
-$(document).ready(function () {
-  window.buildTabsets("TOC");
-});
-
-$(document).ready(function () {
-  $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open');
+<div id="ref-Bruderl.2015" class="csl-entry" role="listitem">
+Brüderl, Josef, and Volker Ludwig. 2015. <span>“Fixed-<span>Effects Panel Regression</span>.”</span> In <em>The <span>Sage Handbook</span> of <span>Regression Analysis</span> and <span>Causal Inference</span></em>, edited by Henning Best and Christof Wolf, 327–57. <span>Los Angeles</span>: <span>Sage</span>.
+</div>
+<div id="ref-Clark.2013" class="csl-entry" role="listitem">
+Clark, Andrew E., and Yannis Georgellis. 2013. <span>“Back to <span>Baseline</span> in <span>Britain</span>: <span>Adaptation</span> in the <span>British Household Panel Survey</span>.”</span> <em>Economica</em> 80 (319): 496–512. <a href="https://doi.org/10.1111/ecca.12007">https://doi.org/10.1111/ecca.12007</a>.
+</div>
+<div id="ref-ConteKeivabu.2022a" class="csl-entry" role="listitem">
+Conte Keivabu, Risto. 2022. <span>“Extreme <span>Temperature</span> and <span>Mortality</span> by <span>Educational Attainment</span> in <span>Spain</span>, 2012.”</span> <em>European Journal of Population</em> 38 (5): 1145–82. <a href="https://doi.org/10.1007/s10680-022-09641-4">https://doi.org/10.1007/s10680-022-09641-4</a>.
+</div>
+<div id="ref-ConteKeivabu.2022" class="csl-entry" role="listitem">
+Conte Keivabu, Risto, and Tobias Rüttenauer. 2022. <span>“London <span>Congestion Charge</span>: <span>The Impact</span> on <span>Air Pollution</span> and <span>School Attendance</span> by <span>Socioeconomic Status</span>.”</span> <em>Population and Environment</em> 43 (4): 576–96. <a href="https://doi.org/10.1007/s11111-022-00401-4">https://doi.org/10.1007/s11111-022-00401-4</a>.
+</div>
+<div id="ref-Croissant.2019" class="csl-entry" role="listitem">
+Croissant, Yves, and Giovanni Millo. 2019. <em>Panel <span>Data Econometrics</span> with <span>R</span></em>. <span>Hoboken, NJ</span>: <span>John Wiley and Sons</span>.
+</div>
+<div id="ref-Cunningham.2021" class="csl-entry" role="listitem">
+Cunningham, Scott. 2021. <em>Causal <span>Inference</span>: <span>The Mixtape</span></em>. <span>New Haven and London</span>: <span>Yale University Press</span>.
+</div>
+<div id="ref-Currie.2015" class="csl-entry" role="listitem">
+Currie, Janet, Lucas Davis, Michael Greenstone, and Reed Walker. 2015. <span>“Environmental <span>Health Risks</span> and <span>Housing Values</span>: <span>Evidence</span> from 1,600 <span>Toxic Plant Openings</span> and <span>Closings</span>.”</span> <em>American Economic Review</em> 105 (2): 678–709. <a href="https://doi.org/10.1257/aer.20121656">https://doi.org/10.1257/aer.20121656</a>.
+</div>
+<div id="ref-Dederichs.2023" class="csl-entry" role="listitem">
+Dederichs, Kasimir, and Hanno Kruse. 2023. <span>“Who <span>Stays Involved</span>? <span>A Longitudinal Study</span> on <span>Adolescents</span>’ <span>Participation</span> in <span>Voluntary Associations</span> in <span>Germany</span>.”</span> <em>European Sociological Review</em> 39 (1): 30–43. <a href="https://doi.org/10.1093/esr/jcac013">https://doi.org/10.1093/esr/jcac013</a>.
+</div>
+<div id="ref-Firebaugh.2008" class="csl-entry" role="listitem">
+Firebaugh, Glenn. 2008. <em>Seven <span>Rules</span> for <span>Social Research</span></em>. <span>Princeton, N.J. and Woodstock</span>: <span>Princeton University Press</span>.
+</div>
+<div id="ref-Franzen.2023" class="csl-entry" role="listitem">
+Franzen, Axel, and Sebastian Bahr. 2023. <span>“Poverty in <span>Europe</span>: <span>How</span> <span><span class="smallcaps">Long-term</span></span> Poverty Developed Following the Financial Crisis and What Drives It.”</span> <em>International Journal of Social Welfare</em>, May, ijsw.12614. <a href="https://doi.org/10.1111/ijsw.12614">https://doi.org/10.1111/ijsw.12614</a>.
+</div>
+<div id="ref-Gattig.2021" class="csl-entry" role="listitem">
+Gattig, Alexander, and Lara Minkus. 2021. <span>“Does <span>Marriage Increase Couples</span>’ <span>Life Satisfaction</span>?: <span>Evidence Using Panel Data</span> and <span class="nocase">Fixed-effects Individual Slopes</span>.”</span> <em>Comparative Population Studies</em> 46 (May). <a href="https://doi.org/10.12765/CPoS-2021-05">https://doi.org/10.12765/CPoS-2021-05</a>.
+</div>
+<div id="ref-Goodair.2022" class="csl-entry" role="listitem">
+Goodair, Benjamin, and Aaron Reeves. 2022. <span>“Outsourcing Health-Care Services to the Private Sector and Treatable Mortality Rates in <span>England</span>, 2013: An Observational Study of <span>NHS</span> Privatisation.”</span> <em>The Lancet Public Health</em> 7 (7): e638–46. <a href="https://doi.org/10.1016/S2468-2667(22)00133-5">https://doi.org/10.1016/S2468-2667(22)00133-5</a>.
+</div>
+<div id="ref-Huntington-Klein.2021" class="csl-entry" role="listitem">
+Huntington-Klein, Nick. 2021. <em>The <span>Effect</span>: <span>An Introduction</span> to <span>Research Design</span> and <span>Causality</span></em>. <span>Boca Raton</span>: <span>Chapman &amp; Hall/CRC</span>.
+</div>
+<div id="ref-Kapelle.2022" class="csl-entry" role="listitem">
+Kapelle, Nicole, Theresa Nutz, Daria Tisch, Manuel Schechtl, Philipp M. Lersch, and Emanuela Struffolino. 2022. <span>“My <span>Wealth</span>, (<span>Y</span>)<span>Our Life Satisfaction</span>? <span>Sole</span> and <span>Joint Wealth Ownership</span> and <span>Life Satisfaction</span> in <span>Marriage</span>.”</span> <em>European Journal of Population</em> 38 (4): 811–34. <a href="https://doi.org/10.1007/s10680-022-09630-7">https://doi.org/10.1007/s10680-022-09630-7</a>.
+</div>
+<div id="ref-Kneip.2009" class="csl-entry" role="listitem">
+Kneip, Thorsten, and Gerrit Bauer. 2009. <span>“Did <span>Unilateral Divorce Laws Raise Divorce Rates</span> in <span>Western Europe</span>?”</span> <em>Journal of Marriage and the Family</em> 71 (3): 592–607. <a href="https://doi.org/10.1111/j.1741-3737.2009.00621.x">https://doi.org/10.1111/j.1741-3737.2009.00621.x</a>.
+</div>
+<div id="ref-Mader.2022" class="csl-entry" role="listitem">
+Mader, Sebastian, and Tobias Rüttenauer. 2022. <span>“The <span>Effects</span> of <span class="nocase">Non-pharmaceutical Interventions</span> on <span>COVID-19 Mortality</span>: <span>A Generalized Synthetic Control Approach Across</span> 169 <span>Countries</span>.”</span> <em>Frontiers in Public Health</em> 10: 1–8. <a href="https://doi.org/10.3389/fpubh.2022.820642">https://doi.org/10.3389/fpubh.2022.820642</a>.
+</div>
+<div id="ref-Ruttenauer.2023a" class="csl-entry" role="listitem">
+Rüttenauer, Tobias. 2023. <span>“More Talk, No Action? <span>The</span> Link Between Exposure to Extreme Weather Events, Climate Change Belief and Pro-Environmental Behaviour.”</span> <em>European Societies</em>, November, 1–25. <a href="https://doi.org/10.1080/14616696.2023.2277281">https://doi.org/10.1080/14616696.2023.2277281</a>.
+</div>
+<div id="ref-Schmitt.2022" class="csl-entry" role="listitem">
+Schmitt, Laila, and Katrin Auspurg. 2022. <span>“A <span>Stall Only</span> on the <span>Surface</span>? <span>Working Hours</span> and the <span>Persistence</span> of the <span>Gender Wage Gap</span> in <span>Western Germany</span> 1985.”</span> <em>European Sociological Review</em> 38 (5): 754–69. <a href="https://doi.org/10.1093/esr/jcac001">https://doi.org/10.1093/esr/jcac001</a>.
+</div>
+<div id="ref-VanWinkle.2020" class="csl-entry" role="listitem">
+Van Winkle, Zachary, and Anette Eva Fasang. 2020. <span>“Parenthood <span>Wage Gaps Across</span> the <span>Life Course</span>: <span>A Comparison</span> by <span>Gender</span> and <span>Race</span>.”</span> <em>Journal of Marriage and Family</em> 82 (5): 1515–33. <a href="https://doi.org/10.1111/jomf.12713">https://doi.org/10.1111/jomf.12713</a>.
+</div>
+<div id="ref-Wooldridge.2010" class="csl-entry" role="listitem">
+Wooldridge, Jeffrey M. 2010. <em>Econometric <span>Analysis</span> of <span>Cross Section</span> and <span>Panel Data</span></em>. <span>Cambridge, Mass.</span>: <span>MIT Press</span>.
+</div>
+<div id="ref-Zoch.2023" class="csl-entry" role="listitem">
+Zoch, Gundula. 2023. <span>“Participation in <span>Job-Related Training</span>: <span>Is There</span> a <span>Parenthood Training Penalty</span>?”</span> <em>Work, Employment and Society</em> 37 (1): 274–92. <a href="https://doi.org/10.1177/09500170221128692">https://doi.org/10.1177/09500170221128692</a>.
+</div>
+</div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
   });
-});
-</script>
-
-<!-- code folding -->
-
-<script>
-$(document).ready(function ()  {
-
-    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
-    $('.unlisted.unnumbered').addClass('toc-ignore')
-
-    // move toc-ignore selectors from section div to header
-    $('div.section.toc-ignore')
-        .removeClass('toc-ignore')
-        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
-
-    // establish options
-    var options = {
-      selectors: "h1,h2",
-      theme: "bootstrap3",
-      context: '.toc-content',
-      hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  const viewSource = window.document.getElementById('quarto-view-source') ||
+                     window.document.getElementById('quarto-code-tools-source');
+  if (viewSource) {
+    const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+    viewSource.addEventListener("click", function(e) {
+      if (sourceUrl) {
+        // rstudio viewer pane
+        if (/\bcapabilities=\b/.test(window.location)) {
+          window.open(sourceUrl);
+        } else {
+          window.location.href = sourceUrl;
+        }
+      } else {
+        const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+        modal.show();
+      }
+      return false;
+    });
+  }
+  function toggleCodeHandler(show) {
+    return function(e) {
+      const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+      for (let i=0; i<detailsSrc.length; i++) {
+        const details = detailsSrc[i].parentElement;
+        if (show) {
+          details.open = true;
+        } else {
+          details.removeAttribute("open");
+        }
+      }
+      const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+      const fromCls = show ? "hidden" : "unhidden";
+      const toCls = show ? "unhidden" : "hidden";
+      for (let i=0; i<cellCodeDivs.length; i++) {
+        const codeDiv = cellCodeDivs[i];
+        if (codeDiv.classList.contains(fromCls)) {
+          codeDiv.classList.remove(fromCls);
+          codeDiv.classList.add(toCls);
+        } 
+      }
+      return false;
+    }
+  }
+  const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+  if (hideAllCode) {
+    hideAllCode.addEventListener("click", toggleCodeHandler(false));
+  }
+  const showAllCode = window.document.getElementById("quarto-show-all-code");
+  if (showAllCode) {
+    showAllCode.addEventListener("click", toggleCodeHandler(true));
+  }
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
       },
-      ignoreSelector: ".toc-ignore",
-      scrollTo: 0
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
     };
-    options.showAndHide = false;
-    options.smoothScroll = false;
-
-    // tocify
-    var toc = $("#TOC").tocify(options).data("toc-tocify");
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
 });
-</script>
+</script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Panel Data Analysis"</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">    code-fold: true</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">    code-tools: true</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="an">output:</span><span class="co"> </span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">  html_document:</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">    toc: true</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">    toc_float: true</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co">    toc_depth: 2</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co">    number_sections: true</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co">  - name: Tobias Rüttenauer</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co">    orcid:  0000-0001-5747-9735</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co">    email: t.ruttenauer@ucl.ac.uk</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co">    url: https://ruettenauer.github.io/</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co">    affiliations:</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co">      - name: UCL Social Research Institute</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co">        address: University College London</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co">        city: London WC1H 0AL</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="fu"># Introduction</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>With usual cross-sectional data, we only observe each unit once.</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>With panel data, we observe the same unit (person, region, or country) repeatedly over time. </span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>This allows applying statistical methods which identify relations based on the within-unit changes rather than the differences between units. We can then account for some statistical problems of non-experimental studies and increases the confidence in a causal interpretation of the results.</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>This course provides a hands on introduction to the preparation of panel data and the application of panel data methods. The course focuses on the most common methods like Difference in Differences, Random Effects, and Fixed Effects. We will also briefly discuss some extensions like novel Diff-in-Diff estimators and Fixed Effects Individual Slopes. The empirical part will be based on R and RMarkdown.</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>This course profited a lot from teaching materials by Josef Brüderl and Volker Ludwig: <span class="co">[</span><span class="ot">Slides</span><span class="co">](https://www.ls3.soziologie.uni-muenchen.de/studium-lehre/archiv/teaching-marterials/panel-analysis_april-2019.pdf)</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="fu">### Why do we need panel data analysis? </span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>In empirical social sciences, we are often interested in the __causal research questions__: we want to investigate questions of cause and effect. Using purely cross-sectional data, we can compare two (or more) different units (e.g. people, states, companies) and test is there exist differences according to our treatment or variable of interest. </span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>However, these units may not only differ in the dimension of interest, but may also be different in many other aspects, and it is likely that we do not obverse all the relevant aspects. In the end, we might erroneously conclude that there is a causal effect, even though we only observe correlation (which is confounded by other differences).</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a><span class="al">![](fig/matrix.jpg)</span></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>Randomized controlled trials (RCT) provide a way to circumvent the problems of unobserved differences between treatment and control cases. </span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>By randomly selecting some individuals and exposing them to the treatment of interest, we make sure that no (unobserved) characteristics of these individual can be correlated with the treatment. In other words, units in the treatment group should - on average - be identical to units in the control group on all characteristics except the treatment.</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>However, randomly exposing some individuals to treatment and withholding treatment from others can be tricky in the social sciences. Think about the effects of education, the effects of marriage, or the effect of pregnancy (good luck with your ethics committee).</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>A potential compromise between those two approaches: "compare alike with alike". This is what we usually aim for by using panel data. We do not compare two different units to each other. Rather, we compare a unit in an earlier stage to the same unit in a later stage. Not as save as an RCT, but much more ethical for many research questions.</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a><span class="al">![](fig/NHK_Control.gif)</span>{width=48%} <span class="al">![](fig/NHK_FE.gif)</span>{width=48%}</span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>Illustration by @Huntington-Klein.2021: Introducing a binary control variable (left) and introducing fixed effects (right)</span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a><span class="fu"># Some examples</span></span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a><span class="fu">### Plant openings and housing prices [@Currie.2015]</span></span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a><span class="al">![](fig/currie.PNG)</span>{width=75%}</span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a><span class="fu">### Life course events and happiness [@Clark.2013]</span></span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a><span class="al">![](fig/lifecourse-events.PNG)</span>{width=75%}</span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a><span class="fu">### London Congestion Charge and School Attendance [@ConteKeivabu.2022]</span></span>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a><span class="al">![](fig/ccz.PNG)</span>{width=75%}</span>
+<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a><span class="fu">### Extreme Weather Events Elevate Climate Change Belief but not Pro-Environmental Behaviour [@Ruttenauer.2023a]</span></span>
+<span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a><span class="al">![](fig/Ruettenauer.png)</span>{width=75%}</span>
+<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a>There are obviously plenty of other examples on various topics, such the determinants of life satisfaction <span class="co">[</span><span class="ot">@Gattig.2021; @Kapelle.2022</span><span class="co">]</span>, family dynamics and the gender wage gap <span class="co">[</span><span class="ot">@Schmitt.2022; @VanWinkle.2020, @Zoch.2023</span><span class="co">]</span>, or drivers of volunteering and pro-social behaviour <span class="co">[</span><span class="ot">@Aksoy.2023; @Dederichs.2023</span><span class="co">]</span>. Moreover, panel data and Differences-in-Differences designs occupy a prominent position the evaluation of social policy impacts <span class="co">[</span><span class="ot">@ConteKeivabu.2022a; @Franzen.2023; @Goodair.2022; @Mader.2022; @Kneip.2009</span><span class="co">]</span>.</span>
+<span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a><span class="fu"># Further materials</span></span>
+<span id="cb1-78"><a href="#cb1-78" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-79"><a href="#cb1-79" aria-hidden="true" tabindex="-1"></a>Extensive slides by Josef Brüderl and Volker Ludwig: <span class="co">[</span><span class="ot">Slides</span><span class="co">](https://www.ls3.soziologie.uni-muenchen.de/studium-lehre/archiv/teaching-marterials/panel-analysis_april-2019.pdf)</span></span>
+<span id="cb1-80"><a href="#cb1-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-81"><a href="#cb1-81" aria-hidden="true" tabindex="-1"></a>See also @Bruderl.2015.</span>
+<span id="cb1-82"><a href="#cb1-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-83"><a href="#cb1-83" aria-hidden="true" tabindex="-1"></a>Books:</span>
+<span id="cb1-84"><a href="#cb1-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Intuitive: @Allison.2009</span>
+<span id="cb1-86"><a href="#cb1-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-87"><a href="#cb1-87" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Comprehensive and formal: @Wooldridge.2010</span>
+<span id="cb1-88"><a href="#cb1-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-89"><a href="#cb1-89" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>For R experts: @Croissant.2019</span>
+<span id="cb1-90"><a href="#cb1-90" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-91"><a href="#cb1-91" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>General introductions to causal estimation techniques: @Angrist.2015, @Cunningham.2021, @Firebaugh.2008, @Huntington-Klein.2021</span>
+<span id="cb1-92"><a href="#cb1-92" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-93"><a href="#cb1-93" aria-hidden="true" tabindex="-1"></a>The books by @Cunningham.2021 (<span class="co">[</span><span class="ot">Link</span><span class="co">](https://mixtape.scunning.com/)</span>) and @Huntington-Klein.2021 (<span class="co">[</span><span class="ot">Link</span><span class="co">](https://theeffectbook.net/)</span>) are freely available online!</span>
+<span id="cb1-94"><a href="#cb1-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-95"><a href="#cb1-95" aria-hidden="true" tabindex="-1"></a><span class="fu"># References</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
 
-<!-- dynamically load mathjax for compatibility with self-contained -->
-<script>
-  (function () {
-    var script = document.createElement("script");
-    script.type = "text/javascript";
-    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
-    document.getElementsByTagName("head")[0].appendChild(script);
-  })();
-</script>
 
-</body>
-</html>
+
+</body></html>

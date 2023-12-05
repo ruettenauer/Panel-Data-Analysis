@@ -6,3 +6,4 @@
 _data/
 .Rproj.user
 *holdout.Rmd
+/.quarto/

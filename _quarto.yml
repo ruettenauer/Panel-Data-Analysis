@@ -1,0 +1,41 @@
+project:
+  title: "Panel Data Analysis"
+  type: website
+  output-dir: docs
+
+website:
+  title: "Panel Data Analysis"
+  navbar:
+    left:
+    - text: "Home"
+      href: index.html
+    - text: "1) Panel data methods"
+      href: Panel_part1.html
+    - text: "2) Advanced Methods"
+      href: Panel_part2.html  
+    - text: "3) Exercises"
+      href: Panel_part3.html  
+    - text: "Solutions"
+      href: Panel_part3_solutions.html 
+    tools:
+      - icon: github
+        menu:
+          - text: Source Code
+            url:  https://ruettenauer.github.io/Panel-Data-Analysis/
+  site-url: "https://github.com/ruettenauer/Panel-Data-Analysis"          
+        
+  # page-footer:
+  #   left: |
+  #     Content by [Tobias Rüttenauer](https://ruettenauer.github.io/) <br>
+  #     {{< fa brands creative-commons >}}
+  #     {{< fa brands creative-commons-by >}} {{< fa brands creative-commons-nc >}}
+  #     [Creative Commons Attribution-NonCommercial 4.0 International license (CC BY-NC 4.0)](https://creativecommons.org/licenses/by-nc/4.0/)
+  #   right: |
+  #     [View the source at {{< fa brands github >}} GitHub](https://github.com/ruettenauer/impact_evaluation)      
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+
+bibliography: Panel.bib     
