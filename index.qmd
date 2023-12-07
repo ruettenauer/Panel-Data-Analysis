@@ -47,7 +47,7 @@ By randomly selecting some individuals and exposing them to the treatment of int
 
 However, randomly exposing some individuals to treatment and withholding treatment from others can be tricky in the social sciences. Think about the effects of education, the effects of marriage, or the effect of pregnancy (good luck with your ethics committee).
 
-A potential compromise between those two approaches: "compare alike with alike". This is what we usually aim for by using panel data. We do not compare two different units to each other. Rather, we compare a unit in an earlier stage to the same unit in a later stage. Not as save as an RCT, but much more ethical for many research questions.
+A potential middle ground between those two approaches: "compare alike with alike" [@Firebaugh.2008]. This is what we usually aim for by using panel data. We do not compare two different units to each other. Rather, we compare a unit in an earlier stage to the same unit in a later stage. Not as save as an RCT, but much more ethical for many research questions.
 
 ![](fig/NHK_Control.gif){width=48%} ![](fig/NHK_FE.gif){width=48%}
 

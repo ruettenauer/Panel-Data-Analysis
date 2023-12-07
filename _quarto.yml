@@ -15,8 +15,8 @@ website:
       href: Panel_part2.html  
     - text: "3) Exercises"
       href: Panel_part3.html  
-    - text: "Solutions"
-      href: Panel_part3_solutions.html 
+    # - text: "Solutions"
+    #   href: Panel_part3_solutions.html 
     tools:
       - icon: github
         menu:

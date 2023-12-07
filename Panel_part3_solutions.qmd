@@ -93,7 +93,85 @@ data.df <- data.df[order(data.df$pid, data.df$year), ]
 
 # Exercise 1
 
-Can we use this dataset to replicate our earlier analysis on the marital wage premium? What might be a problem here?
+Have a look at the data. 
+
+ * How many observations do we have in 1968? How many in 1990?
+
+```{r}
+table(data.df$year)
+```
+
+ * What is the average age in 1968? What was it in 1984? And how is this possible?
+
+
+```{r}
+by(data.df$age, data.df$year, FUN = function(x) summary(x))
+```
+
+* At which age did individual with ID "5790002" become father?
+
+```{r}
+data.df[data.df$pid == 5790002, ]
+
+# View(data.df[data.df$pid == 5790002, ])
+```
+
+# Exercise 2
+
+Just to play a little bit around with the data, let us estimate some models.
+
+* What is the correlation between age and wage? Please use different estimators to determine different tzpes of correlations.
+
+### Pooled OLS
+```{r}
+mod1.lm <- lm(logwages ~ age, data = data.df)
+summary(mod1.lm)
+```
+
+The higher the age of an observation, the higher their wage. If the age of an observation is 1 year higher, the log annual wage of this observation is `r round(mod1.lm$coefficients["age"],4)`. In other words, the wage of an observation is higher by `r (round(exp(mod1.lm$coefficients["age"]), 4)-1)*100`% with an additional year of age (the mean annual wage is `r format(round(mean(exp(data.df$logwages)), 0), scientific=FALSE)`).
+
+
+### Between model
+```{r}
+mod1.btw <- plm(logwages ~ age, 
+                id = c("pid", "year"), # id and time
+                effect = "individual", # individual, time, or twoways as FE? 
+                model = "between",     # between, FE, RE, FD
+                data = data.df)
+summary(mod1.btw)
+```
+
+The higher the age of an individual, the higher their wage. If the age of an individual is 1 year higher, the log annual wage of this individual is `r round(mod1.btw$coefficients["age"],4)`. In other words, the wage of an individual is higher by `r (round(exp(mod1.btw$coefficients["age"]), 4)-1)*100`% with an additional year of age (the mean annual wage is `r format(round(mean(exp(data.df$logwages)), 0), scientific=FALSE)`).
+
+
+### Fixed Effects model
+```{r}
+mod1.fe <- plm(logwages ~ age, 
+                id = c("pid", "year"), # id and time
+                effect = "individual", # individual, time, or twoways as FE? 
+                model = "within",     # between, FE, RE, FD
+                data = data.df)
+summary(mod1.fe)
+```
+
+The higher the age of an individual, the higher their wage. If an individual become one year older, the log annual wage of this individual increases by `r round(mod1.fe$coefficients["age"],4)`. In other words, the wage of an individual increases by `r (round(exp(mod1.fe$coefficients["age"]), 4)-1)*100`% with an additional year of age for this individual (the mean annual wage is `r format(round(mean(exp(data.df$logwages)), 0), scientific=FALSE)`).
+
+
+### Random Effects model
+```{r}
+mod1.fe <- plm(logwages ~ age, 
+                id = c("pid", "year"), # id and time
+                effect = "individual", # individual, time, or twoways as FE? 
+                model = "random",     # between, FE, RE, FD
+                data = data.df)
+summary(mod1.fe)
+```
+
+The higher the age of an individual, the higher their wage. Well,... I don't actually know how to translate that into a substantive interpretation.
+
+# Exercise 3
+
+Can we use this dataset to replicate our earlier analysis on the marital wage premium? What might be a problem here? (tip: have a look a the marriage variable).
 
 ```{r}
 ### Lets check if variable are time-varying or constant
@@ -101,9 +179,8 @@ Can we use this dataset to replicate our earlier analysis on the marital wage pr
 lapply(data.df, FUN = function(x) mean(ave(x, data.df$pid, FUN = sd)))
 ```
 
-The variable married is time-constant and does not have any within-person variance. This is somehow not very useful, as marital status obviously is not a time-constant trait.
 
-# Exercise 2
+The variable married is time-constant and does not have any within-person variance. This is somehow not very useful, as marital status obviously is not a time-constant trait.
 
 However, we do something similar: is there a fatherhood wage premium? In other words, do men experience an increase in wages when they become fathers?
 
@@ -189,7 +266,7 @@ data.df <- data.df[data.df$notstag_child_hh == 0, ]
 table(data.df$fd_child_hh)
 ```    
 
-    * Calculate the effect of having a child on th wage of men (including controls if reasonable). 
+    * Calculate the effect of having a child on the wage of men (including controls if reasonable). 
     
     * Calculate effects for POLS, RE, and FE (if you have some extra time, also FEIS). (#Hint: feis needs a class `data.frame` as input data)
     
@@ -312,7 +389,7 @@ If we observe a treatment effect for a treatment that has not yet happened, this
 
 What do you think, what might be happening here?
 
-# Exercise 3
+# Exercise 4
 
 Can we use one of the new event-study approaches, such as the Callaway and SantAnna estimator?
 
