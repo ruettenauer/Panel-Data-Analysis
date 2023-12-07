@@ -213,7 +213,7 @@ screenreg(list(wages.feis, wages.lmfeis), digits = 3,
 
 Note, however, that this manual approach will lead to incorrect standard errors!
 
-# Dynamic treatment effects
+# Dynamic treatment effects  {#sec-dynamic}
 
 Often, we are not only interested in the overall treatment effect, but we also want to know how treatment effects unfold after a treatment. For example, how does happiness change around specific life course events [@Clark.2013], or how do housing prices develop after the opening of an industrial plant [@Currie.2015]?
 

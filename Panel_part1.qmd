@@ -106,7 +106,12 @@ is.pbalanced(Males, index = c("nr", "year"))
 ```
 In our example, we have balanced data (although there might still be NAs in the data).
 
-A nice feature of panel data is that we can do some within-person transformation. For instance we can calculate the lags and leads, or first differences of data. NOTE: always make sure the data is sorted properly before you do!
+A nice feature of panel data is that we can do some within-person transformation. For instance we can calculate the lags and leads, or first differences of data. 
+
+::: {.callout-note}
+always make sure the data is sorted properly before you do!
+:::
+
 
 ```{r}
 # Order data
@@ -685,7 +690,7 @@ The main problem: this model relies on very strong assumptions for consistency, 
 
 * $\E(\upsilon_{it} | x_{it}) = 0$, or $Cov(x_{it}, \upsilon_{it}) = 0$
 
-The error (including omitted variables) must not be correlated with $x_{it}$. In observational studies, we cannot observe a lot of things and characteristics (unobservables) such as personal views, physical traits, or empathy. However, everything that influences $y_{it}$ but is unobserved ends up in $\upsilon_{it}$. If anything correlates with $x_{it}$, it is endogenous, and $\hat{\beta}_x$ will be biased.  
+The error (including omitted variables) must not be correlated with $x_{it}$. In observational studies, we cannot observe a lot of things and characteristics (unobservables) such as personal views, psychological traits, or empathy. However, everything that influences $y_{it}$ but is unobserved ends up in $\upsilon_{it}$. If anything correlates with $x_{it}$, it is endogenous, and $\hat{\beta}_x$ will be biased.  
 
 Take our marriage example. 
 
@@ -752,9 +757,12 @@ $$
 \hat{\bm \beta} = (\bm X^\intercal\bm X)^{-1}\bm X^\intercal \bm y
 $$
 
-__Note: this also means that every time-constant variable is wiped out - we cannot estimate their effects in FE models!__ 
+__This also means that every time-constant variable is wiped out - we cannot estimate their effects in FE models!__ 
+:::
 
-__Note: the FE estimator can only be applied to observations which are at least observed 2 times ($T \geq 2$)!__
+::: {.callout-note}
+The FE estimator can only be applied to observations which are at least observed 2 times ($T \geq 2$)!__
+:::
 
 The main assumption for consistency now is
 
@@ -800,7 +808,11 @@ zp3 <- ggplot(df2, aes(time, wage)) +
 zp3
 ```
 
-NOTE: A one-ways FE would effectively drop all those observations without within-variance on the independent variables. In our case, we would disregard those who never marry. 
+
+::: {.callout-note}
+A one-ways FE would effectively drop all those observations without within-variance on the independent variables. In our case, we would disregard those who never marry. 
+:::
+
 
 However, they also experienced an increase in wages when the other two married.
 
@@ -808,7 +820,9 @@ However, they also experienced an increase in wages when the other two married.
 
 To circumvent the problem above, we want to add the never-married as a control group in our estimator. 
 
+::: {.callout-tip}
 __In general, it is always a good idea to control for temporal shocks!__
+:::
 
 We can do so by including person fixed effects and time fixed effects:
 
@@ -988,6 +1002,18 @@ The coefficients correspond to:
 ```{r}
 summary(lm(wage ~ marriage_ever*marry_post, data = df2))
 ```
+
+
+::: {.callout-tip}
+## Selecting the estimation sample
+
+When estimating FE or Diff-in-Diff estimators, selecting the estimation sample may play an important role. 
+
+@Bruderl.2015 recommend "*one should restrict the estimation sample to those persons who can potentially
+experience the treatment during the observation window*". Usually this means that we start with the not-yet-treated and omit the already-treated (as in the Diff-in-Diff example above).
+
+The rational behind this: the already-treated may experience ongoing dynamic treatment effects. We thus do not want them as a control group. This discussion is similar to the discussion about dynamic treatment effects ([Next Chapter](Panel_part2.qmd#dynamic-diff-in-diff)). Differences are often likely to be small, but it is advisable to do at least do some robustness checks!
+:::
 
 # Random effects estimator
 
@@ -1363,7 +1389,7 @@ cre <- plm(happiness ~ age + m_age, data = df_orig,
            index = c("id", "time"),
            effect = "individual", model = "random")
 
-screenreg(list(fe1, btw2, re, cre), digits = 3,
+screenreg(list(fe1, btw2, re1, cre), digits = 3,
           custom.model.names = c("FE", "BTW", "RE", "CRE"))
 ```
 
@@ -1371,7 +1397,9 @@ The estimate for $\beta_{CRE}$ equals the within effect. Note that the coefficie
 
 For consistency of $\hat{\beta}_x$ we only need $\E(\epsilon_{it} | x_{i}, \bar{x}_{i}) = 0$: equals the FE assumption for variables additionally included as person-specific means. Usually, one would include person-specific means for all time-varying $\bm x$ (except $\mu_t$ in case of a twoways specification). 
 
-Note that the CRE can also be quite helpful in the case of non-linear models. 
+::: {.callout-note}
+The CRE can also be quite helpful in the case of non-linear models. We cannot just include person-dummies in non-linear models such as logit! @Wooldridge.2010 describes the best way of estimating FE non-linear models: a) Estimate a CRE specification within a Random Effects Probit, b) obtain the marginal effects of the time-varying coefficients. See @Ruttenauer.2022b for an applied example on the likelihood of relocation.
+:::
 
 # Statistical inference
 

@@ -105,13 +105,19 @@ Have a look at the data.
 
 
  * At which age did individual with ID "5790002" become father?
+ 
+ 
+ * Please calculate the average age for each person. 
+ 
+ 
+ * Please calculate the lagged age (the age in the previous period)
 
 
 # Exercise 2
 
 Just to play a little bit around with the data, let us estimate some models.
 
-* What is the correlation between age and wage? Please use different estimators to determine different types of correlations.
+* What is the correlation between age and wage? Please use different estimators to determine different types of correlations: Pooled, Between, FE, RE, CRE.
 
 
 # Exercise 3

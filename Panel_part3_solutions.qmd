@@ -116,6 +116,34 @@ data.df[data.df$pid == 5790002, ]
 # View(data.df[data.df$pid == 5790002, ])
 ```
 
+
+ * Please calculate the average age for each person. 
+ 
+```{r}
+# Ave by id
+data.df$m_age <- ave(data.df$age,
+                     by = data.df$pid,
+                     FUN = function(x) mean(x, na.rm = TRUE))
+
+data.df[,c ("pid", "year", "age", "m_age")]
+```
+ 
+ * Please calculate the lagged age (the age in the previous period)
+ 
+```{r}
+# Make sure the data is ordered by id and year
+data.df <- data.df[order(data.df$pid, data.df$year), ]
+
+# Use dplyr::lag to calculate the age in the previous period
+# Put into ave by id to make sure to use only information within each id
+data.df$lag_age <- ave(data.df$age,
+                       by = data.df$pid,
+                       FUN = function(x) dplyr::lag(x, n = 1)) # 1 year lag
+
+data.df[,c ("pid", "year", "age", "m_age", "lag_age")]
+```
+ 
+
 # Exercise 2
 
 Just to play a little bit around with the data, let us estimate some models.
@@ -159,15 +187,38 @@ The higher the age of an individual, the higher their wage. If an individual bec
 
 ### Random Effects model
 ```{r}
-mod1.fe <- plm(logwages ~ age, 
+mod1.re <- plm(logwages ~ age, 
                 id = c("pid", "year"), # id and time
                 effect = "individual", # individual, time, or twoways as FE? 
                 model = "random",     # between, FE, RE, FD
                 data = data.df)
-summary(mod1.fe)
+summary(mod1.re)
 ```
 
 The higher the age of an individual, the higher their wage. Well,... I don't actually know how to translate that into a substantive interpretation.
+
+### CRE Random Effects model
+
+```{r}
+# Calculate group-specific means of ALL X variables
+data.df$m_age <- ave(data.df$age,
+                     by = data.df$pid,
+                     FUN = function(x) mean(x, na.rm = TRUE))
+
+# Estimate in RE model
+mod1.cre <- plm(logwages ~ age + m_age, 
+                id = c("pid", "year"), # id and time
+                effect = "individual", # individual, time, or twoways as FE? 
+                model = "random",     # between, FE, RE, FD
+                random.method = "walhus", # to avoid singularities
+                data = data.df)
+summary(mod1.cre)
+```
+
+1) If an individual become one year older, the log annual wage of this individual increases by `r round(mod1.cre$coefficients["age"],4)`. In other words, the wage of an individual increases by `r (round(exp(mod1.cre$coefficients["age"]), 4)-1)*100`% with an additional year of age for this individual.
+
+2) If the age of an individual is 1 year higher, the log annual wage of this individual is `r round(mod1.cre$coefficients["m_age"] + mod1.cre$coefficients["age"],4)` (`r round(mod1.cre$coefficients["m_age"],4)` + `r round(mod1.cre$coefficients["age"],4)`). In other words, the wage of an individual is higher by `r (round(exp(mod1.cre$coefficients["m_age"] + mod1.cre$coefficients["age"]), 4)-1)*100`% with an additional year of age
+
 
 # Exercise 3
 
