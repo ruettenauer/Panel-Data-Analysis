@@ -3,7 +3,6 @@
 *.Rhistory
 *.RData
 *.Ruserdata
-_data/
 .Rproj.user
 *holdout.Rmd
 /.quarto/
