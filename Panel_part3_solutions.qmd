@@ -180,6 +180,11 @@ mod1.fe <- plm(logwages ~ age,
                 model = "within",     # between, FE, RE, FD
                 data = data.df)
 summary(mod1.fe)
+
+# Add cluster robust standard errors
+vcovx <- vcovHC(mod1.fe, cluster = "group", method = "arellano", type = "HC3")
+mod1.fe$vcov <- vcovx
+summary(mod1.fe)
 ```
 
 The higher the age of an individual, the higher their wage. If an individual become one year older, the log annual wage of this individual increases by `r round(mod1.fe$coefficients["age"],4)`. In other words, the wage of an individual increases by `r (round(exp(mod1.fe$coefficients["age"]), 4)-1)*100`% with an additional year of age for this individual (the mean annual wage is `r format(round(mean(exp(data.df$logwages)), 0), scientific=FALSE)`).
